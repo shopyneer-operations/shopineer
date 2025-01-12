@@ -189,7 +189,7 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
       language: "ar-eg",
       chargeItems: this.getCheckoutItems(totalPrice, cart),
       returnUrl,
-      orderWebHookUrl: `${BACKEND_URL}/admin/hooks/payment/${FawryProviderService.identifier}_fawry`,
+      orderWebHookUrl: `${BACKEND_URL}/hooks/payment/${FawryProviderService.identifier}_fawry`,
       authCaptureModePayment: false,
       signature: this.generateSignature(sessionId, cart, totalPrice),
     };
