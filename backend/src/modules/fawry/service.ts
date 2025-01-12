@@ -87,8 +87,8 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
     }
   }
 
-  private generateSignature(cart: CartDTO, totalPrice: number): string {
-    const merchantRefNum = cart.id;
+  private generateSignature(sessionId: string, cart: CartDTO, totalPrice: number): string {
+    const merchantRefNum = sessionId;
     const customerProfileId = cart.customer_id;
     const itemsDetails = fp.flow(
       this.getCheckoutItems(totalPrice),
@@ -177,11 +177,11 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
     return result;
   });
 
-  private buildCheckoutRequest(cart: CartDTO, totalPrice: number): ChargeRequest {
+  private buildCheckoutRequest(sessionId: string, cart: CartDTO, totalPrice: number): ChargeRequest {
     const { merchantCode, returnUrl } = this.options_;
     const request: ChargeRequest = {
       merchantCode,
-      merchantRefNum: cart.id,
+      merchantRefNum: sessionId,
       customerMobile: cart.shipping_address.phone,
       customerEmail: cart.email,
       customerName: cart.shipping_address.first_name + " " + cart.shipping_address.last_name,
@@ -191,7 +191,7 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
       returnUrl,
       orderWebHookUrl: `${BACKEND_URL}/admin/hooks/payment/${FawryProviderService.identifier}_fawry`,
       authCaptureModePayment: false,
-      signature: this.generateSignature(cart, totalPrice),
+      signature: this.generateSignature(sessionId, cart, totalPrice),
     };
 
     return request;
@@ -213,7 +213,11 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
     const activityId = this.logger_.activity(
       `⚡🔵 Fawry (initiatePayment): Initiating a payment for cart: ${(context.extra.cart as CartDTO).id}`
     );
-    const checkoutRequest = this.buildCheckoutRequest(context.extra.cart as CartDTO, Number(amount));
+    const checkoutRequest = this.buildCheckoutRequest(
+      context.session_id,
+      context.extra.cart as CartDTO,
+      Number(amount)
+    );
 
     try {
       const response = await axios.post(`${this.options_.baseUrl}/fawrypay-api/api/payments/init`, checkoutRequest, {
@@ -250,8 +254,6 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
     paymentSessionData: Record<string, unknown>,
     context: Record<string, unknown>
   ): Promise<PaymentProviderError | { status: PaymentSessionStatus; data: PaymentProviderSessionResponse["data"] }> {
-    console.log("🤯🤯", paymentSessionData);
-
     return {
       data: paymentSessionData,
       status: "captured",
@@ -281,14 +283,14 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
       `⚡🔵 Fawry (webhook): triggered with payload: ${JSON.stringify(payload)}`
     );
 
-    const { data } = payload;
+    const data = payload.data as unknown as WebhookPayload;
 
     switch (data.orderStatus) {
       case "NEW":
         return {
           action: "authorized",
           data: {
-            session_id: (data.metadata as Record<string, any>).session_id,
+            session_id: data.merchantRefNumber,
             amount: new BigNumber(data.paymentAmount as number),
           },
         };
@@ -296,7 +298,7 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
         return {
           action: "captured",
           data: {
-            session_id: (data.metadata as Record<string, any>).session_id,
+            session_id: data.merchantRefNumber,
             amount: new BigNumber(data.paymentAmount as number),
           },
         };
@@ -304,7 +306,7 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
         return {
           action: "failed",
           data: {
-            session_id: (data.metadata as Record<string, any>).session_id,
+            session_id: data.merchantRefNumber,
             amount: new BigNumber(data.paymentAmount as number),
           },
         };
