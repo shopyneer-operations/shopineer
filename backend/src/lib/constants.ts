@@ -30,6 +30,11 @@ export const FAWRY_RETURN_PATH = assertValue(
 export const IS_DEV = process.env.NODE_ENV === "development";
 
 /**
+ * Public url for the frontend
+ */
+export const STORE_URL = assertValue(process.env.STORE_URL, "Environment variable for STORE_URL is not set");
+
+/**
  * Public URL for the backend
  */
 export const BACKEND_URL =
