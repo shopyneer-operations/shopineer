@@ -3,7 +3,7 @@ import { LinkDefinition } from "@medusajs/framework/types";
 import { Modules } from "@medusajs/framework/utils";
 import { StepResponse } from "@medusajs/framework/workflows-sdk";
 import { eq, map } from "lodash";
-import { SUPPLIER_MODULE } from "modules/supplier";
+import { SUPPLIER_MODULE } from "src/modules/supplier";
 
 createProductsWorkflow.hooks.productsCreated(
   async function ({ products, additional_data }, { container }) {

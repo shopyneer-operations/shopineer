@@ -14,7 +14,7 @@ import { AbstractPaymentProvider, BigNumber, MedusaError } from "@medusajs/utils
 import fp from "lodash/fp";
 import crypto from "crypto";
 import axios from "axios";
-import { BACKEND_URL } from "lib/constants";
+import { BACKEND_URL } from "src/lib/constants";
 
 type ChargeItem = {
   itemId: string;
