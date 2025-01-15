@@ -303,6 +303,7 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
           },
         };
       case "FAILD":
+      case "EXPIRED":
         return {
           action: "failed",
           data: {
