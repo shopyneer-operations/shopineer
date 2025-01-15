@@ -10,3 +10,11 @@ export async function POST(req: MedusaRequest<PostAdminCreateSupplierType>, res:
 
   res.json({ supplier });
 }
+
+export async function GET(req: MedusaRequest, res: MedusaResponse) {
+  const query = req.scope.resolve("query");
+
+  const { data: suppliers } = await query.graph({ entity: "supplier", fields: ["*", "products.*"] });
+
+  res.json({ suppliers });
+}
