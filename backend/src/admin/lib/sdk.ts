@@ -1,8 +1,7 @@
 import Medusa from "@medusajs/js-sdk";
-import { BACKEND_URL } from "../../lib/constants.js";
 
 export const sdk = new Medusa({
-  baseUrl: BACKEND_URL,
+  baseUrl: process.env.NODE_ENV === "development" ? "http://localhost:9000" : "backend-production-b092.up.railway.app",
   debug: process.env.NODE_ENV === "development",
   auth: {
     type: "session",
