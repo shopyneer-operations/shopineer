@@ -14,7 +14,14 @@ export async function POST(req: MedusaRequest<PostAdminCreateSupplierType>, res:
 export async function GET(req: MedusaRequest, res: MedusaResponse) {
   const query = req.scope.resolve("query");
 
-  const { data: suppliers } = await query.graph({ entity: "supplier", fields: ["*", "products.*"] });
+  const {
+    data: suppliers,
+    metadata: { count, take, skip },
+  } = await query.graph({
+    entity: "supplier",
+    // fields: ["*", "products.*"],
+    ...req.remoteQueryConfig,
+  });
 
-  res.json({ suppliers });
+  res.json({ suppliers, count, limit: take, offset: skip });
 }

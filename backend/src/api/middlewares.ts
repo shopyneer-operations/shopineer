@@ -1,6 +1,9 @@
-import { defineMiddlewares, validateAndTransformBody } from "@medusajs/framework/http";
+import { defineMiddlewares, validateAndTransformBody, validateAndTransformQuery } from "@medusajs/framework/http";
 import { PostAdminCreateSupplier } from "./admin/suppliers/validators";
 import z from "zod";
+import { createFindParams } from "@medusajs/medusa/api/utils/validators";
+
+const GetSuppliersSchema = createFindParams();
 
 export default defineMiddlewares({
   routes: [
@@ -15,6 +18,16 @@ export default defineMiddlewares({
       additionalDataValidator: {
         supplier_id: z.string().optional() as any,
       },
+    },
+    {
+      matcher: "/admin/suppliers",
+      method: "GET",
+      middlewares: [
+        validateAndTransformQuery(GetSuppliersSchema, {
+          defaults: ["id", "name", "products.*"],
+          isList: true,
+        }),
+      ],
     },
   ],
 });
