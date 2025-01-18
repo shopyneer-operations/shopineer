@@ -24,7 +24,7 @@ export default defineMiddlewares({
       method: "GET",
       middlewares: [
         validateAndTransformQuery(GetSuppliersSchema, {
-          defaults: ["id", "name", "products.*"],
+          defaults: ["id", "name", "contact_person", "email", "phone", "products.*"],
           isList: true,
         }),
       ],

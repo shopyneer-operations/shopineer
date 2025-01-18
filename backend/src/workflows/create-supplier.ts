@@ -4,6 +4,9 @@ import SupplierModuleService from "src/modules/supplier/service";
 
 export type CreateSupplierStepInput = {
   name: string;
+  contact_person?: string;
+  email?: string;
+  phone?: string;
 };
 
 export const createSupplierStep = createStep(
@@ -24,6 +27,9 @@ export const createSupplierStep = createStep(
 
 export type CreateSupplierWorkflowInput = {
   name: string;
+  contact_person?: string;
+  email?: string;
+  phone?: string;
 };
 
 export const createSupplierWorkflow = createWorkflow(

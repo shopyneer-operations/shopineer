@@ -1,11 +1,12 @@
 import { useMemo } from "react";
 import { Table as UiTable } from "@medusajs/ui";
+import { get } from "lodash";
 
 export type TableProps = {
   columns: {
     key: string;
     label?: string;
-    render?: (value: unknown) => React.ReactNode;
+    render?: (row: any) => React.ReactNode;
   }[];
   data: Record<string, unknown>[];
   pageSize: number;
@@ -14,7 +15,7 @@ export type TableProps = {
   setCurrentPage: (value: number) => void;
 };
 
-export const Table = ({ columns, data, pageSize, count, currentPage, setCurrentPage }: TableProps) => {
+export function Table({ columns, data, pageSize, count, currentPage, setCurrentPage }: TableProps) {
   const pageCount = useMemo(() => {
     return Math.ceil(count / pageSize);
   }, [count, pageSize]);
@@ -56,8 +57,8 @@ export const Table = ({ columns, data, pageSize, count, currentPage, setCurrentP
                 {columns.map((column, index) => (
                   <UiTable.Cell key={`${rowIndex}-${index}`}>
                     <>
-                      {column.render && column.render(item[column.key])}
-                      {!column.render && <>{item[column.key] as string}</>}
+                      {column.render && column.render(item)}
+                      {!column.render && <>{get(item, column.key) as string}</>}
                     </>
                   </UiTable.Cell>
                 ))}
@@ -78,4 +79,4 @@ export const Table = ({ columns, data, pageSize, count, currentPage, setCurrentP
       />
     </div>
   );
-};
+}
