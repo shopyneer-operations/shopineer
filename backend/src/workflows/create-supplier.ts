@@ -12,9 +12,13 @@ export type CreateSupplierStepInput = {
 export const createSupplierStep = createStep(
   "create-supplier-step",
   async function step(input: CreateSupplierStepInput, { container }) {
-    const supplierModuleService: SupplierModuleService = container.resolve(SUPPLIER_MODULE);
+    const logger = container.resolve("logger");
+    const activityId = logger.activity(`🔵 createSupplierStep: Creating supplier: ${input.name}`);
 
+    const supplierModuleService: SupplierModuleService = container.resolve(SUPPLIER_MODULE);
     const supplier = await supplierModuleService.createSuppliers(input);
+
+    logger.success(activityId, `🟢 createSupplierStep: Supplier created: ${input.name}`);
 
     return new StepResponse(supplier, supplier.id);
   },

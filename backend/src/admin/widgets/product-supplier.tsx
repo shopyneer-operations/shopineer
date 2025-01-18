@@ -4,17 +4,10 @@ import { sdk } from "../lib/sdk";
 import { AdminProduct, DetailWidgetProps } from "@medusajs/types";
 import useSWR from "swr";
 import React from "react";
+import { Supplier } from "../types/Supplier";
 
 type AdminroductSupplier = AdminProduct & {
   supplier?: Supplier;
-};
-
-type Supplier = {
-  id: string;
-  name: string;
-  contact_person: string;
-  email: string;
-  phone: string;
 };
 
 type SuppliersResponse = {
