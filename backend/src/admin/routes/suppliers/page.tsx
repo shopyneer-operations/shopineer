@@ -7,17 +7,10 @@ import { useState } from "react";
 import useSWR from "swr";
 import { Table } from "../../components/table";
 import { IconProps } from "@medusajs/icons/dist/types";
+import { CreateSupplierForm } from "../../components/create-supplier-form";
+import { Supplier } from "../../types/Supplier";
 
-type Supplier = {
-  id: string;
-  name: string;
-  contact_person: string;
-  email: string;
-  phone: string;
-  products: any[];
-};
-
-type SuppliersResponse = {
+export type SuppliersResponse = {
   suppliers: Supplier[];
   count: number;
   offset: number;
@@ -70,9 +63,11 @@ export default function SuppliersPage() {
       <Toaster />
 
       <div className="flex items-center justify-between px-6 py-4">
-        <div>
-          <Heading level="h2">Suppliers</Heading>
-        </div>
+        {/* <div> */}
+        <Heading level="h2">Suppliers</Heading>
+        {/* </div> */}
+
+        <CreateSupplierForm mutate={mutate} />
       </div>
 
       <Table
