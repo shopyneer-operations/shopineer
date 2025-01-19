@@ -1,5 +1,5 @@
 import { defineWidgetConfig } from "@medusajs/admin-sdk";
-import { clx, Container, Heading, Select, Text, toast } from "@medusajs/ui";
+import { Container, Heading, Select, toast } from "@medusajs/ui";
 import { sdk } from "../lib/sdk";
 import { AdminProduct, DetailWidgetProps } from "@medusajs/types";
 import useSWR from "swr";
@@ -18,9 +18,7 @@ type SuppliersResponse = {
 };
 
 const ProductSupplierWidget = ({ data: product }: DetailWidgetProps<AdminProduct>) => {
-  const { data: suppliers, mutate } = useSWR(["suppliers"], () =>
-    sdk.client.fetch<SuppliersResponse>("/admin/suppliers")
-  );
+  const { data: suppliers } = useSWR(["suppliers"], () => sdk.client.fetch<SuppliersResponse>("/admin/suppliers"));
 
   useSWR(["product", product.id], async () => {
     const result = await sdk.admin.product.retrieve(product.id, {

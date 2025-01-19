@@ -1,5 +1,5 @@
-import { Container, Heading, DropdownMenu, IconButton, Toaster, toast } from "@medusajs/ui";
-import { TruckFast, EllipsisHorizontal, PencilSquare, Plus, Trash } from "@medusajs/icons";
+import { Container, Heading, Toaster, toast, Button } from "@medusajs/ui";
+import { TruckFast, Trash } from "@medusajs/icons";
 import { defineRouteConfig } from "@medusajs/admin-sdk";
 import { sdk } from "../../lib/sdk";
 import constants from "../../lib/constants";
@@ -9,6 +9,7 @@ import { Table } from "../../components/table";
 import { IconProps } from "@medusajs/icons/dist/types";
 import { CreateSupplierForm } from "../../components/create-supplier-form";
 import { Supplier } from "../../types/Supplier";
+import { EditSuplierForm } from "../../components/edit-supplier-form";
 
 export type SuppliersResponse = {
   suppliers: Supplier[];
@@ -48,13 +49,13 @@ export default function SuppliersPage() {
     return supplierId;
   }
 
-  const actions: Action[] = [
-    {
-      label: "Delete",
-      Icon: Trash,
-      onClick: deleteSupplier,
-    },
-  ];
+  // const actions: Action[] = [
+  //   {
+  //     label: "Delete",
+  //     Icon: Trash,
+  //     onClick: deleteSupplier,
+  //   },
+  // ];
 
   console.log("🫡", { data });
 
@@ -101,7 +102,17 @@ export default function SuppliersPage() {
             key: "actions",
             label: "Actions",
             render(supplier: Supplier) {
-              return <ActionsMenu supplier={supplier} actions={actions} />;
+              return (
+                <div className="flex items-center gap-x-2">
+                  {/* Edit */}
+                  <EditSuplierForm mutate={mutate} supplier={supplier} />
+
+                  {/* Delete */}
+                  <Button type="button" onClick={() => deleteSupplier(supplier.id)} variant="danger">
+                    <Trash />
+                  </Button>
+                </div>
+              );
             },
           },
         ]}
@@ -115,38 +126,25 @@ export default function SuppliersPage() {
   );
 }
 
-function ActionsMenu({ supplier, actions }: { supplier: Supplier; actions: Action[] }) {
-  return (
-    <DropdownMenu>
-      <DropdownMenu.Trigger asChild>
-        <IconButton>
-          <EllipsisHorizontal />
-        </IconButton>
-      </DropdownMenu.Trigger>
-      <DropdownMenu.Content>
-        {actions.map(({ label, onClick, Icon }) => (
-          <DropdownMenu.Item key={label} className="gap-x-2" onClick={() => onClick(supplier.id)}>
-            <Icon className="text-ui-fg-subtle" />
-            {label}
-          </DropdownMenu.Item>
-        ))}
-        {/* <DropdownMenu.Item className="gap-x-2">
-          <PencilSquare className="text-ui-fg-subtle" />
-          Edit
-        </DropdownMenu.Item>
-        <DropdownMenu.Item className="gap-x-2">
-          <Plus className="text-ui-fg-subtle" />
-          Add
-        </DropdownMenu.Item>
-        <DropdownMenu.Separator />
-        <DropdownMenu.Item className="gap-x-2">
-          <Trash className="text-ui-fg-subtle" />
-          Delete
-        </DropdownMenu.Item> */}
-      </DropdownMenu.Content>
-    </DropdownMenu>
-  );
-}
+// function ActionsMenu({ supplier, actions }: { supplier: Supplier; actions: Action[] }) {
+//   return (
+//     <DropdownMenu>
+//       <DropdownMenu.Trigger asChild>
+//         <IconButton>
+//           <EllipsisHorizontal />
+//         </IconButton>
+//       </DropdownMenu.Trigger>
+//       <DropdownMenu.Content>
+//         {actions.map(({ label, onClick, Icon }) => (
+//           <DropdownMenu.Item key={label} className="gap-x-2" onClick={() => onClick(supplier.id)}>
+//             <Icon className="text-ui-fg-subtle" />
+//             {label}
+//           </DropdownMenu.Item>
+//         ))}
+//       </DropdownMenu.Content>
+//     </DropdownMenu>
+//   );
+// }
 
 export const config = defineRouteConfig({
   label: "Suppliers",

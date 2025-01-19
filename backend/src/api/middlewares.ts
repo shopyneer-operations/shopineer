@@ -13,6 +13,11 @@ export default defineMiddlewares({
       middlewares: [validateAndTransformBody(PostAdminCreateSupplier as any)],
     },
     {
+      matcher: "/admin/suppliers/:id",
+      method: "PUT",
+      middlewares: [validateAndTransformBody(PostAdminCreateSupplier as any)],
+    },
+    {
       matcher: "/admin/products",
       method: "POST",
       additionalDataValidator: {
