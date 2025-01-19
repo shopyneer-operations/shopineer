@@ -1,4 +1,4 @@
-import { loadEnv, Modules, defineConfig } from "@medusajs/utils";
+import { loadEnv, defineConfig, Modules } from "@medusajs/framework/utils";
 import {
   ADMIN_CORS,
   AUTH_CORS,
@@ -27,7 +27,7 @@ import {
   FAWRY_RETURN_PATH,
   FAWRY_SECURITY_CODE,
   FAWRY_BASE_URL,
-} from "lib/constants";
+} from "src/lib/constants";
 
 loadEnv(process.env.NODE_ENV, process.cwd());
 
@@ -50,6 +50,9 @@ const medusaConfig = {
     disable: SHOULD_DISABLE_ADMIN,
   },
   modules: [
+    {
+      resolve: "./src/modules/supplier",
+    },
     {
       key: Modules.PAYMENT,
       resolve: "@medusajs/medusa/payment",
