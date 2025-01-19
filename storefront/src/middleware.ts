@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server"
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
 const PUBLISHABLE_API_KEY = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY
-const DEFAULT_REGION = process.env.NEXT_PUBLIC_DEFAULT_REGION || "us"
+const DEFAULT_REGION = process.env.NEXT_PUBLIC_DEFAULT_REGION || "eg"
 
 const regionMapCache = {
   regionMap: new Map<string, HttpTypes.StoreRegion>(),
@@ -28,6 +28,8 @@ async function getRegionMap() {
         tags: ["regions"],
       },
     }).then((res) => res.json())
+
+    console.log("🤯", regions)
 
     if (!regions?.length) {
       notFound()
@@ -142,5 +144,7 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|favicon.ico|.*\\.png|.*\\.jpg|.*\\.gif|.*\\.svg).*)"], // prevents redirecting on static files
+  matcher: [
+    "/((?!api|_next/static|favicon.ico|.*\\.png|.*\\.jpg|.*\\.gif|.*\\.svg).*)",
+  ], // prevents redirecting on static files
 }
