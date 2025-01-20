@@ -25,6 +25,7 @@
     "@medusajs/cli": "latest",
     "@medusajs/core-flows": "latest",
     "@medusajs/framework": "latest",
+    "@medusajs/icons": "^2.3.1",
     "@medusajs/js-sdk": "^2.3.1",
     "@medusajs/medusa": "latest",
     "@medusajs/notification-sendgrid": "latest",
@@ -45,6 +46,7 @@
     "medusajs-launch-utils": "^0.0.10",
     "minio": "^8.0.3",
     "pg": "^8.13.1",
+    "react-hook-form": "^7.54.2",
     "resend": "4.0.1",
     "swr": "^2.3.0",
     "ulid": "^2.3.0"
