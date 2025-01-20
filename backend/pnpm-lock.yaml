@@ -10,7 +10,7 @@ importers:
     dependencies:
       '@medusajs/admin-sdk':
         specifier: latest
-        version: 2.1.3(zod@3.22.4)
+        version: 2.1.3(zod@3.24.1)
       '@medusajs/cli':
         specifier: latest
         version: 2.1.3(@mikro-orm/core@5.9.7)(@mikro-orm/knex@5.9.7(@mikro-orm/core@5.9.7)(@mikro-orm/migrations@5.9.7)(pg@8.13.1))(@mikro-orm/migrations@5.9.7)(@mikro-orm/postgresql@5.9.7(@mikro-orm/core@5.9.7)(@mikro-orm/migrations@5.9.7))(awilix@8.0.1)(ioredis@5.4.2)(pg@8.13.1)(vite@5.4.11(@types/node@20.17.10))
@@ -95,6 +95,9 @@ importers:
       ulid:
         specifier: ^2.3.0
         version: 2.3.0
+      zod:
+        specifier: ^3.24.1
+        version: 3.24.1
     devDependencies:
       '@medusajs/test-utils':
         specifier: latest
@@ -7295,6 +7298,9 @@ packages:
   zod@3.22.4:
     resolution: {integrity: sha512-iC+8Io04lddc+mVqQ9AZ7OQ2MrUKGN+oIQyq1vemgt46jwCwLfhq7/pwnBnNXXXZb8VTVLKwp9EDkx+ryxIWmg==}
 
+  zod@3.24.1:
+    resolution: {integrity: sha512-muH7gBL9sI1nciMZV67X5fTKKBLtwpZ5VBp1vsOQzj1MhrBZ4wlVCm3gedKZWLp0Oyel8sIGfeiz54Su+OVT+A==}
+
 snapshots:
 
   '@alloc/quick-lru@5.2.0': {}
@@ -9030,10 +9036,10 @@ snapshots:
       - ts-node
       - typescript
 
-  '@medusajs/admin-sdk@2.1.3(zod@3.22.4)':
+  '@medusajs/admin-sdk@2.1.3(zod@3.24.1)':
     dependencies:
       '@medusajs/admin-shared': 2.1.3
-      zod: 3.22.4
+      zod: 3.24.1
 
   '@medusajs/admin-shared@2.1.3': {}
 
@@ -16182,3 +16188,5 @@ snapshots:
   yoctocolors-cjs@2.1.2: {}
 
   zod@3.22.4: {}
+
+  zod@3.24.1: {}
