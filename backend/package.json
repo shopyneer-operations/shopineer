@@ -13,10 +13,10 @@
     "medusa"
   ],
   "scripts": {
-    "build": "medusa build && ln -s .medusa/server/public/ public",
+    "build": "medusa build && node src/scripts/postBuild.js",
     "seed": "medusa exec ./src/scripts/seed.ts",
     "ib": "init-backend",
-    "start": "medusa start",
+    "start": "init-backend && cd .medusa/server && medusa start --verbose",
     "dev": "medusa develop",
     "email:dev": "email dev --dir=./src/modules/email-notifications/templates --port=3002"
   },
@@ -28,6 +28,7 @@
     "@medusajs/medusa": "latest",
     "@medusajs/notification-sendgrid": "latest",
     "@medusajs/payment-stripe": "latest",
+    "@medusajs/ui": "^4.0.3",
     "@medusajs/workflow-engine-redis": "latest",
     "@mikro-orm/core": "5.9.7",
     "@mikro-orm/knex": "5.9.7",
