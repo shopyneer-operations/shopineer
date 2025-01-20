@@ -2,8 +2,8 @@ import { defineWidgetConfig } from "@medusajs/admin-sdk";
 import { Container, Heading, Select, toast } from "@medusajs/ui";
 import { sdk } from "../lib/sdk";
 import { AdminProduct, DetailWidgetProps } from "@medusajs/types";
-import useSWR from "swr";
-import React from "react";
+// import useSWR from "swr";
+// import React from "react";
 // import { Supplier } from "../types/Supplier";
 
 type AdminroductSupplier = AdminProduct & {
@@ -18,30 +18,30 @@ type SuppliersResponse = {
 };
 
 const ProductSupplierWidget = ({ data: product }: DetailWidgetProps<AdminProduct>) => {
-  const { data: suppliers } = useSWR(["suppliers"], () => sdk.client.fetch<SuppliersResponse>("/admin/suppliers"));
+  //   const { data: suppliers } = useSWR(["suppliers"], () => sdk.client.fetch<SuppliersResponse>("/admin/suppliers"));
 
-  useSWR(["product", product.id], async () => {
-    const result = await sdk.admin.product.retrieve(product.id, {
-      fields: "+supplier.*",
-    });
+  //   useSWR(["product", product.id], async () => {
+  //     const result = await sdk.admin.product.retrieve(product.id, {
+  //       fields: "+supplier.*",
+  //     });
 
-    setSupplierId((result?.product as AdminroductSupplier)?.supplier?.id);
+  //     setSupplierId((result?.product as AdminroductSupplier)?.supplier?.id);
 
-    return result;
-  });
+  //     return result;
+  //   });
 
-  const [supplierId, setSupplierId] = React.useState<string>();
+  //   const [supplierId, setSupplierId] = React.useState<string>();
 
-  async function updateProductSupplier(supplierId: string) {
-    const result = await sdk.admin.product.update(product.id, { additional_data: { supplier_id: supplierId } } as any);
+  //   async function updateProductSupplier(supplierId: string) {
+  //     const result = await sdk.admin.product.update(product.id, { additional_data: { supplier_id: supplierId } } as any);
 
-    // Update UI
-    setSupplierId(supplierId);
+  //     // Update UI
+  //     setSupplierId(supplierId);
 
-    toast.success("Supplier updated", { description: `Successfully, updated supplier for product: ${product.handle}` });
+  //     toast.success("Supplier updated", { description: `Successfully, updated supplier for product: ${product.handle}` });
 
-    return result;
-  }
+  //     return result;
+  //   }
 
   return (
     <Container className="divide-y p-0">
@@ -51,7 +51,7 @@ const ProductSupplierWidget = ({ data: product }: DetailWidgetProps<AdminProduct
         </div>
       </div>
 
-      <div className="px-6 py-4">
+      {/* <div className="px-6 py-4">
         <Select onValueChange={updateProductSupplier} value={supplierId}>
           <Select.Trigger>
             <Select.Value placeholder="Select a supplier" />
@@ -64,7 +64,7 @@ const ProductSupplierWidget = ({ data: product }: DetailWidgetProps<AdminProduct
             ))}
           </Select.Content>
         </Select>
-      </div>
+      </div> */}
     </Container>
   );
 };
