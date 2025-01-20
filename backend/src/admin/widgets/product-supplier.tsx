@@ -4,14 +4,14 @@ import { sdk } from "../lib/sdk";
 import { AdminProduct, DetailWidgetProps } from "@medusajs/types";
 import useSWR from "swr";
 import React from "react";
-// import { Supplier } from "../types/Supplier";
+import { Supplier } from "../lib/types/supplier";
 
 type AdminroductSupplier = AdminProduct & {
-  supplier?: any;
+  supplier?: Supplier;
 };
 
 type SuppliersResponse = {
-  suppliers: any[];
+  suppliers: Supplier[];
   count: number;
   offset: number;
   limit: number;
