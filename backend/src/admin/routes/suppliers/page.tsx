@@ -6,9 +6,9 @@ import { useState } from "react";
 import useSWR from "swr";
 import { Table } from "../../components/table";
 import { IconProps } from "@medusajs/icons/dist/types";
-import { CreateSupplierForm } from "../../components/create-supplier-form";
+import { CreateSupplierForm } from "./components/create-supplier-form";
 import { Supplier } from "../../lib/types/supplier";
-import { EditSuplierForm } from "../../components/edit-supplier-form";
+import { EditSupplierForm } from "./components/edit-supplier-form";
 import { constants } from "../../lib/constants";
 
 export type SuppliersResponse = {
@@ -105,7 +105,7 @@ export default function SuppliersPage() {
               return (
                 <div className="flex items-center gap-x-2">
                   {/* Edit */}
-                  <EditSuplierForm mutate={mutate} supplier={supplier} />
+                  <EditSupplierForm mutate={mutate} supplier={supplier} />
 
                   {/* Delete */}
                   <Button type="button" onClick={() => deleteSupplier(supplier.id)} variant="danger">

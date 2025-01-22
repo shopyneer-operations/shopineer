@@ -1,49 +1,60 @@
 import { FocusModal, Heading, Label, Input, Button, toast, Toaster } from "@medusajs/ui";
 import { useForm, FormProvider, Controller } from "react-hook-form";
-import * as zod from "zod";
+import * as z from "zod";
 import { Plus } from "@medusajs/icons";
-import { sdk } from "../lib/sdk";
-import { Supplier } from "../lib/types/supplier";
+import { sdk } from "../../../lib/sdk";
+import { Brand } from "../../../lib/types/brand";
 import { KeyedMutator } from "swr";
-import { SuppliersResponse } from "../routes/suppliers/page";
+import { BrandsResponse } from "../page";
 import { useState } from "react";
+import { Media, MediaSchema, UploadMediaFormItem } from "../../../components/upload-media-form-item";
 
-const schema = zod.object({
-  name: zod.string(),
-  contact_person: zod.string().optional(),
-  email: zod.string().email().optional(),
-  phone: zod.string().optional(),
+const schema = z.object({
+  name: z.string(),
+  description: z.string().optional(),
+  image: MediaSchema.optional(),
 });
 
-export const CreateSupplierForm = ({ mutate }: { mutate: KeyedMutator<SuppliersResponse> }) => {
+export const CreateBrandForm = ({ mutate }: { mutate: KeyedMutator<BrandsResponse> }) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const form = useForm<zod.infer<typeof schema>>({
+  const form = useForm<z.infer<typeof schema>>({
     defaultValues: {
       name: "",
-      contact_person: "",
-      email: "",
-      phone: "",
+      description: "",
     },
   });
 
   const handleSubmit = form.handleSubmit(async (data) => {
     try {
-      const result = await sdk.client.fetch<Supplier>(`/admin/suppliers`, {
+      const uploadedMedia = await (async function upload() {
+        if (data.image) {
+          const fileReq = await sdk.admin.upload.create({ files: [data.image.file] });
+          return fileReq.files[0];
+        }
+
+        return null;
+      })();
+
+      const result = await sdk.client.fetch<Brand>(`/admin/brands`, {
         method: "POST",
-        body: data,
+        body: { ...data, image: uploadedMedia?.url || null },
       });
       mutate();
       setIsOpen(false);
 
       // Show success toast
-      toast.success("Supplier created", { description: `Successfully created supplier: ${JSON.stringify(data)}` });
+      toast.success("Brand created", { description: `Successfully created brand: ${JSON.stringify(data)}` });
 
       return result;
     } catch (error: any) {
-      toast.error("Supplier creation failed", { description: `Failed to create supplier: ${error.message}` });
+      toast.error("Brand creation failed", { description: `Failed to create brand: ${error.message}` });
     }
   });
+
+  function handleAppend(media: Media) {
+    form.setValue("image", media);
+  }
 
   return (
     <>
@@ -51,7 +62,7 @@ export const CreateSupplierForm = ({ mutate }: { mutate: KeyedMutator<SuppliersR
 
       <FocusModal open={isOpen} onOpenChange={setIsOpen}>
         <FocusModal.Trigger asChild>
-          <Button>
+          <Button variant="secondary">
             <Plus /> Add
           </Button>
         </FocusModal.Trigger>
@@ -74,15 +85,15 @@ export const CreateSupplierForm = ({ mutate }: { mutate: KeyedMutator<SuppliersR
                 <div className="flex flex-1 flex-col items-center overflow-y-auto">
                   <div className="mx-auto flex w-full max-w-[720px] flex-col gap-y-8 px-2 py-16">
                     <div>
-                      <Heading className="capitalize">Add Supplier</Heading>
+                      <Heading className="capitalize">Add Brand</Heading>
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="flex flex-col sm:flex-row gap-4 flex-wrap">
                       <Controller
                         control={form.control}
                         name="name"
                         render={({ field }) => {
                           return (
-                            <div className="flex flex-col space-y-2">
+                            <div className="flex-1 flex flex-col space-y-2">
                               <div className="flex items-center gap-x-1">
                                 <Label size="small" weight="plus">
                                   Name
@@ -95,13 +106,13 @@ export const CreateSupplierForm = ({ mutate }: { mutate: KeyedMutator<SuppliersR
                       />
                       <Controller
                         control={form.control}
-                        name="contact_person"
+                        name="description"
                         render={({ field }) => {
                           return (
-                            <div className="flex flex-col space-y-2">
+                            <div className="flex-1 flex flex-col space-y-2">
                               <div className="flex items-center gap-x-1">
                                 <Label size="small" weight="plus">
-                                  Contact Person
+                                  Description
                                 </Label>
                               </div>
                               <Input {...field} />
@@ -109,38 +120,9 @@ export const CreateSupplierForm = ({ mutate }: { mutate: KeyedMutator<SuppliersR
                           );
                         }}
                       />
-                      <Controller
-                        control={form.control}
-                        name="email"
-                        render={({ field }) => {
-                          return (
-                            <div className="flex flex-col space-y-2">
-                              <div className="flex items-center gap-x-1">
-                                <Label size="small" weight="plus">
-                                  Email
-                                </Label>
-                              </div>
-                              <Input {...field} />
-                            </div>
-                          );
-                        }}
-                      />
-                      <Controller
-                        control={form.control}
-                        name="phone"
-                        render={({ field }) => {
-                          return (
-                            <div className="flex flex-col space-y-2">
-                              <div className="flex items-center gap-x-1">
-                                <Label size="small" weight="plus">
-                                  Phone
-                                </Label>
-                              </div>
-                              <Input {...field} />
-                            </div>
-                          );
-                        }}
-                      />
+                      <div className="w-full">
+                        <UploadMediaFormItem form={form} append={handleAppend} multiple={false} />
+                      </div>
                     </div>
                   </div>
                 </div>
