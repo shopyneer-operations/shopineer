@@ -3,39 +3,31 @@ import { useState } from "react";
 import { useForm, FormProvider, Controller } from "react-hook-form";
 import { KeyedMutator } from "swr";
 import * as zod from "zod";
-import { SuppliersResponse } from "../routes/suppliers/page";
-import { Supplier } from "../lib/types/supplier";
-import { sdk } from "../lib/sdk";
+import { BrandsResponse } from "../page";
+import { Brand } from "../../../lib/types/brand";
+import { sdk } from "../../../lib/sdk";
 import { PencilSquare } from "@medusajs/icons";
 
 const schema = zod.object({
   name: zod.string(),
-  contact_person: zod.string().optional(),
-  email: zod.string().email().optional(),
-  phone: zod.string().optional(),
+  description: zod.string().optional(),
+  image: zod.string().optional(),
 });
 
-export const EditSuplierForm = ({
-  mutate,
-  supplier,
-}: {
-  mutate: KeyedMutator<SuppliersResponse>;
-  supplier: Supplier;
-}) => {
+export const EditBrandForm = ({ mutate, brand }: { mutate: KeyedMutator<BrandsResponse>; brand: Brand }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const form = useForm<zod.infer<typeof schema>>({
     defaultValues: {
-      name: supplier.name,
-      contact_person: supplier.contact_person,
-      email: supplier.email,
-      phone: supplier.phone,
+      name: brand.name,
+      description: brand.description,
+      image: brand.image,
     },
   });
 
   const handleSubmit = form.handleSubmit(async (data) => {
     try {
-      const result = await sdk.client.fetch<Supplier>(`/admin/suppliers/${supplier.id}`, {
+      const result = await sdk.client.fetch<Brand>(`/admin/brands/${brand.id}`, {
         method: "PUT",
         body: data,
       });
@@ -43,11 +35,11 @@ export const EditSuplierForm = ({
       setIsOpen(false);
 
       // Show success toast
-      toast.success("Supplier updated", { description: `Successfully updated supplier: ${JSON.stringify(data)}` });
+      toast.success("Brand updated", { description: `Successfully updated brand: ${JSON.stringify(data)}` });
 
       return result;
     } catch (error: any) {
-      toast.error("Supplier update failed", { description: `Failed to update supplier: ${error.message}` });
+      toast.error("Brand update failed", { description: `Failed to update brand: ${error.message}` });
     }
   });
 
@@ -83,13 +75,13 @@ export const EditSuplierForm = ({
               />
               <Controller
                 control={form.control}
-                name="contact_person"
+                name="description"
                 render={({ field }) => {
                   return (
                     <div className="flex flex-col space-y-2">
                       <div className="flex items-center gap-x-1">
                         <Label size="small" weight="plus">
-                          Contact Person
+                          Description
                         </Label>
                       </div>
                       <Input {...field} />
@@ -97,7 +89,7 @@ export const EditSuplierForm = ({
                   );
                 }}
               />
-              <Controller
+              {/* <Controller
                 control={form.control}
                 name="email"
                 render={({ field }) => {
@@ -128,7 +120,7 @@ export const EditSuplierForm = ({
                     </div>
                   );
                 }}
-              />
+              /> */}
             </Drawer.Body>
             <Drawer.Footer>
               <div className="flex items-center justify-end gap-x-2">
