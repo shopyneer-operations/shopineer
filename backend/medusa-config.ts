@@ -57,6 +57,9 @@ const medusaConfig = {
       resolve: "./src/modules/supplier",
     },
     {
+      resolve: "./src/modules/update",
+    },
+    {
       key: Modules.PAYMENT,
       resolve: "@medusajs/medusa/payment",
       options: {
