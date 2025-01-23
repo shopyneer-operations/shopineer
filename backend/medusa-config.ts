@@ -57,6 +57,9 @@ const medusaConfig = {
       resolve: "./src/modules/supplier",
     },
     {
+      resolve: "./src/modules/price-history",
+    },
+    {
       key: Modules.PAYMENT,
       resolve: "@medusajs/medusa/payment",
       options: {
