@@ -57,7 +57,7 @@ const medusaConfig = {
       resolve: "./src/modules/supplier",
     },
     {
-      resolve: "./src/modules/update",
+      resolve: "./src/modules/price-history",
     },
     {
       key: Modules.PAYMENT,
