@@ -12,6 +12,7 @@ import { createFindParams } from "@medusajs/medusa/api/utils/validators";
 import { PostAdminCreateBrand } from "./admin/brands/validators";
 import brand from "src/modules/brand";
 import { keys } from "lodash";
+import { Modules } from "@medusajs/framework/utils";
 
 const GetSuppliersSchema = createFindParams();
 
@@ -21,13 +22,27 @@ export const permissions = async (req: MedusaRequest, res: MedusaResponse, next:
   //   return;
   // }
   // retrieve currently logged-in user
-  // const userService = req.scope.resolve("user");
   // const loggedInUser = await userService.retrieveUser(req.user.userId, {
   //   select: ["id"],
   //   relations: ["roles"],
   // });
+  const userService = req.scope.resolve(Modules.USER);
 
-  console.log("🤓🤓", keys(req), req.session, req.sessionID, req.auth_context);
+  const userId = req.session?.auth_context?.actor_id;
+
+  // role,
+  const user = await userService.retrieveUser(userId, {
+    select: ["*"],
+    relations: ["role"],
+  });
+
+  console.log("🤓🤓", keys(req), {
+    "req.session": req.session,
+    "req.sessionID": req.sessionID,
+    "req.auth_context": req.auth_context,
+    userId,
+    user,
+  });
 
   // if (!loggedInUser.teamRole) {
   if (1 + 1 == 2) {
