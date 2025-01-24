@@ -60,6 +60,9 @@ const medusaConfig = {
       resolve: "./src/modules/price-history",
     },
     {
+      resolve: "./src/modules/rbac",
+    },
+    {
       key: Modules.PAYMENT,
       resolve: "@medusajs/medusa/payment",
       options: {
