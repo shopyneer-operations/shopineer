@@ -12,8 +12,11 @@ import z from "zod";
 import { createFindParams } from "@medusajs/medusa/api/utils/validators";
 import { PostAdminCreateBrand } from "./admin/brands/validators";
 import brand from "src/modules/brand";
-import { keys } from "lodash";
+import fp from "lodash/fp";
+
 import { Modules } from "@medusajs/framework/utils";
+import { Permission } from ".medusa/types/remote-query-entry-points";
+import { HttpStatusCode } from "axios";
 
 const GetSuppliersSchema = createFindParams();
 
@@ -31,24 +34,27 @@ export const permissions = async (req: MedusaRequest, res: MedusaResponse, next:
   const query = req.scope.resolve("query");
 
   const userId = req.session?.auth_context?.actor_id;
-  const { data } = await query.graph({
+  const {
+    data: [user],
+  } = await query.graph({
     entity: "user",
-    fields: ["*", "role.*"],
+    fields: ["*", "role.*", "role.permissions.*"],
     filters: {
       id: [userId],
     },
   });
 
-  console.log("🍉", data);
+  console.log("🍉", user, req.path);
 
-  // if (!loggedInUser.teamRole) {
-  if (1 + 1 == 2) {
-    // considered as super user
+  const isSuperAdmin = !user.role;
+  if (isSuperAdmin) {
     next();
     return;
   }
 
-  // const isAllowed = loggedInUser.teamRole?.permissions.some((permission) => {
+  const isAllowed = user.role.permissions.some(fp.property(`metadata.${req.path}`));
+
+  // const isAllowedOld = user.role?.permissions.some((permission) => {
   //   const metadataKey = Object.keys(permission.metadata).find((key) => key === req.path);
   //   if (!metadataKey) {
   //     return false;
@@ -58,13 +64,13 @@ export const permissions = async (req: MedusaRequest, res: MedusaResponse, next:
   //   return permission.metadata[metadataKey];
   // });
 
-  // if (isAllowed) {
-  //   next();
-  //   return;
-  // }
+  if (isAllowed) {
+    next();
+    return;
+  }
 
-  // // deny access
-  // res.sendStatus(401);
+  // deny access
+  res.sendStatus(HttpStatusCode.Unauthorized);
 };
 
 export default defineMiddlewares({
