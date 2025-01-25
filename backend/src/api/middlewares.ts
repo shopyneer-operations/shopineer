@@ -13,10 +13,9 @@ import { createFindParams } from "@medusajs/medusa/api/utils/validators";
 import { PostAdminCreateBrand } from "./admin/brands/validators";
 import brand from "src/modules/brand";
 import fp from "lodash/fp";
-
 import { Modules } from "@medusajs/framework/utils";
-import { Permission } from ".medusa/types/remote-query-entry-points";
 import { HttpStatusCode } from "axios";
+import { Permission } from "src/modules/role/models/role";
 
 const GetSuppliersSchema = createFindParams();
 
@@ -38,7 +37,7 @@ export const permissions = async (req: MedusaRequest, res: MedusaResponse, next:
     data: [user],
   } = await query.graph({
     entity: "user",
-    fields: ["*", "role.*", "role.permissions.*"],
+    fields: ["*", "role.*"],
     filters: {
       id: [userId],
     },
@@ -52,17 +51,8 @@ export const permissions = async (req: MedusaRequest, res: MedusaResponse, next:
     return;
   }
 
-  const isAllowed = user.role.permissions.some(fp.property(`metadata.${req.path}`));
-
-  // const isAllowedOld = user.role?.permissions.some((permission) => {
-  //   const metadataKey = Object.keys(permission.metadata).find((key) => key === req.path);
-  //   if (!metadataKey) {
-  //     return false;
-  //   }
-
-  //   // boolean value
-  //   return permission.metadata[metadataKey];
-  // });
+  const rolePermissions = user.role.permissions as unknown as Permission[];
+  const isAllowed = rolePermissions.some(matchPathMethod(req));
 
   if (isAllowed) {
     next();
@@ -71,6 +61,12 @@ export const permissions = async (req: MedusaRequest, res: MedusaResponse, next:
 
   // deny access
   res.sendStatus(HttpStatusCode.Unauthorized);
+
+  function matchPathMethod(req: MedusaRequest) {
+    return function match(permission: Permission) {
+      return permission.path === req.path && permission.method === req.method;
+    };
+  }
 };
 
 export default defineMiddlewares({

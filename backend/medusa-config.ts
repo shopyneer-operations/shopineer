@@ -60,7 +60,7 @@ const medusaConfig = {
       resolve: "./src/modules/price-history",
     },
     {
-      resolve: "./src/modules/rbac",
+      resolve: "./src/modules/role",
     },
     {
       resolve: "./modules/wishlist",

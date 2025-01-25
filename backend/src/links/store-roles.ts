@@ -1,8 +1,8 @@
 import { defineLink } from "@medusajs/framework/utils";
 import StoreModle from "@medusajs/medusa/store";
-import RbacModule from "src/modules/rbac";
+import RoleModule from "src/modules/role";
 
 export default defineLink(StoreModle.linkable.store, {
-  linkable: RbacModule.linkable.role,
+  linkable: RoleModule.linkable.role,
   isList: true,
 });
