@@ -63,6 +63,12 @@ const medusaConfig = {
       resolve: "./src/modules/rbac",
     },
     {
+      resolve: "./modules/wishlist",
+      options: {
+        jwtSecret: JWT_SECRET,
+      },
+    },
+    {
       key: Modules.PAYMENT,
       resolve: "@medusajs/medusa/payment",
       options: {
