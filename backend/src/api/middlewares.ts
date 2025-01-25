@@ -1,4 +1,5 @@
 import {
+  AuthenticatedMedusaRequest,
   defineMiddlewares,
   MedusaNextFunction,
   MedusaRequest,
@@ -27,22 +28,18 @@ export const permissions = async (req: MedusaRequest, res: MedusaResponse, next:
   //   relations: ["roles"],
   // });
   const userService = req.scope.resolve(Modules.USER);
+  const query = req.scope.resolve("query");
 
   const userId = req.session?.auth_context?.actor_id;
-
-  // role,
-  const user = await userService.retrieveUser(userId, {
-    select: ["*"],
-    relations: ["role"],
+  const { data } = await query.graph({
+    entity: "user",
+    fields: ["*", "role.*"],
+    filters: {
+      id: [userId],
+    },
   });
 
-  console.log("🤓🤓", keys(req), {
-    "req.session": req.session,
-    "req.sessionID": req.sessionID,
-    "req.auth_context": req.auth_context,
-    userId,
-    user,
-  });
+  console.log("🍉", data);
 
   // if (!loggedInUser.teamRole) {
   if (1 + 1 == 2) {
