@@ -60,6 +60,12 @@ const medusaConfig = {
       resolve: "./src/modules/price-history",
     },
     {
+      resolve: "./modules/wishlist",
+      options: {
+        jwtSecret: JWT_SECRET,
+      },
+    },
+    {
       key: Modules.PAYMENT,
       resolve: "@medusajs/medusa/payment",
       options: {
