@@ -1,5 +1,4 @@
 import {
-  AuthenticatedMedusaRequest,
   defineMiddlewares,
   MedusaNextFunction,
   MedusaRequest,
@@ -11,25 +10,13 @@ import { PostAdminCreateSupplier } from "./admin/suppliers/validators";
 import z from "zod";
 import { createFindParams } from "@medusajs/medusa/api/utils/validators";
 import { PostAdminCreateBrand } from "./admin/brands/validators";
-import brand from "src/modules/brand";
-import fp from "lodash/fp";
-import { Modules } from "@medusajs/framework/utils";
+import { MedusaError } from "@medusajs/framework/utils";
 import { HttpStatusCode } from "axios";
 import { Permission } from "src/modules/role/models/role";
 
 const GetSuppliersSchema = createFindParams();
 
 export const permissions = async (req: MedusaRequest, res: MedusaResponse, next: MedusaNextFunction) => {
-  // if (!req.user || !req.user.userId) {
-  //   next();
-  //   return;
-  // }
-  // retrieve currently logged-in user
-  // const loggedInUser = await userService.retrieveUser(req.user.userId, {
-  //   select: ["id"],
-  //   relations: ["roles"],
-  // });
-  const userService = req.scope.resolve(Modules.USER);
   const query = req.scope.resolve("query");
 
   const userId = req.session?.auth_context?.actor_id;
@@ -43,28 +30,29 @@ export const permissions = async (req: MedusaRequest, res: MedusaResponse, next:
     },
   });
 
-  console.log("🍉", user, req.path);
-
-  const isSuperAdmin = !user.role;
+  const isSuperAdmin = !user?.role;
   if (isSuperAdmin) {
     next();
     return;
   }
 
   const rolePermissions = user.role.permissions as unknown as Permission[];
-  const isAllowed = rolePermissions.some(matchPathMethod(req));
-
+  const isAllowed = rolePermissions.some(matchPathAndMethod(req));
   if (isAllowed) {
     next();
     return;
   }
 
   // deny access
-  res.sendStatus(HttpStatusCode.Unauthorized);
+  next(new MedusaError(MedusaError.Types.UNAUTHORIZED, `You are not authorized to access ${req.baseUrl}.`));
 
-  function matchPathMethod(req: MedusaRequest) {
+  function matchPathAndMethod(req: MedusaRequest) {
+    const path = req.baseUrl.replace(/\/admin/, "");
+
     return function match(permission: Permission) {
-      return permission.path === req.path && permission.method === req.method;
+      const result = new RegExp(permission.path).test(path) && permission.method === req.method;
+
+      return result;
     };
   }
 };
@@ -74,6 +62,10 @@ export default defineMiddlewares({
     {
       matcher: "/admin/*",
       middlewares: [permissions],
+    },
+    {
+      matcher: "/admin/products",
+      method: "GET",
     },
     {
       matcher: "/admin/products",
@@ -124,4 +116,15 @@ export default defineMiddlewares({
       ],
     },
   ],
+  errorHandler(error: MedusaError | any, req: MedusaRequest, res: MedusaResponse, next: MedusaNextFunction) {
+    if (error.type === MedusaError.Types.UNAUTHORIZED) {
+      res.status(HttpStatusCode.Ok).json({
+        error: error.message,
+        timestamp: new Date().toISOString(),
+        path: req.baseUrl,
+      });
+    } else {
+      next(error);
+    }
+  },
 });

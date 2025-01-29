@@ -5,7 +5,7 @@ import { Table, Text, clx } from "@medusajs/ui"
 import { updateLineItem } from "@lib/data/cart"
 import { HttpTypes } from "@medusajs/types"
 import CartItemSelect from "@modules/cart/components/cart-item-select"
-import ErrorMessage from "@modules/checkout/components/error-message"
+import UnauthorizedMessage from "@modules/checkout/components/error-message"
 import DeleteButton from "@modules/common/components/delete-button"
 import LineItemOptions from "@modules/common/components/line-item-options"
 import LineItemPrice from "@modules/common/components/line-item-price"
@@ -102,7 +102,10 @@ const Item = ({ item, type = "full" }: ItemProps) => {
             </CartItemSelect>
             {updating && <Spinner />}
           </div>
-          <ErrorMessage error={error} data-testid="product-error-message" />
+          <UnauthorizedMessage
+            error={error}
+            data-testid="product-error-message"
+          />
         </Table.Cell>
       )}
 

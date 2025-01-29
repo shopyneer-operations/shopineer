@@ -3,7 +3,7 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { RadioGroup } from "@headlessui/react"
-import ErrorMessage from "@modules/checkout/components/error-message"
+import UnauthorizedMessage from "@modules/checkout/components/error-message"
 import { CheckCircleSolid, CreditCard } from "@medusajs/icons"
 import { Button, Container, Heading, Text, Tooltip, clx } from "@medusajs/ui"
 import { CardElement } from "@stripe/react-stripe-js"
@@ -201,7 +201,7 @@ const Payment = ({
             </div>
           )}
 
-          <ErrorMessage
+          <UnauthorizedMessage
             error={error}
             data-testid="payment-method-error-message"
           />

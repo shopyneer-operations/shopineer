@@ -1,7 +1,6 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework";
-import { ROLE_MODULE } from "src/modules/role";
 import { Permission } from "src/modules/role/models/role";
-import RoleModuleService from "src/modules/role/service";
+import { createRoleWorkflow } from "src/workflows/create-role";
 
 export const POST = async (
   req: MedusaRequest<{
@@ -14,18 +13,7 @@ export const POST = async (
   // omitting validation for simplicity
   const { name, store_id, permissions = [] } = req.body;
 
-  const roleService: RoleModuleService = req.scope.resolve(ROLE_MODULE);
+  const { result } = await createRoleWorkflow(req.scope).run({ input: { name, store_id, permissions } });
 
-  const roleResult = await roleService.createRoles({
-    name,
-    permissions,
-  });
-
-  //   const role = await roleService.create({
-  //     name,
-  //     store_id,
-  //     permissions,
-  //   });
-
-  //   res.json(role);
+  res.json(result);
 };

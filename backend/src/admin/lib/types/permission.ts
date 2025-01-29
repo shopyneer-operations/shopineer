@@ -1,5 +1,3 @@
-import { model } from "@medusajs/framework/utils";
-
 export type Permission = {
   /**
    * e.g. orders
@@ -23,9 +21,3 @@ export enum PermissionType {
   "PUT" = "PUT",
   "DELETE" = "DELETE",
 }
-
-export const Role = model.define("role", {
-  id: model.id().primaryKey(),
-  name: model.text(),
-  permissions: model.json(),
-});

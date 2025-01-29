@@ -9,6 +9,9 @@ import { CreateBrandForm } from "./components/create-brand-form";
 import { EditBrandForm } from "./components/edit-brand-form";
 import { constants } from "../../lib/constants";
 import { Brand } from "../../lib/types/brand";
+import useIsAuthorized from "../../lib/hooks/useIsAuthorized";
+import { Resource } from "../../lib/data/permissions";
+import UnauthorizedMessage from "../../components/unauthorized-message";
 
 export type BrandsResponse = {
   brands: Brand[];
@@ -18,17 +21,22 @@ export type BrandsResponse = {
 };
 
 export default function BrandsPage() {
+  const { isAuthorized, isLoading } = useIsAuthorized(Resource.brands);
   const [currentPage, setCurrentPage] = useState(0);
   const offset = currentPage * constants.BRANDS_LIMIT;
 
-  const { data, mutate } = useSWR(["brands", offset], async () =>
-    sdk.client.fetch<BrandsResponse>(`/admin/brands`, {
+  const { data, mutate } = useSWR(["brands", offset, isAuthorized], async () => {
+    if (isLoading || !isAuthorized) {
+      return { brands: [], count: 0, offset: 0, limit: 0 };
+    }
+
+    return sdk.client.fetch<BrandsResponse>(`/admin/brands`, {
       query: {
         limit: constants.BRANDS_LIMIT,
         offset,
       },
-    })
-  );
+    });
+  });
 
   async function deleteBrand(id: string) {
     const { brandId } = await sdk.client.fetch<{ brandId: string }>(`/admin/brands/${id}`, {
@@ -53,6 +61,8 @@ export default function BrandsPage() {
   return (
     <Container className="divide-y p-0">
       <Toaster />
+
+      {!isAuthorized && <UnauthorizedMessage resource={Resource.brands} />}
 
       <div className="flex items-center justify-between px-6 py-4">
         {/* <div> */}

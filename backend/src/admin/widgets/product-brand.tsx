@@ -17,8 +17,16 @@ type BrandsResponse = {
   limit: number;
 };
 
-const ProductBrandWidget = ({ data: product }: DetailWidgetProps<AdminProduct>) => {
-  const { data: brands } = useSWR(["brands"], () => sdk.client.fetch<BrandsResponse>("/admin/brands"));
+const ProductBrandWidget = ({ data: product }: any) => {
+  console.log("🟢🟢🔵🔵", product);
+
+  const { data: brands } = useSWR(["brands", Math.random()], async () => {
+    const result = await sdk.client.fetch<BrandsResponse>("/admin/brands");
+
+    console.log("🤓🤓🤓🤓", result);
+
+    return result;
+  });
 
   useSWR(["product", product.id], async () => {
     const result = await sdk.admin.product.retrieve(product.id, {

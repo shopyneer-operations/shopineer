@@ -5,7 +5,7 @@ import { OnApproveActions, OnApproveData } from "@paypal/paypal-js"
 import { PayPalButtons, usePayPalScriptReducer } from "@paypal/react-paypal-js"
 import { useElements, useStripe } from "@stripe/react-stripe-js"
 import React, { use, useEffect, useState } from "react"
-import ErrorMessage from "../error-message"
+import UnauthorizedMessage from "../error-message"
 import Spinner from "@modules/common/icons/spinner"
 import { placeOrder } from "@lib/data/cart"
 import { HttpTypes } from "@medusajs/types"
@@ -106,7 +106,7 @@ const FawryPaymentButton = ({
   "data-testid"?: string
 }) => {
   const [submitting, setSubmitting] = useState(false)
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [errorMessage, setUnauthorizedMessage] = useState<string | null>(null)
 
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -147,7 +147,7 @@ const FawryPaymentButton = ({
   const onPaymentCompleted = async () => {
     await placeOrder()
       .catch((err) => {
-        setErrorMessage(err.message)
+        setUnauthorizedMessage(err.message)
       })
       .finally(() => {
         setSubmitting(false)
@@ -172,7 +172,7 @@ const FawryPaymentButton = ({
       >
         Place order
       </Button>
-      <ErrorMessage
+      <UnauthorizedMessage
         error={errorMessage}
         data-testid="fawry-payment-error-message"
       />
@@ -190,12 +190,12 @@ const StripePaymentButton = ({
   "data-testid"?: string
 }) => {
   const [submitting, setSubmitting] = useState(false)
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [errorMessage, setUnauthorizedMessage] = useState<string | null>(null)
 
   const onPaymentCompleted = async () => {
     await placeOrder()
       .catch((err) => {
-        setErrorMessage(err.message)
+        setUnauthorizedMessage(err.message)
       })
       .finally(() => {
         setSubmitting(false)
@@ -253,7 +253,7 @@ const StripePaymentButton = ({
             onPaymentCompleted()
           }
 
-          setErrorMessage(error.message || null)
+          setUnauthorizedMessage(error.message || null)
           return
         }
 
@@ -279,7 +279,7 @@ const StripePaymentButton = ({
       >
         Place order
       </Button>
-      <ErrorMessage
+      <UnauthorizedMessage
         error={errorMessage}
         data-testid="stripe-payment-error-message"
       />
@@ -297,12 +297,12 @@ const PayPalPaymentButton = ({
   "data-testid"?: string
 }) => {
   const [submitting, setSubmitting] = useState(false)
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [errorMessage, setUnauthorizedMessage] = useState<string | null>(null)
 
   const onPaymentCompleted = async () => {
     await placeOrder()
       .catch((err) => {
-        setErrorMessage(err.message)
+        setUnauthorizedMessage(err.message)
       })
       .finally(() => {
         setSubmitting(false)
@@ -321,13 +321,15 @@ const PayPalPaymentButton = ({
       ?.authorize()
       .then((authorization) => {
         if (authorization.status !== "COMPLETED") {
-          setErrorMessage(`An error occurred, status: ${authorization.status}`)
+          setUnauthorizedMessage(
+            `An error occurred, status: ${authorization.status}`
+          )
           return
         }
         onPaymentCompleted()
       })
       .catch(() => {
-        setErrorMessage(`An unknown error occurred, please try again.`)
+        setUnauthorizedMessage(`An unknown error occurred, please try again.`)
         setSubmitting(false)
       })
   }
@@ -348,7 +350,7 @@ const PayPalPaymentButton = ({
           disabled={notReady || submitting || isPending}
           data-testid={dataTestId}
         />
-        <ErrorMessage
+        <UnauthorizedMessage
           error={errorMessage}
           data-testid="paypal-payment-error-message"
         />
@@ -359,12 +361,12 @@ const PayPalPaymentButton = ({
 
 const ManualTestPaymentButton = ({ notReady }: { notReady: boolean }) => {
   const [submitting, setSubmitting] = useState(false)
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [errorMessage, setUnauthorizedMessage] = useState<string | null>(null)
 
   const onPaymentCompleted = async () => {
     await placeOrder()
       .catch((err) => {
-        setErrorMessage(err.message)
+        setUnauthorizedMessage(err.message)
       })
       .finally(() => {
         setSubmitting(false)
@@ -388,7 +390,7 @@ const ManualTestPaymentButton = ({ notReady }: { notReady: boolean }) => {
       >
         Place order
       </Button>
-      <ErrorMessage
+      <UnauthorizedMessage
         error={errorMessage}
         data-testid="manual-payment-error-message"
       />

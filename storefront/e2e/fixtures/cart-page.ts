@@ -13,7 +13,7 @@ export class CartPage extends BasePage {
   discountButton: Locator
   discountInput: Locator
   discountApplyButton: Locator
-  discountErrorMessage: Locator
+  discountUnauthorizedMessage: Locator
   discountRow: Locator
   giftCardRow: Locator
   giftCardCode: Locator
@@ -47,7 +47,7 @@ export class CartPage extends BasePage {
     this.discountApplyButton = this.container.getByTestId(
       "discount-apply-button"
     )
-    this.discountErrorMessage = this.container.getByTestId(
+    this.discountUnauthorizedMessage = this.container.getByTestId(
       "discount-error-message"
     )
     this.discountRow = this.container.getByTestId("discount-row")
