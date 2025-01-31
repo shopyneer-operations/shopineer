@@ -141,7 +141,7 @@ export default defineMiddlewares({
     console.log("4️⃣", error.type === MedusaError.Types.UNAUTHORIZED);
 
     if (error.type === MedusaError.Types.UNAUTHORIZED) {
-      res.status(HttpStatusCode.Unauthorized).json({
+      res.status(HttpStatusCode.Ok).json({
         error: error.message,
         timestamp: new Date().toISOString(),
         path: req.baseUrl,
