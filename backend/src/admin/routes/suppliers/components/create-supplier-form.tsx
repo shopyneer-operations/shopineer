@@ -5,8 +5,8 @@ import { Plus } from "@medusajs/icons";
 import { sdk } from "../../../lib/sdk";
 import { Supplier } from "../../../lib/types/supplier";
 import { KeyedMutator } from "swr";
-import { SuppliersResponse } from "../page";
 import { useState } from "react";
+import { PaginatedResponse } from "@medusajs/framework/types";
 
 const schema = zod.object({
   name: zod.string(),
@@ -15,7 +15,11 @@ const schema = zod.object({
   phone: zod.string().optional(),
 });
 
-export const CreateSupplierForm = ({ mutate }: { mutate: KeyedMutator<SuppliersResponse> }) => {
+export const CreateSupplierForm = ({
+  mutate,
+}: {
+  mutate: KeyedMutator<PaginatedResponse<{ suppliers: Supplier[] }>>;
+}) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const form = useForm<zod.infer<typeof schema>>({

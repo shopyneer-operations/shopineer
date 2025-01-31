@@ -13,10 +13,11 @@ import { PostAdminCreateBrand } from "./admin/brands/validators";
 import { MedusaError } from "@medusajs/framework/utils";
 import { HttpStatusCode } from "axios";
 import { Permission } from "src/modules/role/models/role";
+import { PutAdminRole } from "./admin/roles/validators";
 
 const GetSuppliersSchema = createFindParams();
 
-export const permissions = async (req: MedusaRequest, res: MedusaResponse, next: MedusaNextFunction) => {
+const permissions = async (req: MedusaRequest, res: MedusaResponse, next: MedusaNextFunction) => {
   const query = req.scope.resolve("query");
 
   const userId = req.session?.auth_context?.actor_id;
@@ -31,6 +32,9 @@ export const permissions = async (req: MedusaRequest, res: MedusaResponse, next:
   });
 
   const isSuperAdmin = !user?.role;
+
+  console.log("1️⃣", { user, isSuperAdmin });
+
   if (isSuperAdmin) {
     next();
     return;
@@ -38,6 +42,8 @@ export const permissions = async (req: MedusaRequest, res: MedusaResponse, next:
 
   const rolePermissions = user.role.permissions as unknown as Permission[];
   const isAllowed = rolePermissions.some(matchPathAndMethod(req));
+
+  console.log("2️⃣", { 'req.baseUrl.replace(//admin/, "")': req.baseUrl.replace(/\/admin/, ""), isAllowed });
   if (isAllowed) {
     next();
     return;
@@ -115,10 +121,27 @@ export default defineMiddlewares({
         }),
       ],
     },
+    {
+      matcher: "/admin/roles",
+      method: "GET",
+      middlewares: [
+        validateAndTransformQuery(GetSuppliersSchema, {
+          defaults: ["id", "name", "permissions", "users.*"],
+          isList: true,
+        }),
+      ],
+    },
+    {
+      matcher: "/admin/roles/:roleId",
+      method: "PUT",
+      middlewares: [validateAndTransformBody(PutAdminRole as any)],
+    },
   ],
   errorHandler(error: MedusaError | any, req: MedusaRequest, res: MedusaResponse, next: MedusaNextFunction) {
+    console.log("4️⃣", error.type === MedusaError.Types.UNAUTHORIZED);
+
     if (error.type === MedusaError.Types.UNAUTHORIZED) {
-      res.status(HttpStatusCode.Ok).json({
+      res.status(HttpStatusCode.Unauthorized).json({
         error: error.message,
         timestamp: new Date().toISOString(),
         path: req.baseUrl,

@@ -17,3 +17,17 @@ export const POST = async (
 
   res.json(result);
 };
+
+export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
+  const query = req.scope.resolve("query");
+
+  const {
+    data: roles,
+    metadata: { count, take, skip },
+  } = await query.graph({
+    entity: "role",
+    ...req.remoteQueryConfig,
+  });
+
+  res.json({ roles, count, limit: take, offset: skip });
+};

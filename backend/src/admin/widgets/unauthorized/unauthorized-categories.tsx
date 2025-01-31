@@ -1,6 +1,6 @@
 import { defineWidgetConfig } from "@medusajs/admin-sdk";
 import UnauthorizedMessage from "../../components/unauthorized-message";
-import useIsAuthorized from "../../lib/hooks/useIsAuthorized";
+import useIsAuthorized from "../../lib/hooks/use-is-authorized";
 import { Resource } from "../../lib/data/permissions";
 
 const UnauthorizedWidget = () => {

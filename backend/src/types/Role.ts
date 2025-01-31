@@ -1,3 +1,9 @@
+export type Role = {
+  id: string;
+  name: string;
+  permissions: Permission[];
+};
+
 export type Permission = {
   /**
    * e.g. orders

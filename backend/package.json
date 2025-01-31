@@ -21,6 +21,7 @@
     "email:dev": "email dev --dir=./src/modules/email-notifications/templates --port=3002"
   },
   "dependencies": {
+    "@hookform/resolvers": "^3.10.0",
     "@medusajs/admin-sdk": "latest",
     "@medusajs/cli": "latest",
     "@medusajs/core-flows": "latest",

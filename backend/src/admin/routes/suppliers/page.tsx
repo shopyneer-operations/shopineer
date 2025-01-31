@@ -10,16 +10,10 @@ import { CreateSupplierForm } from "./components/create-supplier-form";
 import { Supplier } from "../../lib/types/supplier";
 import { EditSupplierForm } from "./components/edit-supplier-form";
 import { constants } from "../../lib/constants";
-import useIsAuthorized from "../../lib/hooks/useIsAuthorized";
+import useIsAuthorized from "../../lib/hooks/use-is-authorized";
 import { Resource } from "../../lib/data/permissions";
 import UnauthorizedMessage from "../../components/unauthorized-message";
-
-export type SuppliersResponse = {
-  suppliers: Supplier[];
-  count: number;
-  offset: number;
-  limit: number;
-};
+import { PaginatedResponse } from "@medusajs/framework/types";
 
 type Action = {
   label: string;
@@ -37,7 +31,7 @@ export default function SuppliersPage() {
       return { suppliers: [], count: 0, offset: 0, limit: 0 };
     }
 
-    return sdk.client.fetch<SuppliersResponse>(`/admin/suppliers`, {
+    return sdk.client.fetch<PaginatedResponse<{ suppliers: Supplier[] }>>(`/admin/suppliers`, {
       query: {
         limit: constants.SUPPLIERS_LIMIT,
         offset,

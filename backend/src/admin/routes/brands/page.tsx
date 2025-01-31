@@ -9,16 +9,10 @@ import { CreateBrandForm } from "./components/create-brand-form";
 import { EditBrandForm } from "./components/edit-brand-form";
 import { constants } from "../../lib/constants";
 import { Brand } from "../../lib/types/brand";
-import useIsAuthorized from "../../lib/hooks/useIsAuthorized";
+import useIsAuthorized from "../../lib/hooks/use-is-authorized";
 import { Resource } from "../../lib/data/permissions";
 import UnauthorizedMessage from "../../components/unauthorized-message";
-
-export type BrandsResponse = {
-  brands: Brand[];
-  count: number;
-  offset: number;
-  limit: number;
-};
+import { PaginatedResponse } from "@medusajs/framework/types";
 
 export default function BrandsPage() {
   const { isAuthorized, isLoading } = useIsAuthorized(Resource.brands);
@@ -30,7 +24,7 @@ export default function BrandsPage() {
       return { brands: [], count: 0, offset: 0, limit: 0 };
     }
 
-    return sdk.client.fetch<BrandsResponse>(`/admin/brands`, {
+    return sdk.client.fetch<PaginatedResponse<{ brands: Brand[] }>>(`/admin/brands`, {
       query: {
         limit: constants.BRANDS_LIMIT,
         offset,
