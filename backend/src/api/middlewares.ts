@@ -65,10 +65,10 @@ const permissions = async (req: MedusaRequest, res: MedusaResponse, next: Medusa
 
 export default defineMiddlewares({
   routes: [
-    // {
-    //   matcher: "/admin/*",
-    //   middlewares: [permissions],
-    // },
+    {
+      matcher: "/admin/*",
+      middlewares: [permissions],
+    },
     {
       matcher: "/admin/products",
       method: "GET",
@@ -137,17 +137,17 @@ export default defineMiddlewares({
       middlewares: [validateAndTransformBody(PutAdminRole as any)],
     },
   ],
-  // errorHandler(error: MedusaError | any, req: MedusaRequest, res: MedusaResponse, next: MedusaNextFunction) {
-  //   console.log("4️⃣", error.type === MedusaError.Types.UNAUTHORIZED);
+  errorHandler(error: MedusaError | any, req: MedusaRequest, res: MedusaResponse, next: MedusaNextFunction) {
+    console.log("4️⃣", error.type === MedusaError.Types.UNAUTHORIZED);
 
-  //   if (error.type === MedusaError.Types.UNAUTHORIZED) {
-  //     res.status(HttpStatusCode.Ok).json({
-  //       error: error.message,
-  //       timestamp: new Date().toISOString(),
-  //       path: req.baseUrl,
-  //     });
-  //   } else {
-  //     next(error);
-  //   }
-  // },
+    if (error.type === MedusaError.Types.UNAUTHORIZED) {
+      res.status(HttpStatusCode.Ok).json({
+        error: error.message,
+        timestamp: new Date().toISOString(),
+        path: req.baseUrl,
+      });
+    } else {
+      next(error);
+    }
+  },
 });
