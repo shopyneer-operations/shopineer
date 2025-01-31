@@ -13,7 +13,7 @@ import {
   uniqBy,
 } from "lodash";
 import { Label, Switch } from "@medusajs/ui";
-import { REQUIRED_PERMISSIONS, Resource, uiMethodMapper } from "../../../lib/data/permissions";
+import { REQUIRED_PERMISSIONS, uiMethodMapper } from "../../../lib/data/permissions";
 
 type Props = {
   permissions: Permission[];
@@ -28,9 +28,6 @@ function PermissionSwitches({ permissions, selectedPermissions, onChange }: Prop
     const domainPermissions = sortBy(filter(permissions, { name }), "method");
     const selectedDomainPermissions = sortBy(filter(selectedPermissions, { name }), "method");
 
-    if (name == Resource.stores) {
-      console.log("🥲", domainPermissions, selectedDomainPermissions);
-    }
     return isEqual(domainPermissions, selectedDomainPermissions);
   }
 
