@@ -1,7 +1,7 @@
 import { createWorkflow, when, WorkflowResponse } from "@medusajs/framework/workflows-sdk";
 import { createRemoteLinkStep } from "@medusajs/medusa/core-flows";
 import { Modules } from "@medusajs/framework/utils";
-import { WISHLIST_MODULE } from "src/modules/wishlist";
+import { WISHLIST_MODULE } from "../modules/wishlist";
 
 type AssignWishlistToCustomerInput = {
   customerId: string;

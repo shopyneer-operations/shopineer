@@ -1,7 +1,7 @@
 import { LinkDefinition } from "@medusajs/framework/types";
 import { Modules } from "@medusajs/framework/utils";
 import { createStep, createWorkflow, StepResponse, WorkflowResponse } from "@medusajs/framework/workflows-sdk";
-import { ROLE_MODULE } from "src/modules/role";
+import { ROLE_MODULE } from "../modules/role";
 
 type AssignRoleDto = {
   userId: string;

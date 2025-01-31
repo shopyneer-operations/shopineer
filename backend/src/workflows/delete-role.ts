@@ -1,6 +1,6 @@
 import { createStep, createWorkflow, StepResponse, WorkflowResponse } from "@medusajs/framework/workflows-sdk";
-import { ROLE_MODULE } from "src/modules/role";
-import RoleModuleService from "src/modules/role/service";
+import { ROLE_MODULE } from "../modules/role";
+import RoleModuleService from "../modules/role/service";
 
 type DeleteRoleDto = {
   id: string;

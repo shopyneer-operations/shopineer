@@ -1,6 +1,6 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework";
-import { Permission } from "src/modules/role/models/role";
-import { createRoleWorkflow } from "src/workflows/create-role";
+import { Permission } from "../../../modules/role/models/role";
+import { createRoleWorkflow } from "../../../workflows/create-role";
 
 export const POST = async (
   req: MedusaRequest<{

@@ -27,7 +27,7 @@ import {
   FAWRY_RETURN_PATH,
   FAWRY_SECURITY_CODE,
   FAWRY_BASE_URL,
-} from "src/lib/constants";
+} from "./src/lib/constants";
 
 loadEnv(process.env.NODE_ENV, process.cwd());
 

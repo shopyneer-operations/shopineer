@@ -1,9 +1,7 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework";
-import { Supplier } from "src/types/Supplier";
-import { deleteBrandWorkflow } from "src/workflows/delete-brand";
-import { deleteSupplierWorkflow } from "src/workflows/delete-supplier";
-import { updateBrandWorkflow } from "src/workflows/update-brand";
-import { updateSupplierWorkflow } from "src/workflows/update-supplier";
+import { Supplier } from "../../../../types/Supplier";
+import { deleteBrandWorkflow } from "../../../../workflows/delete-brand";
+import { updateBrandWorkflow } from "../../../../workflows/update-brand";
 
 export async function PUT(req: MedusaRequest<Supplier>, res: MedusaResponse) {
   const { result: brand } = await updateBrandWorkflow(req.scope).run({

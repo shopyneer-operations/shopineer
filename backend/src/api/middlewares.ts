@@ -12,7 +12,7 @@ import { createFindParams } from "@medusajs/medusa/api/utils/validators";
 import { PostAdminCreateBrand } from "./admin/brands/validators";
 import { MedusaError } from "@medusajs/framework/utils";
 import { HttpStatusCode } from "axios";
-import { Permission } from "src/modules/role/models/role";
+import { Permission } from "../modules/role/models/role";
 import { PutAdminRole } from "./admin/roles/validators";
 
 const GetSuppliersSchema = createFindParams();

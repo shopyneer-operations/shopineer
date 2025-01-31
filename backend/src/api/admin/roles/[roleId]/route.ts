@@ -1,7 +1,7 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework";
-import { Role } from "src/types/Role";
-import { deleteRoleWorkflow } from "src/workflows/delete-role";
-import { updateRoleWorkflow } from "src/workflows/update-role";
+import { Role } from "../../../../types/Role";
+import { deleteRoleWorkflow } from "../../../../workflows/delete-role";
+import { updateRoleWorkflow } from "../../../../workflows/update-role";
 
 export async function PUT(req: MedusaRequest<Role>, res: MedusaResponse) {
   const { result } = await updateRoleWorkflow(req.scope).run({

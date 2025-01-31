@@ -1,6 +1,5 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework";
-import { createSupplierWorkflow } from "src/workflows/create-supplier";
-import { deleteSupplierWorkflow } from "src/workflows/delete-supplier";
+import { createSupplierWorkflow } from "../../../workflows/create-supplier";
 
 type PostAdminCreateSupplierType = {
   name: string;

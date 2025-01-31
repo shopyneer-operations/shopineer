@@ -1,6 +1,6 @@
 import { createStep, createWorkflow, StepResponse, WorkflowResponse } from "@medusajs/framework/workflows-sdk";
-import { BRAND_MODULE } from "src/modules/brand";
-import BrandModuleService from "src/modules/brand/service";
+import { BRAND_MODULE } from "../modules/brand";
+import BrandModuleService from "../modules/brand/service";
 
 export type CreateBrandStepInput = {
   name: string;

@@ -1,5 +1,5 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework";
-import { assignRoleWorkflow } from "src/workflows/assign-role-to-user";
+import { assignRoleWorkflow } from "../../../../../../workflows/assign-role-to-user";
 
 export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
   const { roleId, userId } = req.params;

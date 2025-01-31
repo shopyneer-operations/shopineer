@@ -1,4 +1,4 @@
-import { PermissionType } from "src/types/Role";
+import { PermissionType } from "../../../types/Role";
 import z from "zod";
 
 export const PutAdminRole = z.object({

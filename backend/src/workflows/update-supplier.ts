@@ -1,7 +1,7 @@
 import { createStep, createWorkflow, StepResponse, WorkflowResponse } from "@medusajs/framework/workflows-sdk";
-import { SUPPLIER_MODULE } from "src/modules/supplier";
-import SupplierModuleService from "src/modules/supplier/service";
-import { Supplier } from "src/types/Supplier";
+import { SUPPLIER_MODULE } from "../modules/supplier";
+import SupplierModuleService from "../modules/supplier/service";
+import { Supplier } from "../types/Supplier";
 
 export const updateSupplierStep = createStep(
   "update-supplier-step",

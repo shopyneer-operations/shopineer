@@ -3,8 +3,8 @@ import { CalculatedPriceSet } from "@medusajs/framework/types";
 import { Modules } from "@medusajs/framework/utils";
 import { StepResponse, transform } from "@medusajs/framework/workflows-sdk";
 import { map } from "lodash";
-import { PRICE_HISTORY_MODULE } from "src/modules/price-history";
-import PriceHistoryModuleService from "src/modules/price-history/service";
+import { PRICE_HISTORY_MODULE } from "../../modules/price-history";
+import PriceHistoryModuleService from "../../modules/price-history/service";
 
 updateProductVariantsWorkflow.hooks.productVariantsUpdated(async function addPriceUpdate(
   { product_variants },

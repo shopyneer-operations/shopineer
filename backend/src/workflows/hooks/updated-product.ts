@@ -4,8 +4,8 @@ import { LinkDefinition, Logger, ProductDTO, RemoteQueryFunction } from "@medusa
 import { Modules } from "@medusajs/framework/utils";
 import { StepResponse, WorkflowData } from "@medusajs/framework/workflows-sdk";
 import { filter, map } from "lodash";
-import { BRAND_MODULE } from "src/modules/brand";
-import { SUPPLIER_MODULE } from "src/modules/supplier";
+import { BRAND_MODULE } from "../../modules/brand";
+import { SUPPLIER_MODULE } from "../../modules/supplier";
 
 async function handleEntityLinking({
   logger,

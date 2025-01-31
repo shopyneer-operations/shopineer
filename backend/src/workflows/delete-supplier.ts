@@ -1,6 +1,6 @@
 import { createStep, createWorkflow, StepResponse, WorkflowResponse } from "@medusajs/framework/workflows-sdk";
-import { SUPPLIER_MODULE } from "src/modules/supplier";
-import SupplierModuleService from "src/modules/supplier/service";
+import { SUPPLIER_MODULE } from "../modules/supplier";
+import SupplierModuleService from "../modules/supplier/service";
 
 type DeleteSupplierStepInput = {
   id: string;
