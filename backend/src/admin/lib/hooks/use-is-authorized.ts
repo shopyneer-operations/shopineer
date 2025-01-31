@@ -9,7 +9,8 @@ const useIsAuthorized = (resource: Resource) => {
    * isLoading: we want the default status to be authorized while we are still loading the user data
    * !user.role: If user has no role, he's considered a superadmin
    */
-  const isAuthorized = isLoading || !user?.role || some(user.role.permissions, { name: resource });
+  const isAuthorized =
+    isLoading || user?.metadata?.is_super_admin || some((user as any).role.permissions, { name: resource });
 
   return { isAuthorized, isLoading };
 };

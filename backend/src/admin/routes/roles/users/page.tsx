@@ -10,7 +10,7 @@ import { sdk } from "../../../lib/sdk";
 import { AdminUser, PaginatedResponse } from "@medusajs/framework/types";
 import { Table } from "../../../components/table";
 import { Role } from "../../../lib/types/role";
-import { curry, filter, property } from "lodash";
+import { curry, filter, matchesProperty, negate } from "lodash";
 
 type Props = {};
 
@@ -31,7 +31,7 @@ export default function UserRolePage({}: Props) {
     );
 
     // Filter out super admins (they don't have role property)
-    result.users = filter(result.users, property("role"));
+    result.users = filter(result.users, negate(matchesProperty("metadata.is_super_admin", true)));
 
     return result;
   });

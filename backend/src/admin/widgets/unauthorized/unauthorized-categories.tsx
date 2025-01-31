@@ -4,11 +4,11 @@ import useIsAuthorized from "../../lib/hooks/use-is-authorized";
 import { Resource } from "../../lib/data/permissions";
 
 const UnauthorizedWidget = () => {
-  const { isAuthorized } = useIsAuthorized(Resource.categories);
+  const { isAuthorized } = useIsAuthorized(Resource["product-categories"]);
 
   if (isAuthorized) return <></>;
 
-  return <UnauthorizedMessage resource={Resource.categories} />;
+  return <UnauthorizedMessage resource={Resource["product-categories"]} />;
 };
 
 export const config = defineWidgetConfig({

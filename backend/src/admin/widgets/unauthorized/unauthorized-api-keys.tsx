@@ -12,7 +12,7 @@ const UnauthorizedWidget = () => {
 };
 
 export const config = defineWidgetConfig({
-  zone: "product_category.list.before",
+  zone: "api_key.list.before",
 });
 
 export default UnauthorizedWidget;
