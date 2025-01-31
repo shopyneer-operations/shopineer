@@ -6,7 +6,7 @@ import { sdk } from "../../../lib/sdk";
 import useStore from "../../../lib/hooks/use-store";
 import { Button, FocusModal, Heading, Input, Label, toast, Toaster } from "@medusajs/ui";
 import { Plus } from "@medusajs/icons";
-import { permissions } from "../../../lib/data/permissions";
+import { permissions, REQUIRED_PERMISSIONS } from "../../../lib/data/permissions";
 import PermissionSwitches from "./permission-switchs";
 
 const roleSchema = z.object({

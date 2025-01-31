@@ -56,3 +56,16 @@ export const uiMethodMapper = {
   [PermissionType.PUT]: "Update",
   [PermissionType.DELETE]: "Delete",
 };
+
+export const REQUIRED_PERMISSIONS: Permission[] = [
+  {
+    name: Resource.users,
+    path: "^/users.*",
+    method: PermissionType.GET,
+  },
+  {
+    name: Resource.stores,
+    path: "^/stores.*",
+    method: PermissionType.GET,
+  },
+];

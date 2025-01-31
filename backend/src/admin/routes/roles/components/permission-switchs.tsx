@@ -13,7 +13,7 @@ import {
   uniqBy,
 } from "lodash";
 import { Label, Switch } from "@medusajs/ui";
-import { uiMethodMapper } from "../../../lib/data/permissions";
+import { REQUIRED_PERMISSIONS, Resource, uiMethodMapper } from "../../../lib/data/permissions";
 
 type Props = {
   permissions: Permission[];
@@ -28,6 +28,9 @@ function PermissionSwitches({ permissions, selectedPermissions, onChange }: Prop
     const domainPermissions = sortBy(filter(permissions, { name }), "method");
     const selectedDomainPermissions = sortBy(filter(selectedPermissions, { name }), "method");
 
+    if (name == Resource.stores) {
+      console.log("🥲", domainPermissions, selectedDomainPermissions);
+    }
     return isEqual(domainPermissions, selectedDomainPermissions);
   }
 
@@ -82,8 +85,12 @@ function PermissionSwitches({ permissions, selectedPermissions, onChange }: Prop
               <div key={permission.method} className="flex items-center gap-x-3">
                 <Switch
                   id={`${permission.name}_${permission.method}`}
-                  checked={some(selectedPermissions, matchPermission(permission))}
+                  checked={
+                    some(selectedPermissions, matchPermission(permission)) ||
+                    some(REQUIRED_PERMISSIONS, matchPermission(permission))
+                  }
                   onCheckedChange={handlePermissionSwitchChange(permission)}
+                  disabled={some(REQUIRED_PERMISSIONS, matchPermission(permission))}
                 />
                 <Label className="text-ui-fg-muted" htmlFor={`${permission.name}_${permission.method}`}>
                   {capitalize(uiMethodMapper[permission.method])}
