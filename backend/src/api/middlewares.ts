@@ -31,7 +31,7 @@ const permissions = async (req: MedusaRequest, res: MedusaResponse, next: Medusa
     },
   });
 
-  const isSuperAdmin = user.metadata.is_super_admin;
+  const isSuperAdmin = user?.metadata?.is_super_admin;
 
   console.log("1️⃣", { user, isSuperAdmin });
 
