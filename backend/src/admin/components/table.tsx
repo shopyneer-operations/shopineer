@@ -8,7 +8,7 @@ export type TableProps = {
     label?: string;
     render?: (row: any) => React.ReactNode;
   }[];
-  data: Record<string, unknown>[];
+  data: Record<string, any>[];
   pageSize: number;
   count: number;
   currentPage: number;

@@ -16,7 +16,6 @@ const VariantWidget = ({ data }: DetailWidgetProps<AdminProductVariant>) => {
 
     return result.variant;
   });
-  console.log("🤯", variant);
 
   return (
     <Container className="flex flex-col divide-y p-0">

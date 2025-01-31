@@ -10,13 +10,10 @@ import { CreateSupplierForm } from "./components/create-supplier-form";
 import { Supplier } from "../../lib/types/supplier";
 import { EditSupplierForm } from "./components/edit-supplier-form";
 import { constants } from "../../lib/constants";
-
-export type SuppliersResponse = {
-  suppliers: Supplier[];
-  count: number;
-  offset: number;
-  limit: number;
-};
+import useIsAuthorized from "../../lib/hooks/use-is-authorized";
+import { Resource } from "../../lib/data/permissions";
+import UnauthorizedMessage from "../../components/unauthorized-message";
+import { PaginatedResponse } from "@medusajs/framework/types";
 
 type Action = {
   label: string;
@@ -25,17 +22,22 @@ type Action = {
 };
 
 export default function SuppliersPage() {
+  const { isAuthorized, isLoading } = useIsAuthorized(Resource.suppliers);
   const [currentPage, setCurrentPage] = useState(0);
   const offset = currentPage * constants.SUPPLIERS_LIMIT;
 
-  const { data, mutate } = useSWR(["suppliers", offset], async () =>
-    sdk.client.fetch<SuppliersResponse>(`/admin/suppliers`, {
+  const { data, mutate } = useSWR(["suppliers", offset], async () => {
+    if (isLoading || !isAuthorized) {
+      return { suppliers: [], count: 0, offset: 0, limit: 0 };
+    }
+
+    return sdk.client.fetch<PaginatedResponse<{ suppliers: Supplier[] }>>(`/admin/suppliers`, {
       query: {
         limit: constants.SUPPLIERS_LIMIT,
         offset,
       },
-    })
-  );
+    });
+  });
 
   async function deleteSupplier(id: string) {
     const { supplierId } = await sdk.client.fetch<{ supplierId: string }>(`/admin/suppliers/${id}`, {
@@ -57,11 +59,11 @@ export default function SuppliersPage() {
   //   },
   // ];
 
-  console.log("🫡", { data });
-
   return (
     <Container className="divide-y p-0">
       <Toaster />
+
+      {!isAuthorized && <UnauthorizedMessage resource={Resource.suppliers} />}
 
       <div className="flex items-center justify-between px-6 py-4">
         {/* <div> */}

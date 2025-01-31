@@ -12,7 +12,7 @@ import compareAddresses from "@lib/util/compare-addresses"
 import { HttpTypes } from "@medusajs/types"
 import { useFormState } from "react-dom"
 import BillingAddress from "../billing_address"
-import ErrorMessage from "../error-message"
+import UnauthorizedMessage from "../error-message"
 import ShippingAddress from "../shipping-address"
 import { SubmitButton } from "../submit-button"
 
@@ -88,7 +88,10 @@ const Addresses = ({
             <SubmitButton className="mt-6" data-testid="submit-address-button">
               Continue to delivery
             </SubmitButton>
-            <ErrorMessage error={message} data-testid="address-error-message" />
+            <UnauthorizedMessage
+              error={message}
+              data-testid="address-error-message"
+            />
           </div>
         </form>
       ) : (

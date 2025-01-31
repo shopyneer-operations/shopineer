@@ -40,27 +40,27 @@ export class CheckoutPage extends BasePage {
   billingAddressSummary: Locator
 
   submitAddressButton: Locator
-  addressErrorMessage: Locator
+  addressUnauthorizedMessage: Locator
 
   deliveryOptionsContainer: Locator
   deliveryOptionRadio: Locator
-  deliveryOptionErrorMessage: Locator
+  deliveryOptionUnauthorizedMessage: Locator
   submitDeliveryOptionButton: Locator
   deliveryOptionSummary: Locator
 
   paymentMethodSummary: Locator
   paymentDetailsSummary: Locator
-  paymentMethodErrorMessage: Locator
-  stripePaymentErrorMessage: Locator
-  paypalPaymentErrorMessage: Locator
-  manualPaymentErrorMessage: Locator
+  paymentMethodUnauthorizedMessage: Locator
+  stripePaymentUnauthorizedMessage: Locator
+  paypalPaymentUnauthorizedMessage: Locator
+  manualPaymentUnauthorizedMessage: Locator
   submitPaymentButton: Locator
   submitOrderButton: Locator
 
   discountButton: Locator
   discountInput: Locator
   discountApplyButton: Locator
-  discountErrorMessage: Locator
+  discountUnauthorizedMessage: Locator
   discountRow: Locator
   giftCardRow: Locator
   giftCardCode: Locator
@@ -164,7 +164,7 @@ export class CheckoutPage extends BasePage {
     this.submitAddressButton = this.container.getByTestId(
       "submit-address-button"
     )
-    this.addressErrorMessage = this.container.getByTestId(
+    this.addressUnauthorizedMessage = this.container.getByTestId(
       "address-error-message"
     )
 
@@ -174,7 +174,7 @@ export class CheckoutPage extends BasePage {
     this.deliveryOptionRadio = this.container.getByTestId(
       "delivery-option-radio"
     )
-    this.deliveryOptionErrorMessage = this.container.getByTestId(
+    this.deliveryOptionUnauthorizedMessage = this.container.getByTestId(
       "delivery-option-error-message"
     )
     this.submitDeliveryOptionButton = this.container.getByTestId(
@@ -190,19 +190,19 @@ export class CheckoutPage extends BasePage {
     this.paymentDetailsSummary = this.container.getByTestId(
       "payment-details-summary"
     )
-    this.paymentMethodErrorMessage = this.container.getByTestId(
+    this.paymentMethodUnauthorizedMessage = this.container.getByTestId(
       "payment-method-error-message"
     )
     this.submitPaymentButton = this.container.getByTestId(
       "submit-payment-button"
     )
-    this.stripePaymentErrorMessage = this.container.getByTestId(
+    this.stripePaymentUnauthorizedMessage = this.container.getByTestId(
       "stripe-payment-error-message"
     )
-    this.paypalPaymentErrorMessage = this.container.getByTestId(
+    this.paypalPaymentUnauthorizedMessage = this.container.getByTestId(
       "paypal-payment-error-message"
     )
-    this.manualPaymentErrorMessage = this.container.getByTestId(
+    this.manualPaymentUnauthorizedMessage = this.container.getByTestId(
       "manual-payment-error-message"
     )
     this.submitOrderButton = this.container.getByTestId("submit-order-button")
@@ -212,7 +212,7 @@ export class CheckoutPage extends BasePage {
     this.discountApplyButton = this.container.getByTestId(
       "discount-apply-button"
     )
-    this.discountErrorMessage = this.container.getByTestId(
+    this.discountUnauthorizedMessage = this.container.getByTestId(
       "discount-error-message"
     )
     this.discountRow = this.container.getByTestId("discount-row")

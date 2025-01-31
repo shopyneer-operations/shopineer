@@ -60,6 +60,9 @@ const medusaConfig = {
       resolve: "./src/modules/price-history",
     },
     {
+      resolve: "./src/modules/role",
+    },
+    {
       resolve: "./modules/wishlist",
       options: {
         jwtSecret: JWT_SECRET,

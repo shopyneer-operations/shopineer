@@ -1,7 +1,7 @@
 import { defineWidgetConfig } from "@medusajs/admin-sdk";
 import { Container, Heading, Select, toast } from "@medusajs/ui";
 import { sdk } from "../lib/sdk";
-import { AdminProduct, DetailWidgetProps } from "@medusajs/types";
+import { AdminProduct } from "@medusajs/types";
 import useSWR from "swr";
 import React from "react";
 import { Brand } from "../lib/types/brand";
@@ -17,8 +17,12 @@ type BrandsResponse = {
   limit: number;
 };
 
-const ProductBrandWidget = ({ data: product }: DetailWidgetProps<AdminProduct>) => {
-  const { data: brands } = useSWR(["brands"], () => sdk.client.fetch<BrandsResponse>("/admin/brands"));
+const ProductBrandWidget = ({ data: product }: any) => {
+  const { data: brands } = useSWR(["brands"], async () => {
+    const result = await sdk.client.fetch<BrandsResponse>("/admin/brands");
+
+    return result;
+  });
 
   useSWR(["product", product.id], async () => {
     const result = await sdk.admin.product.retrieve(product.id, {

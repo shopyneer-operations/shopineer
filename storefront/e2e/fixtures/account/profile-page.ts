@@ -34,11 +34,11 @@ export class ProfilePage extends AccountPage {
   passwordSuccessMessage: Locator
   billingAddressSuccessMessage: Locator
 
-  nameErrorMessage: Locator
-  emailErrorMessage: Locator
-  phoneErrorMessage: Locator
-  passwordErrorMessage: Locator
-  billingAddressErrorMessage: Locator
+  nameUnauthorizedMessage: Locator
+  emailUnauthorizedMessage: Locator
+  phoneUnauthorizedMessage: Locator
+  passwordUnauthorizedMessage: Locator
+  billingAddressUnauthorizedMessage: Locator
 
   emailInput: Locator
   firstNameInput: Locator
@@ -105,14 +105,15 @@ export class ProfilePage extends AccountPage {
       this.accountPasswordEditor.getByTestId("success-message")
     this.billingAddressSuccessMessage =
       this.accountBillingAddressEditor.getByTestId("success-message")
-    this.nameErrorMessage = this.accountNameEditor.getByTestId("error-message")
-    this.emailErrorMessage =
+    this.nameUnauthorizedMessage =
+      this.accountNameEditor.getByTestId("error-message")
+    this.emailUnauthorizedMessage =
       this.accountEmailEditor.getByTestId("error-message")
-    this.phoneErrorMessage =
+    this.phoneUnauthorizedMessage =
       this.accountPhoneEditor.getByTestId("error-message")
-    this.passwordErrorMessage =
+    this.passwordUnauthorizedMessage =
       this.accountPasswordEditor.getByTestId("error-message")
-    this.billingAddressErrorMessage =
+    this.billingAddressUnauthorizedMessage =
       this.accountBillingAddressEditor.getByTestId("error-message")
 
     this.firstNameInput = page.getByTestId("first-name-input")

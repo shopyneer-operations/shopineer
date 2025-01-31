@@ -2,7 +2,7 @@ import { useFormState } from "react-dom"
 
 import { LOGIN_VIEW } from "@modules/account/templates/login-template"
 import Input from "@modules/common/components/input"
-import ErrorMessage from "@modules/checkout/components/error-message"
+import UnauthorizedMessage from "@modules/checkout/components/error-message"
 import { SubmitButton } from "@modules/checkout/components/submit-button"
 import { login } from "@lib/data/customer"
 
@@ -42,7 +42,10 @@ const Login = ({ setCurrentView }: Props) => {
             data-testid="password-input"
           />
         </div>
-        <ErrorMessage error={message} data-testid="login-error-message" />
+        <UnauthorizedMessage
+          error={message}
+          data-testid="login-error-message"
+        />
         <SubmitButton data-testid="sign-in-button" className="w-full mt-6">
           Sign in
         </SubmitButton>

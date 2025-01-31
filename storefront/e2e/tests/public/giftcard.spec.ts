@@ -323,7 +323,7 @@ test.describe("Gift card tests", async () => {
       await expect(cartPage.discountInput).toBeVisible()
       await cartPage.discountInput.fill("__FAKE_GIFT_CARD_DNE_1111111")
       await cartPage.discountApplyButton.click()
-      await expect(cartPage.discountErrorMessage).toBeVisible()
+      await expect(cartPage.discountUnauthorizedMessage).toBeVisible()
     })
   })
 
@@ -358,7 +358,7 @@ test.describe("Gift card tests", async () => {
       await expect(checkoutPage.discountInput).toBeVisible()
       await checkoutPage.discountInput.fill("__FAKE_GIFT_CARD_DNE_1111111")
       await checkoutPage.discountApplyButton.click()
-      await expect(checkoutPage.discountErrorMessage).toBeVisible()
+      await expect(checkoutPage.discountUnauthorizedMessage).toBeVisible()
     })
   })
 

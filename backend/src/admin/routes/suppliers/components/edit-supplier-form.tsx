@@ -3,10 +3,10 @@ import { useState } from "react";
 import { useForm, FormProvider, Controller } from "react-hook-form";
 import { KeyedMutator } from "swr";
 import * as zod from "zod";
-import { SuppliersResponse } from "../page";
 import { Supplier } from "../../../lib/types/supplier";
 import { sdk } from "../../../lib/sdk";
 import { PencilSquare } from "@medusajs/icons";
+import { PaginatedResponse } from "@medusajs/framework/types";
 
 const schema = zod.object({
   name: zod.string(),
@@ -19,7 +19,7 @@ export const EditSupplierForm = ({
   mutate,
   supplier,
 }: {
-  mutate: KeyedMutator<SuppliersResponse>;
+  mutate: KeyedMutator<PaginatedResponse<{ suppliers: Supplier[] }>>;
   supplier: Supplier;
 }) => {
   const [isOpen, setIsOpen] = useState(false);

@@ -5,9 +5,9 @@ import { Plus } from "@medusajs/icons";
 import { sdk } from "../../../lib/sdk";
 import { Brand } from "../../../lib/types/brand";
 import { KeyedMutator } from "swr";
-import { BrandsResponse } from "../page";
 import { useState } from "react";
 import { Media, MediaSchema, UploadMediaFormItem } from "../../../components/upload-media-form-item";
+import { PaginatedResponse } from "@medusajs/framework/types";
 
 const schema = z.object({
   name: z.string(),
@@ -15,7 +15,7 @@ const schema = z.object({
   image: MediaSchema.optional(),
 });
 
-export const CreateBrandForm = ({ mutate }: { mutate: KeyedMutator<BrandsResponse> }) => {
+export const CreateBrandForm = ({ mutate }: { mutate: KeyedMutator<PaginatedResponse<{ brands: Brand[] }>> }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const form = useForm<z.infer<typeof schema>>({
