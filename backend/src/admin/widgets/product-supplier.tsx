@@ -46,9 +46,7 @@ const ProductSupplierWidget = ({ data: product }: DetailWidgetProps<AdminProduct
   return (
     <Container className="divide-y p-0">
       <div className="flex items-center justify-between px-6 py-4">
-        <div>
-          <Heading level="h2">Supplier</Heading>
-        </div>
+        <Heading level="h2">Supplier</Heading>
       </div>
 
       <div className="px-6 py-4">

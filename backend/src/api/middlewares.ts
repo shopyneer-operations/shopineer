@@ -20,7 +20,7 @@ const GetSuppliersSchema = createFindParams();
 const permissions = async (req: MedusaRequest, res: MedusaResponse, next: MedusaNextFunction) => {
   const query = req.scope.resolve("query");
 
-  const userId = req.session?.auth_context?.actor_id;
+  const userId = (req as any)?.auth_context?.actor_id;
   const {
     data: [user],
   } = await query.graph({
