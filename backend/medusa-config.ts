@@ -51,6 +51,9 @@ const medusaConfig = {
   },
   modules: [
     {
+      resolve: "./src/modules/review",
+    },
+    {
       resolve: "./src/modules/brand",
     },
     {

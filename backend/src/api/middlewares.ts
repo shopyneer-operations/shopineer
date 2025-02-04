@@ -11,9 +11,10 @@ import z from "zod";
 import { createFindParams } from "@medusajs/medusa/api/utils/validators";
 import { PostAdminCreateBrand } from "./admin/brands/validators";
 import { MedusaError } from "@medusajs/framework/utils";
-import { HttpStatusCode } from "axios";
 import { Permission } from "../modules/role/models/role";
 import { PutAdminRole } from "./admin/roles/validators";
+import { PostReview } from "./store/reviews/validators";
+import { PostReviewResponse } from "./admin/reviews/validators";
 
 const GetSuppliersSchema = createFindParams();
 
@@ -65,9 +66,40 @@ const permissions = async (req: MedusaRequest, res: MedusaResponse, next: Medusa
 
 export default defineMiddlewares({
   routes: [
+    // Store
     {
-      matcher: "/admin/*",
-      middlewares: [permissions],
+      matcher: "/store/reviews",
+      method: "POST",
+      middlewares: [validateAndTransformBody(PostReview as any)],
+    },
+
+    // Admin
+    {
+      matcher: "/admin/reviews/:reviewId/respond",
+      method: "POST",
+      middlewares: [validateAndTransformBody(PostReviewResponse as any)],
+    },
+    {
+      matcher: "/admin/reviews",
+      method: "GET",
+      middlewares: [
+        validateAndTransformQuery(GetSuppliersSchema, {
+          defaults: [
+            "id",
+            "title",
+            "rating",
+            "description",
+            "created_at",
+            "updated_at",
+            "approved_at",
+            "product.*",
+            "customer.*",
+            "user.*",
+            "response.*",
+          ],
+          isList: true,
+        }),
+      ],
     },
     {
       matcher: "/admin/products",
@@ -137,17 +169,17 @@ export default defineMiddlewares({
       middlewares: [validateAndTransformBody(PutAdminRole as any)],
     },
   ],
-  errorHandler(error: MedusaError | any, req: MedusaRequest, res: MedusaResponse, next: MedusaNextFunction) {
-    console.log("4️⃣", error.type === MedusaError.Types.UNAUTHORIZED);
+  // errorHandler(error: MedusaError | any, req: MedusaRequest, res: MedusaResponse, next: MedusaNextFunction) {
+  //   console.log("4️⃣", error.type === MedusaError.Types.UNAUTHORIZED);
 
-    if (error.type === MedusaError.Types.UNAUTHORIZED) {
-      res.status(HttpStatusCode.Ok).json({
-        error: error.message,
-        timestamp: new Date().toISOString(),
-        path: req.baseUrl,
-      });
-    } else {
-      next(error);
-    }
-  },
+  //   if (error.type === MedusaError.Types.UNAUTHORIZED) {
+  //     res.status(HttpStatusCode.Ok).json({
+  //       error: error.message,
+  //       timestamp: new Date().toISOString(),
+  //       path: req.baseUrl,
+  //     });
+  //   } else {
+  //     next(error);
+  //   }
+  // },
 });
