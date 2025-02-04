@@ -40,7 +40,7 @@ const medusaConfig = {
     http: {
       adminCors: ADMIN_CORS,
       authCors: AUTH_CORS,
-      storeCors: STORE_CORS,
+      storeCors: STORE_CORS + ",http://localhost:4200",
       jwtSecret: JWT_SECRET,
       cookieSecret: COOKIE_SECRET,
     },
