@@ -27,6 +27,8 @@ updateProductVariantsWorkflow.hooks.productVariantsUpdated(async function addPri
 
     for (const region of regions) {
       for (const variant of product_variants) {
+        if (!variant.price_set) continue;
+
         const prices = await pricingModuleService.calculatePrices(
           {
             id: [variant.price_set.id],
