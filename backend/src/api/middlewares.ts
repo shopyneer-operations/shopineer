@@ -72,6 +72,16 @@ export default defineMiddlewares({
       method: "POST",
       middlewares: [validateAndTransformBody(PostReview as any)],
     },
+    {
+      matcher: "/store/brands",
+      method: "GET",
+      middlewares: [
+        validateAndTransformQuery(GetSuppliersSchema, {
+          defaults: ["id", "name", "description", "image", "products.*"],
+          isList: true,
+        }),
+      ],
+    },
 
     // Admin
     {
