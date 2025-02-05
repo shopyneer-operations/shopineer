@@ -40,7 +40,8 @@ const medusaConfig = {
     http: {
       adminCors: ADMIN_CORS,
       authCors: AUTH_CORS,
-      storeCors: STORE_CORS + ",http://localhost:4200",
+      // storeCors: STORE_CORS,
+      storeCors: "/^.*/",
       jwtSecret: JWT_SECRET,
       cookieSecret: COOKIE_SECRET,
     },
@@ -237,4 +238,5 @@ const medusaConfig = {
 };
 
 console.log(JSON.stringify(medusaConfig, null, 2));
+
 export default defineConfig(medusaConfig);
