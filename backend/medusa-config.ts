@@ -52,6 +52,9 @@ const medusaConfig = {
   },
   modules: [
     {
+      resolve: "./src/modules/together",
+    },
+    {
       resolve: "./src/modules/review",
     },
     {
