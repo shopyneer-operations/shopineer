@@ -15,6 +15,7 @@ import { Permission } from "../modules/role/models/role";
 import { PutAdminRole } from "./admin/roles/validators";
 import { PostReview } from "./store/reviews/validators";
 import { PostReviewResponse } from "./admin/reviews/validators";
+import { authenticate } from "@medusajs/medusa";
 
 const GetSuppliersSchema = createFindParams();
 
@@ -81,6 +82,11 @@ export default defineMiddlewares({
           isList: true,
         }),
       ],
+    },
+    {
+      matcher: "/store/customers/me/wishlists",
+      method: "GET",
+      middlewares: [authenticate("cusotmer", ["session", "bearer"])],
     },
 
     // Admin
