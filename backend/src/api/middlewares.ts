@@ -83,11 +83,11 @@ export default defineMiddlewares({
         }),
       ],
     },
-    {
-      matcher: "/store/customers/me/wishlists",
-      method: "GET",
-      middlewares: [authenticate("cusotmer", ["session", "bearer"])],
-    },
+    // {
+    //   matcher: "/store/customers/me/wishlists",
+    //   method: "GET",
+    //   middlewares: [authenticate("cusotmer", ["session", "bearer"])],
+    // },
 
     // Admin
     {
