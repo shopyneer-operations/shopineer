@@ -1,9 +1,9 @@
 import { InjectManager, InjectTransactionManager, MedusaContext, MedusaService } from "@medusajs/framework/utils";
-import { ProductSales } from "./models/sales";
+import { Sales } from "./models/sales";
 import { Context } from "@medusajs/framework/types";
 import { EntityManager } from "@mikro-orm/knex";
 
-class SalesModuleService extends MedusaService({ ProductSales }) {
+class SalesModuleService extends MedusaService({ Sales }) {
   @InjectManager()
   async incrementProductSales(productId: string, count = 1, @MedusaContext() sharedContext?: Context<EntityManager>) {
     const result = await sharedContext.manager.execute(`
