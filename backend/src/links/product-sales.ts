@@ -1,7 +1,7 @@
 import { defineLink } from "@medusajs/framework/utils";
 import ProductModule from "@medusajs/medusa/product";
-import ProductSalesModule from "../modules/product-sales";
+import SalesModule from "../modules/sales";
 
 export default defineLink(ProductModule.linkable.product, {
-  linkable: ProductSalesModule.linkable.productSales,
+  linkable: SalesModule.linkable.sales,
 });
