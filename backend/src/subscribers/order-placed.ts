@@ -5,6 +5,8 @@ import { EmailTemplates } from "../modules/email-notifications/templates";
 import fp from "lodash/fp";
 import TogetherModuleService from "../modules/together/service";
 import { TOGETHER_MODULE } from "../modules/together";
+import SalesModuleService from "../modules/sales/service";
+import { SALES_MODULE } from "../modules/sales";
 
 function getUniquePairs(arr: string[]): [string, string][] {
   if (arr.length < 2) return [];
@@ -109,6 +111,27 @@ export default async function orderPlacedHandler({ event: { data }, container }:
       }
     } catch (error) {
       logger.failure(activityId, `🔴 boughtTogether: Error: ${error.message}`);
+    }
+  })();
+
+  // Track product sales
+  (async function updateProductSales() {
+    const logger = container.resolve("logger");
+    const salesModuleService: SalesModuleService = container.resolve(SALES_MODULE);
+
+    const activityId = logger.activity(`🔵 sales: Incrementing product sales for order: ${order.id}`);
+
+    try {
+      for (const item of order.items) {
+        await salesModuleService.incrementProductSales(item.product_id, item.quantity);
+      }
+
+      logger.success(activityId, `🟢 sales: Incremented product sales for order: ${order.id}`);
+    } catch (error) {
+      logger.failure(
+        activityId,
+        `🔴 sales: Error incrementing product sales for order: ${order.id}. Error: ${error.message}`
+      );
     }
   })();
 }
