@@ -83,11 +83,35 @@ export default defineMiddlewares({
         }),
       ],
     },
-    // {
-    //   matcher: "/store/customers/me/wishlists",
-    //   method: "GET",
-    //   middlewares: [authenticate("cusotmer", ["session", "bearer"])],
-    // },
+    {
+      matcher: "/store/promotions",
+      method: "GET",
+      middlewares: [
+        validateAndTransformQuery(GetSuppliersSchema, {
+          defaults: [
+            "id",
+            "code",
+            "is_automatic",
+            "type",
+            "created_at",
+            "updated_at",
+            "deleted_at",
+            "campaign_id",
+            "application_method",
+            "rules",
+            "campaign",
+            "application_method.*",
+            "application_method.target_rules.*",
+          ],
+          isList: true,
+        }),
+      ],
+    },
+    {
+      matcher: "/store/customers/me/wishlists",
+      method: "GET",
+      // middlewares: [authenticate("cusotmer", ["session", "bearer"])],
+    },
 
     // Admin
     {
