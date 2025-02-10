@@ -16,5 +16,5 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
     fp.property("value")
   )(data);
 
-  res.json({ threshold });
+  res.json({ threshold: threshold || null });
 };
