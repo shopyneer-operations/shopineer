@@ -15,6 +15,7 @@ import fp from "lodash/fp";
 import crypto from "crypto";
 import axios from "axios";
 import { BACKEND_URL } from "../../lib/constants";
+import { EntityManager } from "@mikro-orm/knex";
 
 type ChargeItem = {
   itemId: string;
@@ -61,12 +62,31 @@ type Options = {
 
 type InjectedDependencies = {
   logger: Logger;
+  manager: EntityManager;
+};
+
+type CartResponse = {
+  cart_id: string;
+  customer_id: string;
+  customer_email: string;
+  customer_first_name: string;
+  customer_last_name: string;
+  customer_phone: string;
+  line_items: {
+    line_item_id: string;
+    quantity: number;
+    unit_price: number;
+    title: string;
+    subtitle: string;
+    thumbnail: string;
+  }[];
 };
 
 export default class FawryProviderService extends AbstractPaymentProvider<Options> {
   static identifier = "fawry";
   protected logger_: Logger;
   protected options_: Options;
+  protected manager_: EntityManager;
   // assuming you're initializing a client
   protected client;
 
@@ -74,6 +94,7 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
     super(container, options);
 
     this.options_ = options;
+    this.manager_ = container.manager;
     this.logger_ = container.logger;
   }
 
@@ -87,7 +108,7 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
     }
   }
 
-  private generateSignature(sessionId: string, cart: CartDTO, totalPrice: number): string {
+  private generateSignature(sessionId: string, cart: CartResponse, totalPrice: number): string {
     const merchantRefNum = sessionId;
     const customerProfileId = cart.customer_id;
     const itemsDetails = fp.flow(
@@ -104,35 +125,7 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
     return signature;
   }
 
-  private getCheckoutItems = fp.curry(function getCheckoutItems(totalPrice: number, cart: CartDTO): ChargeItem[] {
-    const addDiscountItem = fp.curry(function addDiscountItem(cart: CartDTO, lineItems: ChargeItem[]) {
-      lineItems = fp.cloneDeep(lineItems);
-      if (Number(cart.discount_total) > 0) {
-        lineItems.push({
-          itemId: "discount",
-          description: "Discount",
-          price: -Number(cart.discount_total),
-          quantity: 1,
-          imageUrl: "",
-        });
-      }
-      return lineItems;
-    });
-
-    const addShipingItem = fp.curry(function addDiscountItem(cart: CartDTO, lineItems: ChargeItem[]) {
-      lineItems = fp.cloneDeep(lineItems);
-      if (Number(cart.shipping_total) > 0) {
-        lineItems.push({
-          itemId: "shipping",
-          description: "Shipping",
-          price: Number(cart.shipping_total),
-          quantity: 1,
-          imageUrl: "",
-        });
-      }
-      return lineItems;
-    });
-
+  private getCheckoutItems = fp.curry(function getCheckoutItems(totalPrice: number, cart: CartResponse): ChargeItem[] {
     /**
      * Add amount difference item to cart if amount difference is greater than 0
      */
@@ -156,10 +149,10 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
       return lineItems;
     });
 
-    function mapCartItemToChargeItem(item: CartLineItemDTO): ChargeItem {
+    function mapCartItemToChargeItem(item: CartResponse["line_items"][0]): ChargeItem {
       return {
-        itemId: item.id,
-        description: item.title,
+        itemId: item.line_item_id,
+        description: `${item.subtitle} ${item.title}`,
         price: Number(item.unit_price),
         quantity: Number(item.quantity),
         imageUrl: item.thumbnail,
@@ -168,23 +161,21 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
 
     const result = fp.flow(
       fp.map(mapCartItemToChargeItem),
-      addDiscountItem(cart),
-      addShipingItem(cart),
       addAmountDifferenceItem(totalPrice),
       fp.sortBy<ChargeItem>("itemId")
-    )(cart.items);
+    )(cart.line_items);
 
     return result;
   });
 
-  private buildCheckoutRequest(sessionId: string, cart: CartDTO, totalPrice: number): ChargeRequest {
+  private buildCheckoutRequest(sessionId: string, cart: CartResponse, totalPrice: number): ChargeRequest {
     const { merchantCode, returnUrl } = this.options_;
     const request: ChargeRequest = {
       merchantCode,
       merchantRefNum: sessionId,
-      customerMobile: cart.shipping_address.phone,
-      customerEmail: cart.email,
-      customerName: cart.shipping_address.first_name + " " + cart.shipping_address.last_name,
+      customerMobile: cart.customer_phone,
+      customerEmail: cart.customer_email,
+      customerName: cart.customer_first_name + " " + cart.customer_last_name,
       customerProfileId: cart.customer_id,
       language: "ar-eg",
       chargeItems: this.getCheckoutItems(totalPrice, cart),
@@ -206,18 +197,48 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
     return signature;
   }
 
+  private async getCart(cartId: string): Promise<CartResponse> {
+    const cart = (await this.manager_.execute(`
+      SELECT 
+          c.id AS cart_id,
+          cu.id AS customer_id,
+          cu.email AS customer_email,
+          ca.first_name AS customer_first_name,
+          ca.last_name AS customer_last_name,
+          ca.phone AS customer_phone,
+          JSON_AGG(
+              JSON_BUILD_OBJECT(
+                  'line_item_id', cli.id,
+                  'quantity', cli.quantity,
+                  'unit_price', cli.unit_price,
+                  'title', cli.title,
+                  'subtitle', cli.subtitle,
+            'thumbnail', cli.thumbnail
+              )
+          ) AS line_items
+      FROM cart c
+      LEFT JOIN customer cu ON c.customer_id = cu.id  
+      LEFT JOIN cart_address ca ON c.shipping_address_id = ca.id
+      LEFT JOIN cart_line_item cli ON c.id = cli.cart_id
+      WHERE c.id = '${cartId}'
+      GROUP BY c.id, cu.id, cu.email, ca.first_name, ca.last_name, ca.phone
+    `)) as CartResponse[];
+
+    return cart[0];
+  }
+
   async initiatePayment({
     context,
     amount,
   }: CreatePaymentProviderSession): Promise<PaymentProviderError | PaymentProviderSessionResponse> {
+    const cart = await this.getCart(context.extra.cartId as string);
+
+    console.log("✨", cart);
+
     const activityId = this.logger_.activity(
-      `⚡🔵 Fawry (initiatePayment): Initiating a payment for cart: ${(context.extra.cart as CartDTO).id}`
+      `⚡🔵 Fawry (initiatePayment): Initiating a payment for cart: ${context.extra.cartId}`
     );
-    const checkoutRequest = this.buildCheckoutRequest(
-      context.session_id,
-      context.extra.cart as CartDTO,
-      Number(amount)
-    );
+    const checkoutRequest = this.buildCheckoutRequest(context.session_id, cart, Number(amount));
 
     try {
       const response = await axios.post(`${this.options_.baseUrl}/fawrypay-api/api/payments/init`, checkoutRequest, {
@@ -228,18 +249,14 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
 
       this.logger_.success(
         activityId,
-        `⚡🟢 Fawry (initiatePayment): Successfully created checkout URL: ${response.data} for cart: ${
-          (context.extra.cart as CartDTO).id
-        }`
+        `⚡🟢 Fawry (initiatePayment): Successfully created checkout URL: ${response.data} for cart: ${context.extra.cartId}`
       );
 
       return { data: { checkoutUrl: response.data } };
     } catch (error) {
       this.logger_.failure(
         activityId,
-        `⚡🔴 Fawry (initiatePayment): Failed to create checkout URL for cart: ${
-          (context.extra.cart as CartDTO).id
-        } with error: ${error.message}`
+        `⚡🔴 Fawry (initiatePayment): Failed to create checkout URL for cart: ${context.extra.cartId} with error: ${error.message}`
       );
 
       return {
@@ -280,13 +297,19 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
 
   async getWebhookActionAndData(payload: ProviderWebhookPayload["payload"]): Promise<WebhookActionResult> {
     const activityId = this.logger_.activity(
-      `⚡🔵 Fawry (webhook): triggered with payload: ${JSON.stringify(payload)}`
+      `⚡🔵 Fawry (webhook): triggered with payload: ${JSON.stringify(payload.data)}`,
+      payload.data
     );
 
     const data = payload.data as unknown as WebhookPayload;
 
     switch (data.orderStatus) {
       case "NEW":
+        this.logger_.success(
+          activityId,
+          `⚡🟢 Fawry (webhook): Setting session_id: ${data.merchantRefNumber} as authorized`
+        );
+
         return {
           action: "authorized",
           data: {
@@ -295,6 +318,11 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
           },
         };
       case "PAID":
+        this.logger_.success(
+          activityId,
+          `⚡🟢 Fawry (webhook): Setting session_id: ${data.merchantRefNumber} as captured`
+        );
+
         return {
           action: "captured",
           data: {
