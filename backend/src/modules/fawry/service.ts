@@ -297,13 +297,19 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
 
   async getWebhookActionAndData(payload: ProviderWebhookPayload["payload"]): Promise<WebhookActionResult> {
     const activityId = this.logger_.activity(
-      `⚡🔵 Fawry (webhook): triggered with payload: ${JSON.stringify(payload)}`
+      `⚡🔵 Fawry (webhook): triggered with payload: ${JSON.stringify(payload.data)}`,
+      payload.data
     );
 
     const data = payload.data as unknown as WebhookPayload;
 
     switch (data.orderStatus) {
       case "NEW":
+        this.logger_.success(
+          activityId,
+          `⚡🟢 Fawry (webhook): Setting session_id: ${data.merchantRefNumber} as authorized`
+        );
+
         return {
           action: "authorized",
           data: {
@@ -312,6 +318,11 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
           },
         };
       case "PAID":
+        this.logger_.success(
+          activityId,
+          `⚡🟢 Fawry (webhook): Setting session_id: ${data.merchantRefNumber} as captured`
+        );
+
         return {
           action: "captured",
           data: {
