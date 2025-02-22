@@ -382,10 +382,12 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
     }
   }
 
-  cancelPayment(
+  async cancelPayment(
     paymentData: Record<string, unknown>
   ): Promise<PaymentProviderError | PaymentProviderSessionResponse["data"]> {
-    throw new Error("Method not implemented.");
+    return {
+      data: paymentData,
+    };
   }
 
   deletePayment(

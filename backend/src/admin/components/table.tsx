@@ -2,12 +2,14 @@ import { useMemo } from "react";
 import { Table as UiTable } from "@medusajs/ui";
 import { get } from "lodash";
 
+type Column = {
+  key: string;
+  label?: string;
+  render?: (row: any) => React.ReactNode;
+};
+
 export type TableProps = {
-  columns: {
-    key: string;
-    label?: string;
-    render?: (row: any) => React.ReactNode;
-  }[];
+  columns: Column[];
   data: Record<string, any>[];
   pageSize: number;
   count: number;
@@ -39,6 +41,14 @@ export function Table({ columns, data, pageSize, count, currentPage, setCurrentP
     }
   };
 
+  function getCellContent(item: Record<string, any>, column: Column) {
+    if (column.render) {
+      return column.render(item) || "_";
+    }
+
+    return get(item, column.key) || "_";
+  }
+
   return (
     <div className="flex h-full flex-col overflow-hidden !border-t-0">
       <UiTable>
@@ -55,12 +65,7 @@ export function Table({ columns, data, pageSize, count, currentPage, setCurrentP
             return (
               <UiTable.Row key={rowIndex}>
                 {columns.map((column, index) => (
-                  <UiTable.Cell key={`${rowIndex}-${index}`}>
-                    <>
-                      {column.render && column.render(item)}
-                      {!column.render && <>{get(item, column.key) as string}</>}
-                    </>
-                  </UiTable.Cell>
+                  <UiTable.Cell key={`${rowIndex}-${index}`}>{getCellContent(item, column)}</UiTable.Cell>
                 ))}
               </UiTable.Row>
             );
