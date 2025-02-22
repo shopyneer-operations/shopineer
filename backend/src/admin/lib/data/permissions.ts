@@ -41,6 +41,7 @@ export enum Resource {
   "invites" = "invites",
   "price-preferences" = "price-preferences",
   "reviews" = "reviews",
+  "abandoned-carts" = "abandoned-carts",
 }
 
 export const permissions: Permission[] = values(Resource).flatMap(function allMethods(resource) {

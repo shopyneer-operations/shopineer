@@ -4,4 +4,5 @@ export const constants = {
   ROLES_LIMIT: 15,
   USERS_LIMIT: 15,
   REVIEWS_LIMIT: 15,
+  ABANDONED_CARTS_LIMIT: 15,
 };

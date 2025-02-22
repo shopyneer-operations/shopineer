@@ -24,7 +24,7 @@ function getUniquePairs(arr: string[]): [string, string][] {
 
 export default async function orderPlacedHandler({ event: { data }, container }: SubscriberArgs<any>) {
   const notificationModuleService: INotificationModuleService = container.resolve(Modules.NOTIFICATION);
-  const orderModuleService: IOrderModuleService = container.resolve(Modules.ORDER);
+  const orderModuleService = container.resolve(Modules.ORDER);
 
   const order = await orderModuleService.retrieveOrder(data.id, {
     relations: ["items", "summary", "shipping_address"],

@@ -16,6 +16,7 @@ import { PutAdminRole } from "./admin/roles/validators";
 import { PostReview } from "./store/reviews/validators";
 import { PostReviewResponse } from "./admin/reviews/validators";
 import { authenticate } from "@medusajs/medusa";
+import { retrieveCartTransformQueryConfig } from "./admin/abandoned-carts/query-config";
 
 const GetSuppliersSchema = createFindParams();
 
@@ -198,6 +199,11 @@ export default defineMiddlewares({
           isList: true,
         }),
       ],
+    },
+    {
+      matcher: "/admin/abandoned-carts",
+      method: "GET",
+      middlewares: [validateAndTransformQuery(GetSuppliersSchema, retrieveCartTransformQueryConfig)],
     },
     {
       matcher: "/admin/roles",
