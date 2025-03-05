@@ -1,16 +1,22 @@
 import {
-  PaymentProviderError,
-  PaymentProviderSessionResponse,
   PaymentSessionStatus,
-  CreatePaymentProviderSession,
-  UpdatePaymentProviderSession,
   ProviderWebhookPayload,
   WebhookActionResult,
   Logger,
   CartDTO,
   CartLineItemDTO,
-} from "@medusajs/types";
-import { AbstractPaymentProvider, BigNumber, MedusaError } from "@medusajs/utils";
+  InitiatePaymentInput,
+  InitiatePaymentOutput,
+  CapturePaymentInput,
+  CapturePaymentOutput,
+  AuthorizePaymentInput,
+  AuthorizePaymentOutput,
+  RefundPaymentInput,
+  RefundPaymentOutput,
+  RetrievePaymentInput,
+  RetrievePaymentOutput,
+} from "@medusajs/framework/types";
+import { AbstractPaymentProvider, BigNumber, MedusaError } from "@medusajs/framework/utils";
 import fp from "lodash/fp";
 import crypto from "crypto";
 import axios from "axios";
@@ -125,6 +131,16 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
     return signature;
   }
 
+  private generateRetrieveSignature(merchantRefNum: string) {
+    const { merchantCode, securityCode } = this.options_;
+
+    const dataToHash = `${merchantCode}${merchantRefNum}${securityCode}`;
+
+    const signature = crypto.createHash("sha256").update(dataToHash).digest("hex");
+
+    return signature;
+  }
+
   private getCheckoutItems = fp.curry(function getCheckoutItems(totalPrice: number, cart: CartResponse): ChargeItem[] {
     /**
      * Add amount difference item to cart if amount difference is greater than 0
@@ -199,7 +215,7 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
 
   private async getCart(cartId: string): Promise<CartResponse> {
     const cart = (await this.manager_.execute(`
-      SELECT 
+      SELECT
           c.id AS cart_id,
           cu.id AS customer_id,
           cu.email AS customer_email,
@@ -217,7 +233,7 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
               )
           ) AS line_items
       FROM cart c
-      LEFT JOIN customer cu ON c.customer_id = cu.id  
+      LEFT JOIN customer cu ON c.customer_id = cu.id
       LEFT JOIN cart_address ca ON c.shipping_address_id = ca.id
       LEFT JOIN cart_line_item cli ON c.id = cli.cart_id
       WHERE c.id = '${cartId}'
@@ -227,72 +243,51 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
     return cart[0];
   }
 
-  async initiatePayment({
-    context,
-    amount,
-  }: CreatePaymentProviderSession): Promise<PaymentProviderError | PaymentProviderSessionResponse> {
-    const cart = await this.getCart(context.extra.cartId as string);
+  async initiatePayment(input: InitiatePaymentInput): Promise<InitiatePaymentOutput> {
+    {
+      console.log("✨", input);
+      const { cartId, session_id } = input.data as Record<string, string>;
 
-    console.log("✨", cart);
+      const cart = await this.getCart(cartId);
 
-    const activityId = this.logger_.activity(
-      `⚡🔵 Fawry (initiatePayment): Initiating a payment for cart: ${context.extra.cartId}`
-    );
-    const checkoutRequest = this.buildCheckoutRequest(context.session_id, cart, Number(amount));
-
-    try {
-      const response = await axios.post(`${this.options_.baseUrl}/fawrypay-api/api/payments/init`, checkoutRequest, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      this.logger_.success(
-        activityId,
-        `⚡🟢 Fawry (initiatePayment): Successfully created checkout URL: ${response.data} for cart: ${context.extra.cartId}`
+      const activityId = this.logger_.activity(
+        `⚡🔵 Fawry (initiatePayment): Initiating a payment for cart: ${cartId}`
       );
+      const checkoutRequest = this.buildCheckoutRequest(session_id, cart, Number(input.amount));
 
-      return { data: { checkoutUrl: response.data } };
-    } catch (error) {
-      this.logger_.failure(
-        activityId,
-        `⚡🔴 Fawry (initiatePayment): Failed to create checkout URL for cart: ${context.extra.cartId} with error: ${error.message}`
-      );
+      try {
+        const response = await axios.post(`${this.options_.baseUrl}/fawrypay-api/api/payments/init`, checkoutRequest, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
 
-      return {
-        error: error.message,
-        code: "unknown",
-        detail: error,
-      };
+        this.logger_.success(
+          activityId,
+          `⚡🟢 Fawry (initiatePayment): Successfully created checkout URL: ${response.data} for cart: ${cartId}`
+        );
+
+        return { id: session_id, data: { checkoutUrl: response.data } };
+      } catch (error) {
+        this.logger_.failure(
+          activityId,
+          `⚡🔴 Fawry (initiatePayment): Failed to create checkout URL for cart: ${cartId} with error: ${error.message}`
+        );
+
+        throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, error.message);
+      }
     }
   }
 
-  async authorizePayment(
-    paymentSessionData: Record<string, unknown>,
-    context: Record<string, unknown>
-  ): Promise<PaymentProviderError | { status: PaymentSessionStatus; data: PaymentProviderSessionResponse["data"] }> {
+  async authorizePayment(input: AuthorizePaymentInput): Promise<AuthorizePaymentOutput> {
     return {
-      data: paymentSessionData,
+      data: input.data,
       status: "captured",
     };
   }
 
-  async capturePayment(
-    paymentData: Record<string, unknown>
-  ): Promise<PaymentProviderError | PaymentProviderSessionResponse["data"]> {
-    const externalId = paymentData.id;
-
-    try {
-      return {
-        id: externalId,
-      };
-    } catch (e) {
-      return {
-        error: e,
-        code: "unknown",
-        detail: e,
-      };
-    }
+  async capturePayment(input: CapturePaymentInput): Promise<CapturePaymentOutput> {
+    return input.data;
   }
 
   async getWebhookActionAndData(payload: ProviderWebhookPayload["payload"]): Promise<WebhookActionResult> {
@@ -346,64 +341,85 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
     }
   }
 
-  async refundPayment(
-    paymentData: Record<string, unknown>,
-    refundAmount: number
-  ): Promise<PaymentProviderError | PaymentProviderSessionResponse["data"]> {
+  async refundPayment(input: RefundPaymentInput): Promise<RefundPaymentOutput> {
     const activityId = this.logger_.activity(
-      `⚡🔵 Fawry (refundPayment): Initiating a refund for payment: ${paymentData.checkoutUrl}`
+      `⚡🔵 Fawry (refundPayment): Initiating a refund for payment: ${input.data.id}`
     );
-    console.log("🤯", paymentData, refundAmount);
+    console.log("🤯", input);
 
     try {
-      const response = await axios.post(
-        `${this.options_.baseUrl}/ECommerceWeb/Fawry/payments/refund`,
-        this.generateRefundObject("", refundAmount),
-        { headers: { "Content-Type": "application/json" } }
-      );
+      // 1. get payment by merchant reference number (session_id)
+      const paymentData = await this.retrievePayment({ data: { id: input.data.id } });
 
-      this.logger_.success(
-        activityId,
-        `⚡🟢 Fawry (refundPayment): Successfully created a refund for payment ${paymentData.checkoutUrl} with amount: ${refundAmount}`
-      );
+      console.log("🫣🫣🫣🫣", paymentData);
 
-      return { data: { ...response.data } };
+      throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, "");
+
+      // const response = await axios.post(
+      //   `${this.options_.baseUrl}/ECommerceWeb/Fawry/payments/refund`,
+      //   this.generateRefundObject("", Number(input.amount)),
+      //   { headers: { "Content-Type": "application/json" } }
+      // );
+
+      // this.logger_.success(
+      //   activityId,
+      //   `⚡🟢 Fawry (refundPayment): Successfully created a refund for payment ${paymentData.checkoutUrl} with amount: ${refundAmount}`
+      // );
+
+      // return { data: { ...response.data } };
     } catch (error) {
-      this.logger_.failure(
-        activityId,
-        `⚡🔴 Fawry (refundPayment): Failed to refund payment: ${paymentData.checkoutUrl} with error: ${error.message}`
-      );
+      throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, "");
+      // this.logger_.failure(
+      //   activityId,
+      //   `⚡🔴 Fawry (refundPayment): Failed to refund payment: ${paymentData.checkoutUrl} with error: ${error.message}`
+      // );
 
-      return {
-        error: error.message,
-        code: "unknown",
-        detail: error,
-      };
+      // return {
+      //   error: error.message,
+      //   code: "unknown",
+      //   detail: error,
+      // };
     }
   }
 
-  async cancelPayment(
-    paymentData: Record<string, unknown>
-  ): Promise<PaymentProviderError | PaymentProviderSessionResponse["data"]> {
-    return {
-      data: paymentData,
-    };
-  }
+  // async cancelPayment(
+  //   paymentData: Record<string, unknown>
+  // ): Promise<PaymentProviderError | PaymentProviderSessionResponse["data"]> {
+  //   return {
+  //     data: paymentData,
+  //   };
+  // }
 
-  deletePayment(
-    paymentSessionData: Record<string, unknown>
-  ): Promise<PaymentProviderError | PaymentProviderSessionResponse["data"]> {
-    throw new Error("Method not implemented.");
-  }
-  getPaymentStatus(paymentSessionData: Record<string, unknown>): Promise<PaymentSessionStatus> {
-    throw new Error("Method not implemented.");
-  }
-  retrievePayment(
-    paymentSessionData: Record<string, unknown>
-  ): Promise<PaymentProviderError | PaymentProviderSessionResponse["data"]> {
-    throw new Error("Method not implemented.");
-  }
-  updatePayment(context: UpdatePaymentProviderSession): Promise<PaymentProviderError | PaymentProviderSessionResponse> {
-    throw new Error("Method not implemented.");
+  // deletePayment(
+  //   paymentSessionData: Record<string, unknown>
+  // ): Promise<PaymentProviderError | PaymentProviderSessionResponse["data"]> {
+  //   throw new Error("Method not implemented.");
+  // }
+  // getPaymentStatus(paymentSessionData: Record<string, unknown>): Promise<PaymentSessionStatus> {
+  //   throw new Error("Method not implemented.");
+  // }
+
+  async retrievePayment(input: RetrievePaymentInput): Promise<RetrievePaymentOutput> {
+    const activityId = this.logger_.activity(`⚡🔵 Fawry (retrievePayment): Retrieving a payment: ${input.data.id}`);
+    const externalId = input.data?.id;
+
+    try {
+      const response = await axios.get(
+        `${this.options_.baseUrl}/ECommerceWeb/Fawry/payments/status/v2?merchantCode=${
+          this.options_.merchantCode
+        }&merchantRefNumber=${externalId}&signature=${this.generateRetrieveSignature(externalId as string)}`,
+        { headers: { "Content-Type": "application/json" } }
+      );
+
+      this.logger_.success(activityId, `⚡🟢 Fawry (retrievePayment): Successfully retrieved payment: ${externalId}`);
+
+      return response.data;
+    } catch (error) {
+      this.logger_.failure(
+        activityId,
+        `⚡🔴 Fawry (retrievePayment): Failed to retrieve payment: ${externalId} with error: ${error.message}`
+      );
+      throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, error.message);
+    }
   }
 }

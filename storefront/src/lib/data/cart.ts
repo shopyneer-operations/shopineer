@@ -216,7 +216,7 @@ export async function initiatePaymentSession(
   cart: HttpTypes.StoreCart,
   data: {
     provider_id: string
-    context?: Record<string, unknown>
+    data?: Record<string, unknown>
   }
 ) {
   return sdk.store.payment

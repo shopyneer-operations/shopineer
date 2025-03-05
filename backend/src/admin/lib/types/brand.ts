@@ -1,4 +1,4 @@
-import { AdminProduct } from "@medusajs/types";
+import { AdminProduct } from "@medusajs/framework/types";
 
 export type Brand = {
   id: string;

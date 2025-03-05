@@ -91,7 +91,7 @@ const Payment = ({
       if (!activeSession) {
         await initiatePaymentSession(cart, {
           provider_id: selectedPaymentMethod,
-          context: { extra: { cartId: cart.id } },
+          data: { cartId: cart.id },
         })
       }
 

@@ -1,4 +1,4 @@
-const { defineConfig, loadEnv } = require("@medusajs/utils")
+const { defineConfig, loadEnv } = require("@medusajs/framework/utils")
 
 loadEnv(process.env.NODE_ENV || "development", process.cwd())
 

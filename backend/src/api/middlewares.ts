@@ -17,6 +17,7 @@ import { PostReview } from "./store/reviews/validators";
 import { PostReviewResponse } from "./admin/reviews/validators";
 import { authenticate } from "@medusajs/medusa";
 import { retrieveCartTransformQueryConfig } from "./admin/abandoned-carts/query-config";
+import { HttpStatusCode } from "axios";
 
 const GetSuppliersSchema = createFindParams();
 
@@ -43,7 +44,7 @@ const permissions = async (req: MedusaRequest, res: MedusaResponse, next: Medusa
     return;
   }
 
-  const rolePermissions = user.role.permissions as unknown as Permission[];
+  const rolePermissions = (user.role?.permissions || []) as unknown as Permission[];
   const isAllowed = rolePermissions.some(matchPathAndMethod(req));
 
   console.log("2️⃣", { 'req.baseUrl.replace(//admin/, "")': req.baseUrl.replace(/\/admin/, ""), isAllowed });
@@ -121,6 +122,10 @@ export default defineMiddlewares({
     },
 
     // Admin
+    // {
+    //   matcher: "/admin/*",
+    //   middlewares: [permissions],
+    // },
     {
       matcher: "/admin/reviews/:reviewId/respond",
       method: "POST",
@@ -221,17 +226,17 @@ export default defineMiddlewares({
       middlewares: [validateAndTransformBody(PutAdminRole as any)],
     },
   ],
-  // errorHandler(error: MedusaError | any, req: MedusaRequest, res: MedusaResponse, next: MedusaNextFunction) {
-  //   console.log("4️⃣", error.type === MedusaError.Types.UNAUTHORIZED);
+  errorHandler(error: MedusaError | any, req: MedusaRequest, res: MedusaResponse, next: MedusaNextFunction) {
+    console.log("4️⃣", error.type === MedusaError.Types.UNAUTHORIZED);
 
-  //   if (error.type === MedusaError.Types.UNAUTHORIZED) {
-  //     res.status(HttpStatusCode.Ok).json({
-  //       error: error.message,
-  //       timestamp: new Date().toISOString(),
-  //       path: req.baseUrl,
-  //     });
-  //   } else {
-  //     next(error);
-  //   }
-  // },
+    if (error.type === MedusaError.Types.UNAUTHORIZED) {
+      res.status(HttpStatusCode.Ok).json({
+        error: error.message,
+        timestamp: new Date().toISOString(),
+        path: req.baseUrl,
+      });
+    } else {
+      next(error);
+    }
+  },
 });
