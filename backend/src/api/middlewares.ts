@@ -53,6 +53,12 @@ const permissions = async (req: MedusaRequest, res: MedusaResponse, next: Medusa
     return;
   }
 
+  // Allow access to the route that assigns a super admin role to a user
+  if (req.method === "POST" && req.baseUrl.includes("/users")) {
+    next();
+    return;
+  }
+
   // deny access
   next(new MedusaError(MedusaError.Types.UNAUTHORIZED, `You are not authorized to access ${req.baseUrl}.`));
 
