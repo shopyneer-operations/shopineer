@@ -93,18 +93,18 @@ const medusaConfig = {
               returnUrl: `${STORE_URL}/${FAWRY_RETURN_PATH}`,
             },
           },
-          ...(STRIPE_API_KEY && STRIPE_WEBHOOK_SECRET
-            ? [
-                {
-                  resolve: "@medusajs/payment-stripe",
-                  id: "stripe",
-                  options: {
-                    apiKey: STRIPE_API_KEY,
-                    webhookSecret: STRIPE_WEBHOOK_SECRET,
-                  },
-                },
-              ]
-            : []),
+          // ...(STRIPE_API_KEY && STRIPE_WEBHOOK_SECRET
+          //   ? [
+          //       {
+          //         resolve: "@medusajs/payment-stripe",
+          //         id: "stripe",
+          //         options: {
+          //           apiKey: STRIPE_API_KEY,
+          //           webhookSecret: STRIPE_WEBHOOK_SECRET,
+          //         },
+          //       },
+          //     ]
+          //   : []),
         ],
       },
     },

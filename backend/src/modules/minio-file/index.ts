@@ -1,10 +1,10 @@
-import { ModuleProviderExports } from '@medusajs/types'
-import MinioFileProviderService from './service'
+import { ModuleProviderExports } from "@medusajs/framework/types";
+import MinioFileProviderService from "./service";
 
-const services = [MinioFileProviderService]
+const services = [MinioFileProviderService];
 
 const providerExport: ModuleProviderExports = {
   services,
-}
+};
 
-export default providerExport
+export default providerExport;

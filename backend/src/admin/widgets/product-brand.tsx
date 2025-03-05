@@ -1,7 +1,7 @@
 import { defineWidgetConfig } from "@medusajs/admin-sdk";
 import { Container, Heading, Select, toast } from "@medusajs/ui";
 import { sdk } from "../lib/sdk";
-import { AdminProduct } from "@medusajs/types";
+import { AdminProduct } from "@medusajs/framework/types";
 import useSWR from "swr";
 import React from "react";
 import { Brand } from "../lib/types/brand";

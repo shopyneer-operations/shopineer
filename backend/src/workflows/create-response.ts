@@ -1,4 +1,4 @@
-import { createStep, createWorkflow, StepResponse } from "@medusajs/framework/workflows-sdk";
+import { createStep, createWorkflow, StepResponse, WorkflowResponse } from "@medusajs/framework/workflows-sdk";
 import { ResponseDto } from "../types/review";
 import ReviewModuleService from "../modules/review/service";
 import { REVIEW_MODULE } from "../modules/review";
@@ -10,7 +10,7 @@ export const createResopnseStep = createStep(
   async function step(input: ResponseDto, { container }) {
     try {
       const logger = container.resolve("logger");
-      const link = container.resolve("remoteLink");
+      const link = container.resolve("link");
       const reviewModuleService: ReviewModuleService = container.resolve(REVIEW_MODULE);
 
       const activityId = logger.activity(`🔵 createResponseStep: Creating response`);
@@ -34,7 +34,7 @@ export const createResopnseStep = createStep(
       await link.create(userResponseLink);
       logger.progress(activityId, `🔵 createResponseStep: Response linked to user: ${response.id}`);
 
-      return new StepResponse(response, response.id);
+      return new StepResponse(response, { id: response.id });
     } catch (error) {
       return StepResponse.permanentFailure(error.message);
     }
@@ -48,5 +48,5 @@ export const createResopnseStep = createStep(
 
 export const createResponseWorkflow = createWorkflow("create-response", function workflow(input: ResponseDto) {
   const response = createResopnseStep(input);
-  return response;
+  return new WorkflowResponse(response);
 });
