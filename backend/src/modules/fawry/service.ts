@@ -15,6 +15,14 @@ import {
   RefundPaymentOutput,
   RetrievePaymentInput,
   RetrievePaymentOutput,
+  CancelPaymentInput,
+  CancelPaymentOutput,
+  DeletePaymentInput,
+  DeletePaymentOutput,
+  GetPaymentStatusInput,
+  GetPaymentStatusOutput,
+  UpdatePaymentInput,
+  UpdatePaymentOutput,
 } from "@medusajs/framework/types";
 import { AbstractPaymentProvider, BigNumber, MedusaError } from "@medusajs/framework/utils";
 import fp from "lodash/fp";
@@ -89,6 +97,18 @@ type CartResponse = {
 };
 
 export default class FawryProviderService extends AbstractPaymentProvider<Options> {
+  cancelPayment(input: CancelPaymentInput): Promise<CancelPaymentOutput> {
+    throw new Error("Method not implemented.");
+  }
+  deletePayment(input: DeletePaymentInput): Promise<DeletePaymentOutput> {
+    throw new Error("Method not implemented.");
+  }
+  getPaymentStatus(input: GetPaymentStatusInput): Promise<GetPaymentStatusOutput> {
+    throw new Error("Method not implemented.");
+  }
+  updatePayment(input: UpdatePaymentInput): Promise<UpdatePaymentOutput> {
+    throw new Error("Method not implemented.");
+  }
   static identifier = "fawry";
   protected logger_: Logger;
   protected options_: Options;
