@@ -300,6 +300,7 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
   }
 
   async authorizePayment(input: AuthorizePaymentInput): Promise<AuthorizePaymentOutput> {
+    const activityId = this.logger_.activity(`⚡🔵 Fawry (authorizePayment): Authorizing: ${JSON.stringify(input)}`);
     return {
       data: input.data,
       status: "captured",
@@ -307,7 +308,8 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
   }
 
   async capturePayment(input: CapturePaymentInput): Promise<CapturePaymentOutput> {
-    return input.data;
+    const activityId = this.logger_.activity(`⚡🔵 Fawry (capturePayment): Capturing: ${JSON.stringify(input)}`);
+    return { data: input.data };
   }
 
   async getWebhookActionAndData(payload: ProviderWebhookPayload["payload"]): Promise<WebhookActionResult> {
