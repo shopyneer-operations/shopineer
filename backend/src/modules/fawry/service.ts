@@ -341,7 +341,7 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
         );
 
         return {
-          action: "captured",
+          action: "authorized",
           data: {
             session_id: data.merchantRefNumber,
             amount: new BigNumber(data.paymentAmount as number),
