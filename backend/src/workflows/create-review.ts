@@ -20,16 +20,18 @@ export const createReviewStep = createStep(
     logger.progress(activityId, `🔵 createReviewStep: Review created: ${review.id}`);
 
     // 2. Link the review to the customer
-    const customerReviewLink: LinkDefinition = {
-      [Modules.CUSTOMER]: {
-        customer_id: input.customer_id,
-      },
-      [REVIEW_MODULE]: {
-        review_id: review.id,
-      },
-    };
-    await link.create(customerReviewLink);
-    logger.progress(activityId, `🔵 createReviewStep: Review linked to customer: ${review.id}`);
+    if (input.customer_id) {
+      const customerReviewLink: LinkDefinition = {
+        [Modules.CUSTOMER]: {
+          customer_id: input.customer_id,
+        },
+        [REVIEW_MODULE]: {
+          review_id: review.id,
+        },
+      };
+      await link.create(customerReviewLink);
+      logger.progress(activityId, `🔵 createReviewStep: Review linked to customer: ${review.id}`);
+    }
 
     // 3. Link the review to the product
     const productReviewLink: LinkDefinition = {
@@ -52,14 +54,18 @@ export const createReviewStep = createStep(
 
     await ReviewModuleService.deleteReviews(input.id);
     await link.dismiss([
-      {
-        [Modules.CUSTOMER]: {
-          customer_id: input.customer_id,
-        },
-        [REVIEW_MODULE]: {
-          review_id: input.id,
-        },
-      },
+      ...(input.customer_id
+        ? [
+            {
+              [Modules.CUSTOMER]: {
+                customer_id: input.customer_id,
+              },
+              [REVIEW_MODULE]: {
+                review_id: input.id,
+              },
+            },
+          ]
+        : []),
       {
         [Modules.PRODUCT]: {
           product_id: input.product_id,
