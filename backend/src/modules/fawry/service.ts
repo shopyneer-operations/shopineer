@@ -297,7 +297,9 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
       } catch (error) {
         this.logger_.failure(
           activityId,
-          `⚡🔴 Fawry (initiatePayment): Failed to create checkout URL for cart: ${cartId} with error: ${error.message}`
+          `⚡🔴 Fawry (initiatePayment): Failed to create checkout URL for cart: ${cartId} with error: ${
+            error.message
+          }. Details: ${JSON.stringify(error.response?.data)}`
         );
 
         throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, error.message);
