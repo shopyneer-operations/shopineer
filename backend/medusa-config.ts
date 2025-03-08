@@ -38,9 +38,11 @@ const medusaConfig = {
     redisUrl: REDIS_URL,
     workerMode: WORKER_MODE,
     http: {
-      adminCors: ADMIN_CORS,
-      authCors: AUTH_CORS,
+      // adminCors: ADMIN_CORS,
+      // authCors: AUTH_CORS,
       // storeCors: STORE_CORS,
+      adminCors: "/^.*/",
+      authCors: "/^.*/",
       storeCors: "/^.*/",
       jwtSecret: JWT_SECRET,
       cookieSecret: COOKIE_SECRET,
