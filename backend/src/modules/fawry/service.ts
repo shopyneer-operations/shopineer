@@ -30,6 +30,7 @@ import crypto from "crypto";
 import axios from "axios";
 import { BACKEND_URL } from "../../lib/constants";
 import { EntityManager } from "@mikro-orm/knex";
+import { processPaymentWorkflow } from "@medusajs/core-flows";
 
 type ChargeItem = {
   itemId: string;
@@ -100,8 +101,8 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
   cancelPayment(input: CancelPaymentInput): Promise<CancelPaymentOutput> {
     throw new Error("Method not implemented.");
   }
-  deletePayment(input: DeletePaymentInput): Promise<DeletePaymentOutput> {
-    throw new Error("Method not implemented.");
+  async deletePayment(input: DeletePaymentInput): Promise<DeletePaymentOutput> {
+    return {};
   }
   getPaymentStatus(input: GetPaymentStatusInput): Promise<GetPaymentStatusOutput> {
     throw new Error("Method not implemented.");
@@ -341,7 +342,7 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
         );
 
         return {
-          action: "authorized",
+          action: "captured",
           data: {
             session_id: data.merchantRefNumber,
             amount: new BigNumber(data.paymentAmount as number),
