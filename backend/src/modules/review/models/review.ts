@@ -6,6 +6,7 @@ export const Review = model.define("review", {
   rating: model.number(),
   title: model.text(),
   description: model.text().nullable(),
+  image: model.text().nullable(),
   approved_at: model.dateTime().nullable(),
 
   response: model.hasOne(() => Response, {

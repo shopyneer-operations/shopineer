@@ -6,4 +6,5 @@ export const PostReview = z.object({
   rating: z.number().max(5).min(1),
   title: z.string(),
   description: z.string().optional(),
+  image: z.string().optional(),
 });
