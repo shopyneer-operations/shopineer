@@ -205,8 +205,13 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
     return result;
   });
 
-  private buildCheckoutRequest(sessionId: string, cart: CartResponse, totalPrice: number): ChargeRequest {
-    const { merchantCode, returnUrl } = this.options_;
+  private buildCheckoutRequest(
+    sessionId: string,
+    cart: CartResponse,
+    totalPrice: number,
+    returnUrl?: string
+  ): ChargeRequest {
+    const { merchantCode, returnUrl: defaultReturnUrl } = this.options_;
     const request: ChargeRequest = {
       merchantCode,
       merchantRefNum: sessionId,
@@ -216,7 +221,7 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
       customerProfileId: cart.customer_id,
       language: "ar-eg",
       chargeItems: this.getCheckoutItems(totalPrice, cart),
-      returnUrl,
+      returnUrl: returnUrl || defaultReturnUrl,
       orderWebHookUrl: `${BACKEND_URL}/hooks/payment/${FawryProviderService.identifier}_fawry`,
       authCaptureModePayment: false,
       signature: this.generateSignature(sessionId, cart, totalPrice),
@@ -267,14 +272,14 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
   async initiatePayment(input: InitiatePaymentInput): Promise<InitiatePaymentOutput> {
     {
       console.log("✨", input);
-      const { cartId, session_id } = input.data as Record<string, string>;
+      const { cartId, returnUrl, session_id } = input.data as Record<string, string>;
 
       const cart = await this.getCart(cartId);
 
       const activityId = this.logger_.activity(
         `⚡🔵 Fawry (initiatePayment): Initiating a payment for cart: ${cartId}`
       );
-      const checkoutRequest = this.buildCheckoutRequest(session_id, cart, Number(input.amount));
+      const checkoutRequest = this.buildCheckoutRequest(session_id, cart, Number(input.amount), returnUrl);
 
       try {
         const response = await axios.post(`${this.options_.baseUrl}/fawrypay-api/api/payments/init`, checkoutRequest, {
