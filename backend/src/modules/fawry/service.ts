@@ -135,7 +135,7 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
     }
   }
 
-  private generateSignature(sessionId: string, cart: CartResponse, totalPrice: number): string {
+  private generateSignature(sessionId: string, cart: CartResponse, totalPrice: number, returnUrl: string): string {
     const merchantRefNum = sessionId;
     const customerProfileId = cart.customer_id;
     const itemsDetails = fp.flow(
@@ -143,7 +143,7 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
       fp.map((item) => `${item.itemId}${item.quantity}${Number(item.price).toFixed(2)}`),
       fp.join("")
     )(cart);
-    const { returnUrl, merchantCode, securityCode } = this.options_;
+    const { merchantCode, securityCode } = this.options_;
 
     const dataToHash = `${merchantCode}${merchantRefNum}${customerProfileId}${returnUrl}${itemsDetails}${securityCode}`;
 
@@ -212,6 +212,10 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
     returnUrl?: string
   ): ChargeRequest {
     const { merchantCode, returnUrl: defaultReturnUrl } = this.options_;
+    if (!returnUrl) {
+      returnUrl = defaultReturnUrl;
+    }
+
     const request: ChargeRequest = {
       merchantCode,
       merchantRefNum: sessionId,
@@ -221,10 +225,10 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
       customerProfileId: cart.customer_id,
       language: "ar-eg",
       chargeItems: this.getCheckoutItems(totalPrice, cart),
-      returnUrl: returnUrl || defaultReturnUrl,
+      returnUrl,
       orderWebHookUrl: `${BACKEND_URL}/hooks/payment/${FawryProviderService.identifier}_fawry`,
       authCaptureModePayment: false,
-      signature: this.generateSignature(sessionId, cart, totalPrice),
+      signature: this.generateSignature(sessionId, cart, totalPrice, returnUrl),
     };
 
     return request;
