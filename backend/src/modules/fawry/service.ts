@@ -376,10 +376,10 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
   }
 
   async refundPayment(input: RefundPaymentInput): Promise<RefundPaymentOutput> {
+    const activityId = this.logger_.activity(
+      `⚡🔵 Fawry (refundPayment): Initiating a refund for payment: ${input.data.id}`
+    );
     return { data: {} };
-    // const activityId = this.logger_.activity(
-    //   `⚡🔵 Fawry (refundPayment): Initiating a refund for payment: ${input.data.id}`
-    // );
     // console.log("🤯", input);
     // try {
     //   // 1. get payment by merchant reference number (session_id)
