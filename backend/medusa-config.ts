@@ -1,4 +1,4 @@
-import { loadEnv, defineConfig, Modules } from "@medusajs/framework/utils";
+import { loadEnv, defineConfig, Modules, ContainerRegistrationKeys } from "@medusajs/framework/utils";
 import {
   ADMIN_CORS,
   AUTH_CORS,
@@ -78,6 +78,26 @@ const medusaConfig = {
       resolve: "./modules/wishlist",
       options: {
         jwtSecret: JWT_SECRET,
+      },
+    },
+    {
+      // ...
+      key: Modules.AUTH,
+      resolve: "@medusajs/medusa/auth",
+      dependencies: [Modules.CACHE, ContainerRegistrationKeys.LOGGER],
+      options: {
+        providers: [
+          // other providers...
+          {
+            resolve: "@medusajs/medusa/auth-google",
+            id: "google",
+            options: {
+              clientId: process.env.GOOGLE_CLIENT_ID,
+              clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+              callbackUrl: process.env.GOOGLE_CALLBACK_URL,
+            },
+          },
+        ],
       },
     },
     {
