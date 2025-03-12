@@ -10,7 +10,7 @@ For example, create the file `src/scripts/my-script.ts` with the following conte
 
 ```ts title="src/scripts/my-script.ts"
 import { ExecArgs, IProductModuleService } from "@medusajs/framework/types";
-import { ModuleRegistrationName } from "@medusajs/utils";
+import { ModuleRegistrationName } from "@medusajs/framework/utils";
 
 export default async function myScript({ container }: ExecArgs) {
   const productModuleService: IProductModuleService = container.resolve(ModuleRegistrationName.PRODUCT);

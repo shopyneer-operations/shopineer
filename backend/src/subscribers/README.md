@@ -35,7 +35,7 @@ A subscriber receives an object having the following properties:
 ```ts
 import type { SubscriberArgs, SubscriberConfig } from "@medusajs/medusa";
 import { IProductModuleService } from "@medusajs/framework/types";
-import { ModuleRegistrationName } from "@medusajs/utils";
+import { ModuleRegistrationName } from "@medusajs/framework/utils";
 
 export default async function productCreateHandler({ event: { data }, container }: SubscriberArgs<{ id: string }>) {
   const productId = data.id;
