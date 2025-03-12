@@ -89,6 +89,11 @@ const medusaConfig = {
         providers: [
           // other providers...
           {
+            resolve: "@medusajs/medusa/auth-emailpass",
+            id: "emailpass",
+            options: {},
+          },
+          {
             resolve: "@medusajs/medusa/auth-google",
             id: "google",
             options: {
