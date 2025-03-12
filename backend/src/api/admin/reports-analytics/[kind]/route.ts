@@ -10,17 +10,12 @@
  * limitations under the License.
  */
 
-
-import { MedusaError, MedusaErrorTypes, Modules, OrderStatus } from "@medusajs/utils"
+import { MedusaError, MedusaErrorTypes, Modules, OrderStatus } from "@medusajs/framework/utils";
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework";
 import StoreAnalyticsModuleService from "../../../../modules/store-analytics/service";
 import { STORE_ANALYTICS_MODULE } from "../../../../modules/store-analytics";
 
-export const POST = async (
-  req: MedusaRequest,
-  res: MedusaResponse
-) => {
-
+export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
   const rawRequest = req as unknown as any;
 
   const kind = req.params.kind;
@@ -31,36 +26,35 @@ export const POST = async (
   const dateRangeToCompareTo = body.dateRangeToCompareTo;
   const orderStatusesFromQuery: string[] = body.orderStatuses as string[];
 
-  const orderStatuses: OrderStatus[] = orderStatusesFromQuery !== undefined ? 
-    orderStatusesFromQuery.map(status => OrderStatus[status.toUpperCase()]).filter(orderStatus => orderStatus !== undefined): [];
+  const orderStatuses: OrderStatus[] =
+    orderStatusesFromQuery !== undefined
+      ? orderStatusesFromQuery
+          .map((status) => OrderStatus[status.toUpperCase()])
+          .filter((orderStatus) => orderStatus !== undefined)
+      : [];
 
   let result: Buffer | undefined;
-  const storeAnalyticsModuleService: StoreAnalyticsModuleService = req.scope.resolve(STORE_ANALYTICS_MODULE)
+  const storeAnalyticsModuleService: StoreAnalyticsModuleService = req.scope.resolve(STORE_ANALYTICS_MODULE);
 
   try {
     switch (kind) {
-      case 'general':
-        const regionModuleService = req.scope.resolve(
-          Modules.REGION
-        )
+      case "general":
+        const regionModuleService = req.scope.resolve(Modules.REGION);
         const regions = await regionModuleService.listRegions();
         result = await storeAnalyticsModuleService.generateReport(
           regions,
           orderStatuses,
-          dateRangeFrom ? new Date(Number(dateRangeFrom)) : undefined, 
-          dateRangeTo ? new Date(Number(dateRangeTo)) : undefined, 
-          dateRangeFromCompareTo ? new Date(Number(dateRangeFromCompareTo)) : undefined, 
-          dateRangeToCompareTo ? new Date(Number(dateRangeToCompareTo)) : undefined, 
+          dateRangeFrom ? new Date(Number(dateRangeFrom)) : undefined,
+          dateRangeTo ? new Date(Number(dateRangeTo)) : undefined,
+          dateRangeFromCompareTo ? new Date(Number(dateRangeFromCompareTo)) : undefined,
+          dateRangeToCompareTo ? new Date(Number(dateRangeToCompareTo)) : undefined
         );
         break;
     }
     res.status(201).json({
-      buffer: result
+      buffer: result,
     });
   } catch (error) {
-    throw new MedusaError(
-      MedusaErrorTypes.DB_ERROR,
-      error.message
-    )
+    throw new MedusaError(MedusaErrorTypes.DB_ERROR, error.message);
   }
-}
+};

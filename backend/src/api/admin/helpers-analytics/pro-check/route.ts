@@ -10,28 +10,18 @@
  * limitations under the License.
  */
 
-import type { 
-  MedusaRequest, 
-  MedusaResponse,
-} from "@medusajs/framework/http"
-import { MedusaError, MedusaErrorTypes } from "@medusajs/utils"
+import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http";
+import { MedusaError, MedusaErrorTypes } from "@medusajs/framework/utils";
 import { STORE_ANALYTICS_MODULE } from "../../../../modules/store-analytics";
 import StoreAnalyticsModuleService from "../../../../modules/store-analytics/service";
 
-export const GET = async (
-  req: MedusaRequest,
-  res: MedusaResponse
-) => {
-
-  const storeAnalyticsModuleService: StoreAnalyticsModuleService = req.scope.resolve(STORE_ANALYTICS_MODULE)
+export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
+  const storeAnalyticsModuleService: StoreAnalyticsModuleService = req.scope.resolve(STORE_ANALYTICS_MODULE);
   try {
     res.status(200).json({
-      hideProTab: storeAnalyticsModuleService.getHideProSetting()
+      hideProTab: storeAnalyticsModuleService.getHideProSetting(),
     });
   } catch (error) {
-    throw new MedusaError(
-      MedusaErrorTypes.DB_ERROR,
-      error.message
-    )
+    throw new MedusaError(MedusaErrorTypes.DB_ERROR, error.message);
   }
-}
+};
