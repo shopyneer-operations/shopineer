@@ -37,9 +37,9 @@ const permissions = async (req: MedusaRequest, res: MedusaResponse, next: Medusa
 
   const isSuperAdmin = user?.metadata?.is_super_admin;
 
-  console.log("1️⃣", { user, isSuperAdmin });
+  console.log("1️⃣", { userId, user, isSuperAdmin });
 
-  if (isSuperAdmin) {
+  if (!user || isSuperAdmin) {
     next();
     return;
   }
@@ -127,7 +127,7 @@ export default defineMiddlewares({
       // middlewares: [authenticate("cusotmer", ["session", "bearer"])],
     },
 
-    // Admin
+    // // Admin
     {
       matcher: "/admin/*",
       middlewares: [permissions],
