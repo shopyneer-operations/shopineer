@@ -179,9 +179,11 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
     ) {
       lineItems = fp.cloneDeep(lineItems);
       const lineItemsTotal = fp.sumBy<ChargeItem>("price", lineItems);
-      const amountDifference = Number(lineItemsTotal) - Number(totalPrice);
+      const amountDifference = Number(totalPrice) - Number(lineItemsTotal);
 
-      if (amountDifference > 0) {
+      console.log("💵💵💵💵", { amountDifference, lineItemsTotal, totalPrice });
+
+      if (amountDifference !== 0) {
         lineItems.push({
           itemId: "amount_difference",
           description: "Amount Difference",
@@ -208,6 +210,8 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
       addAmountDifferenceItem(totalPrice),
       fp.sortBy<ChargeItem>("itemId")
     )(cart.line_items);
+
+    console.log("💵💵💵💵", result);
 
     return result;
   });
@@ -399,42 +403,32 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
   }
 
   async refundPayment(input: RefundPaymentInput): Promise<RefundPaymentOutput> {
-    const activityId = this.logger_.log(
+    const activityId = this.logger_.activity(
       `⚡🔵 Fawry (refundPayment): Initiating a refund for payment: ${JSON.stringify(input.data)}`
     );
 
     try {
       // 1. get payment by merchant reference number (session_id)
       const paymentData = await this.retrievePayment({ data: { id: input.data.merchantRefNum } });
-      console.log(
-        "💵💵💵💵",
-        `${this.options_.baseUrl}/ECommerceWeb/Fawry/payments/refund`,
-        this.buildRefundRequest((paymentData.data as any).fawryRefNumber, convertBigNumberToNumber(input.amount))
-      );
+
       const response = await axios.post(
         `${this.options_.baseUrl}/ECommerceWeb/Fawry/payments/refund`,
         this.buildRefundRequest((paymentData.data as any).fawryRefNumber, convertBigNumberToNumber(input.amount)),
         { headers: { "Content-Type": "application/json" } }
       );
-      console.log("🫣🫣🫣🫣", response.data);
-      // this.logger_.success(
-      //   activityId,
-      //   `⚡🟢 Fawry (refundPayment): Successfully created a refund for payment ${paymentData.checkoutUrl} with amount: ${refundAmount}`
-      // );
-      // return { data: { ...response.data } };
-      throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, "");
+      this.logger_.success(
+        activityId,
+        `⚡🟢 Fawry (refundPayment): Successfully created a refund for payment ${
+          paymentData.data.fawryRefNumber
+        } with amount: ${convertBigNumberToNumber(input.amount)}`
+      );
+      return { data: { ...response.data } };
     } catch (error) {
-      console.log("🤯🤯🤯🤯", error.response?.data, error.response, error.message);
-      throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, "");
-      // this.logger_.failure(
-      //   activityId,
-      //   `⚡🔴 Fawry (refundPayment): Failed to refund payment: ${paymentData.checkoutUrl} with error: ${error.message}`
-      // );
-      // return {
-      //   error: error.message,
-      //   code: "unknown",
-      //   detail: error,
-      // };
+      this.logger_.failure(
+        activityId,
+        `⚡🔴 Fawry (refundPayment): Failed to refund payment: ${input.data.merchantRefNum} with error: ${error.message}`
+      );
+      throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, error.message);
     }
   }
 
