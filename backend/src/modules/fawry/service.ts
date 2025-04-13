@@ -1,10 +1,7 @@
 import {
-  PaymentSessionStatus,
   ProviderWebhookPayload,
   WebhookActionResult,
   Logger,
-  CartDTO,
-  CartLineItemDTO,
   InitiatePaymentInput,
   InitiatePaymentOutput,
   CapturePaymentInput,
