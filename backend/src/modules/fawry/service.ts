@@ -1,10 +1,7 @@
 import {
-  PaymentSessionStatus,
   ProviderWebhookPayload,
   WebhookActionResult,
   Logger,
-  CartDTO,
-  CartLineItemDTO,
   InitiatePaymentInput,
   InitiatePaymentOutput,
   CapturePaymentInput,
@@ -31,6 +28,7 @@ import axios from "axios";
 import { BACKEND_URL } from "../../lib/constants";
 import { EntityManager } from "@mikro-orm/knex";
 import { processPaymentWorkflow } from "@medusajs/core-flows";
+import convertBigNumberToNumber from "./utils/convertBigNumberToNumber";
 
 type ChargeItem = {
   itemId: string;
@@ -98,6 +96,9 @@ type CartResponse = {
 };
 
 export default class FawryProviderService extends AbstractPaymentProvider<Options> {
+  updatePayment(input: UpdatePaymentInput): Promise<UpdatePaymentOutput> {
+    throw new Error("Method not implemented.");
+  }
   cancelPayment(input: CancelPaymentInput): Promise<CancelPaymentOutput> {
     throw new Error("Method not implemented.");
   }
@@ -107,9 +108,7 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
   getPaymentStatus(input: GetPaymentStatusInput): Promise<GetPaymentStatusOutput> {
     throw new Error("Method not implemented.");
   }
-  updatePayment(input: UpdatePaymentInput): Promise<UpdatePaymentOutput> {
-    throw new Error("Method not implemented.");
-  }
+
   static identifier = "fawry";
   protected logger_: Logger;
   protected options_: Options;
@@ -135,7 +134,12 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
     }
   }
 
-  private generateSignature(sessionId: string, cart: CartResponse, totalPrice: number, returnUrl: string): string {
+  private generateCheckoutSignature(
+    sessionId: string,
+    cart: CartResponse,
+    totalPrice: number,
+    returnUrl: string
+  ): string {
     const merchantRefNum = sessionId;
     const customerProfileId = cart.customer_id;
     const itemsDetails = fp.flow(
@@ -172,9 +176,11 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
     ) {
       lineItems = fp.cloneDeep(lineItems);
       const lineItemsTotal = fp.sumBy<ChargeItem>("price", lineItems);
-      const amountDifference = Number(lineItemsTotal) - Number(totalPrice);
+      const amountDifference = Number(totalPrice) - Number(lineItemsTotal);
 
-      if (amountDifference > 0) {
+      console.log("💵💵💵💵", { amountDifference, lineItemsTotal, totalPrice });
+
+      if (amountDifference !== 0) {
         lineItems.push({
           itemId: "amount_difference",
           description: "Amount Difference",
@@ -202,6 +208,8 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
       fp.sortBy<ChargeItem>("itemId")
     )(cart.line_items);
 
+    console.log("💵💵💵💵", result);
+
     return result;
   });
 
@@ -228,19 +236,30 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
       returnUrl,
       orderWebHookUrl: `${BACKEND_URL}/hooks/payment/${FawryProviderService.identifier}_fawry`,
       authCaptureModePayment: false,
-      signature: this.generateSignature(sessionId, cart, totalPrice, returnUrl),
+      signature: this.generateCheckoutSignature(sessionId, cart, totalPrice, returnUrl),
     };
 
     return request;
   }
 
-  private generateRefundObject(referenceNumber: string, refundAmount: number) {
+  private generateRefundSignature(referenceNumber: string, refundAmount: number) {
     const { merchantCode, securityCode } = this.options_;
     const dataToHash = `${merchantCode}${referenceNumber}${refundAmount.toFixed(2)}${securityCode}`;
 
     const signature = crypto.createHash("sha256").update(dataToHash).digest("hex");
 
     return signature;
+  }
+
+  private buildRefundRequest(referenceNumber: string, refundAmount: number) {
+    const { merchantCode } = this.options_;
+
+    return {
+      merchantCode,
+      referenceNumber,
+      refundAmount: refundAmount.toFixed(2),
+      signature: this.generateRefundSignature(referenceNumber, refundAmount),
+    };
   }
 
   private async getCart(cartId: string): Promise<CartResponse> {
@@ -283,7 +302,12 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
       const activityId = this.logger_.activity(
         `⚡🔵 Fawry (initiatePayment): Initiating a payment for cart: ${cartId}`
       );
-      const checkoutRequest = this.buildCheckoutRequest(session_id, cart, Number(input.amount), returnUrl);
+      const checkoutRequest = this.buildCheckoutRequest(
+        session_id,
+        cart,
+        convertBigNumberToNumber(input.amount),
+        returnUrl
+      );
 
       try {
         const response = await axios.post(`${this.options_.baseUrl}/fawrypay-api/api/payments/init`, checkoutRequest, {
@@ -297,7 +321,7 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
           `⚡🟢 Fawry (initiatePayment): Successfully created checkout URL: ${response.data} for cart: ${cartId}`
         );
 
-        return { id: session_id, data: { checkoutUrl: response.data } };
+        return { id: session_id, data: { checkoutUrl: response.data, merchantRefNum: session_id } };
       } catch (error) {
         this.logger_.failure(
           activityId,
@@ -312,7 +336,7 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
   }
 
   async authorizePayment(input: AuthorizePaymentInput): Promise<AuthorizePaymentOutput> {
-    const activityId = this.logger_.activity(`⚡🔵 Fawry (authorizePayment): Authorizing: ${JSON.stringify(input)}`);
+    const activityId = this.logger_.log(`⚡🔵 Fawry (authorizePayment): Authorizing: ${JSON.stringify(input)}`);
     return {
       data: input.data,
       status: "captured",
@@ -320,7 +344,7 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
   }
 
   async capturePayment(input: CapturePaymentInput): Promise<CapturePaymentOutput> {
-    const activityId = this.logger_.activity(`⚡🔵 Fawry (capturePayment): Capturing: ${JSON.stringify(input)}`);
+    const activityId = this.logger_.log(`⚡🔵 Fawry (capturePayment): Capturing: ${JSON.stringify(input)}`);
     return { data: input.data };
   }
 
@@ -377,55 +401,33 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
 
   async refundPayment(input: RefundPaymentInput): Promise<RefundPaymentOutput> {
     const activityId = this.logger_.activity(
-      `⚡🔵 Fawry (refundPayment): Initiating a refund for payment: ${input.data.id}`
+      `⚡🔵 Fawry (refundPayment): Initiating a refund for payment: ${JSON.stringify(input.data)}`
     );
-    return { data: {} };
-    // console.log("🤯", input);
-    // try {
-    //   // 1. get payment by merchant reference number (session_id)
-    //   const paymentData = await this.retrievePayment({ data: { id: input.data.id } });
-    //   console.log("🫣🫣🫣🫣", paymentData);
-    //   throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, "");
-    //   // const response = await axios.post(
-    //   //   `${this.options_.baseUrl}/ECommerceWeb/Fawry/payments/refund`,
-    //   //   this.generateRefundObject("", Number(input.amount)),
-    //   //   { headers: { "Content-Type": "application/json" } }
-    //   // );
-    //   // this.logger_.success(
-    //   //   activityId,
-    //   //   `⚡🟢 Fawry (refundPayment): Successfully created a refund for payment ${paymentData.checkoutUrl} with amount: ${refundAmount}`
-    //   // );
-    //   // return { data: { ...response.data } };
-    // } catch (error) {
-    //   throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, "");
-    //   // this.logger_.failure(
-    //   //   activityId,
-    //   //   `⚡🔴 Fawry (refundPayment): Failed to refund payment: ${paymentData.checkoutUrl} with error: ${error.message}`
-    //   // );
-    //   // return {
-    //   //   error: error.message,
-    //   //   code: "unknown",
-    //   //   detail: error,
-    //   // };
-    // }
+
+    try {
+      // 1. get payment by merchant reference number (session_id)
+      const paymentData = await this.retrievePayment({ data: { id: input.data.merchantRefNum } });
+
+      const response = await axios.post(
+        `${this.options_.baseUrl}/ECommerceWeb/Fawry/payments/refund`,
+        this.buildRefundRequest((paymentData.data as any).fawryRefNumber, convertBigNumberToNumber(input.amount)),
+        { headers: { "Content-Type": "application/json" } }
+      );
+      this.logger_.success(
+        activityId,
+        `⚡🟢 Fawry (refundPayment): Successfully created a refund for payment ${
+          paymentData.data.fawryRefNumber
+        } with amount: ${convertBigNumberToNumber(input.amount)}`
+      );
+      return { data: { ...response.data } };
+    } catch (error) {
+      this.logger_.failure(
+        activityId,
+        `⚡🔴 Fawry (refundPayment): Failed to refund payment: ${input.data.merchantRefNum} with error: ${error.message}`
+      );
+      throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, error.message);
+    }
   }
-
-  // async cancelPayment(
-  //   paymentData: Record<string, unknown>
-  // ): Promise<PaymentProviderError | PaymentProviderSessionResponse["data"]> {
-  //   return {
-  //     data: paymentData,
-  //   };
-  // }
-
-  // deletePayment(
-  //   paymentSessionData: Record<string, unknown>
-  // ): Promise<PaymentProviderError | PaymentProviderSessionResponse["data"]> {
-  //   throw new Error("Method not implemented.");
-  // }
-  // getPaymentStatus(paymentSessionData: Record<string, unknown>): Promise<PaymentSessionStatus> {
-  //   throw new Error("Method not implemented.");
-  // }
 
   async retrievePayment(input: RetrievePaymentInput): Promise<RetrievePaymentOutput> {
     const activityId = this.logger_.activity(`⚡🔵 Fawry (retrievePayment): Retrieving a payment: ${input.data.id}`);
@@ -441,7 +443,7 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
 
       this.logger_.success(activityId, `⚡🟢 Fawry (retrievePayment): Successfully retrieved payment: ${externalId}`);
 
-      return response.data;
+      return { data: response.data };
     } catch (error) {
       this.logger_.failure(
         activityId,
