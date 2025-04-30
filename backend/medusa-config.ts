@@ -29,6 +29,7 @@ import {
   FAWRY_BASE_URL,
   FAWATERAK_BASE_URL,
   FAWATERAK_API_KEY,
+  FAWATERAK_RETURN_PATH,
 } from "./src/lib/constants";
 
 loadEnv(process.env.NODE_ENV, process.cwd());
@@ -126,11 +127,12 @@ const medusaConfig = {
             },
           },
           {
-            resolve: "./src/modules/fawateerak",
-            id: "fawateerak",
+            resolve: "./src/modules/fawaterak",
+            id: "fawaterak",
             options: {
               baseUrl: FAWATERAK_BASE_URL,
               apiKey: FAWATERAK_API_KEY,
+              returnUrl: `${STORE_URL}/${FAWATERAK_RETURN_PATH}`,
             },
           },
           // ...(STRIPE_API_KEY && STRIPE_WEBHOOK_SECRET

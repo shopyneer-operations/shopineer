@@ -34,6 +34,10 @@ export const FAWATERAK_API_KEY = assertValue(
   process.env.FAWATERAK_API_KEY,
   "Environment variable for FAWATERAK_API_KEY is not set"
 );
+export const FAWATERAK_RETURN_PATH = assertValue(
+  process.env.FAWATERAK_RETURN_PATH,
+  "Environment variable for FAWATERAK_RETURN_PATH is not set"
+);
 
 /**
  * Is development environment

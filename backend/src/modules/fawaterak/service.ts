@@ -89,7 +89,7 @@ type Options = {
   // merchantCode: string;
   apiKey: string;
   baseUrl: string;
-  // returnUrl: string;
+  returnUrl: string;
 };
 
 type InjectedDependencies = {
@@ -115,7 +115,7 @@ type CartResponse = {
 };
 
 export default class FawaterakProviderService extends AbstractPaymentProvider<Options> {
-  static identifier = "fawateerak";
+  static identifier = "fawaterak";
   protected logger_: Logger;
   protected options_: Options;
   protected manager_: EntityManager;
@@ -131,7 +131,7 @@ export default class FawaterakProviderService extends AbstractPaymentProvider<Op
   }
 
   static validateOptions(options: Record<any, any>) {
-    const requiredFields = ["apiKey", "baseUrl"];
+    const requiredFields = ["apiKey", "baseUrl", "returnUrl"];
 
     for (const field of requiredFields) {
       if (!options[field]) {
@@ -150,9 +150,9 @@ export default class FawaterakProviderService extends AbstractPaymentProvider<Op
     ) {
       lineItems = fp.cloneDeep(lineItems);
       const lineItemsTotal = fp.sumBy<ChargeItem>("price", lineItems);
-      const amountDifference = Number(lineItemsTotal) - Number(totalPrice);
+      const amountDifference = Number(totalPrice) - Number(lineItemsTotal);
 
-      if (amountDifference > 0) {
+      if (amountDifference !== 0) {
         lineItems.push({
           name: "Amount Difference",
           price: amountDifference,
@@ -227,14 +227,13 @@ export default class FawaterakProviderService extends AbstractPaymentProvider<Op
           address: "",
         },
         redirectionUrls: {
-          successUrl: returnUrl,
-          failUrl: returnUrl,
-          pendingUrl: returnUrl,
+          successUrl: this.options_.returnUrl,
+          failUrl: this.options_.returnUrl,
+          pendingUrl: this.options_.returnUrl,
+          webhookUrl: `https://backend-production-b092.up.railway.app/hooks/payment/fawaterak_fawaterak`,
         },
         cartItems: this.getCheckoutItems(Number(input.amount), cart),
       };
-
-      console.log("🤯", request, _.sumBy(request.cartItems, "price"));
 
       try {
         const response = await axios.post(`${this.options_.baseUrl}/api/v2/createInvoiceLink`, request, {
