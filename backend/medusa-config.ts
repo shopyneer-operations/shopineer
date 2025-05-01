@@ -66,6 +66,16 @@ const medusaConfig = {
       resolve: "./src/modules/review",
     },
     {
+      resolve: "./src/modules/facebook",
+      options: {
+        accessToken: process.env.FACEBOOK_ACCESS_TOKEN,
+        catalogId: process.env.FACEBOOK_CATALOG_ID,
+        businessId: process.env.FACEBOOK_BUSINESS_ID,
+        pixelId: process.env.FACEBOOK_PIXEL_ID,
+        apiVersion: "v18.0",
+      },
+    },
+    {
       resolve: "./src/modules/brand",
     },
     {
