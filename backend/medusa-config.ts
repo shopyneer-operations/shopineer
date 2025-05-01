@@ -262,7 +262,7 @@ const medusaConfig = {
     ...(MEILISEARCH_HOST && MEILISEARCH_API_KEY
       ? [
           {
-            resolve: "@rokmohar/medusa-plugin-meilisearch",
+            resolve: "medusa-plugin-meilisearch",
             options: {
               config: {
                 host: MEILISEARCH_HOST,
