@@ -96,11 +96,11 @@ type CartResponse = {
 };
 
 export default class FawryProviderService extends AbstractPaymentProvider<Options> {
-  updatePayment(input: UpdatePaymentInput): Promise<UpdatePaymentOutput> {
-    throw new Error("Method not implemented.");
+  async updatePayment(input: UpdatePaymentInput): Promise<UpdatePaymentOutput> {
+    return {};
   }
-  cancelPayment(input: CancelPaymentInput): Promise<CancelPaymentOutput> {
-    throw new Error("Method not implemented.");
+  async cancelPayment(input: CancelPaymentInput): Promise<CancelPaymentOutput> {
+    return {};
   }
   async deletePayment(input: DeletePaymentInput): Promise<DeletePaymentOutput> {
     return {};
