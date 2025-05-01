@@ -141,38 +141,13 @@ export default class FawaterakProviderService extends AbstractPaymentProvider<Op
   }
 
   private getCheckoutItems = fp.curry(function getCheckoutItems(totalPrice: number, cart: CartResponse): ChargeItem[] {
-    /**
-     * Add amount difference item to cart if amount difference is greater than 0
-     */
-    const addAmountDifferenceItem = fp.curry(function addAmountDifferenceItem(
-      totalPrice: number,
-      lineItems: ChargeItem[]
-    ) {
-      lineItems = fp.cloneDeep(lineItems);
-      const lineItemsTotal = fp.sumBy<ChargeItem>("price", lineItems);
-      const amountDifference = Number(totalPrice) - Number(lineItemsTotal);
-
-      if (amountDifference !== 0) {
-        lineItems.push({
-          name: "Amount Difference",
-          price: amountDifference,
-          quantity: 1,
-        });
-      }
-      return lineItems;
-    });
-
-    function mapCartItemToChargeItem(item: CartResponse["line_items"][0]): ChargeItem {
-      return {
-        name: `${item.subtitle} ${item.title}`,
-        price: Number(item.unit_price),
-        quantity: Number(item.quantity),
-      };
-    }
-
-    const result = fp.flow(fp.map(mapCartItemToChargeItem), addAmountDifferenceItem(totalPrice))(cart.line_items);
-
-    return result;
+    return [
+      {
+        name: "Order Total",
+        price: Number(totalPrice),
+        quantity: 1,
+      },
+    ];
   });
 
   private async getCart(cartId: string): Promise<CartResponse> {
@@ -207,7 +182,6 @@ export default class FawaterakProviderService extends AbstractPaymentProvider<Op
 
   async initiatePayment(input: InitiatePaymentInput): Promise<InitiatePaymentOutput> {
     {
-      console.log("✨", input);
       const { cartId, returnUrl, session_id } = input.data as Record<string, string>;
 
       const cart = await this.getCart(cartId);
