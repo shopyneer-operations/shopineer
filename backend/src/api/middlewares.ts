@@ -128,10 +128,10 @@ export default defineMiddlewares({
     },
 
     // // Admin
-    {
-      matcher: "/admin/*",
-      middlewares: [permissions],
-    },
+    // {
+    //   matcher: "/admin/*",
+    //   middlewares: [permissions],
+    // },
     {
       matcher: "/admin/reviews/:reviewId/respond",
       method: "POST",
