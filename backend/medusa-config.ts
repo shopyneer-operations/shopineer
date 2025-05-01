@@ -259,28 +259,28 @@ const medusaConfig = {
           },
         ]
       : []),
-    ...(MEILISEARCH_HOST && MEILISEARCH_API_KEY
-      ? [
-          {
-            resolve: "medusa-plugin-meilisearch",
-            options: {
-              config: {
-                host: MEILISEARCH_HOST,
-                apiKey: MEILISEARCH_API_KEY,
-              },
-              settings: {
-                products: {
-                  indexSettings: {
-                    searchableAttributes: ["title", "description", "variant_sku"],
-                    displayedAttributes: ["title", "description", "variant_sku", "thumbnail", "handle"],
-                  },
-                  primaryKey: "id",
-                },
-              },
-            },
-          },
-        ]
-      : []),
+    // ...(MEILISEARCH_HOST && MEILISEARCH_API_KEY
+    //   ? [
+    //       {
+    //         resolve: "medusa-plugin-meilisearch",
+    //         options: {
+    //           config: {
+    //             host: MEILISEARCH_HOST,
+    //             apiKey: MEILISEARCH_API_KEY,
+    //           },
+    //           settings: {
+    //             products: {
+    //               indexSettings: {
+    //                 searchableAttributes: ["title", "description", "variant_sku"],
+    //                 displayedAttributes: ["title", "description", "variant_sku", "thumbnail", "handle"],
+    //               },
+    //               primaryKey: "id",
+    //             },
+    //           },
+    //         },
+    //       },
+    //     ]
+    //   : []),
   ],
   plugins: [],
 };
