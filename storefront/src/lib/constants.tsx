@@ -50,6 +50,9 @@ export const isManual = (providerId?: string) => {
 export const isFawry = (providerId?: string) => {
   return providerId?.startsWith("pp_fawry")
 }
+export const isFawaterak = (providerId?: string) => {
+  return providerId?.startsWith("pp_fawaterak")
+}
 
 // Add currencies that don't need to be divided by 100
 export const noDivisionCurrencies = [

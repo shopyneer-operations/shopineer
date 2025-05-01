@@ -178,8 +178,6 @@ export default class FawryProviderService extends AbstractPaymentProvider<Option
       const lineItemsTotal = fp.sumBy<ChargeItem>("price", lineItems);
       const amountDifference = Number(totalPrice) - Number(lineItemsTotal);
 
-      console.log("💵💵💵💵", { amountDifference, lineItemsTotal, totalPrice });
-
       if (amountDifference !== 0) {
         lineItems.push({
           itemId: "amount_difference",
