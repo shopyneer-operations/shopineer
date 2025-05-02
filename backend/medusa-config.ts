@@ -71,7 +71,8 @@ const medusaConfig = {
         accessToken: process.env.FACEBOOK_ACCESS_TOKEN,
         catalogId: process.env.FACEBOOK_CATALOG_ID,
         businessId: process.env.FACEBOOK_BUSINESS_ID,
-        apiVersion: process.env.FACEBOOK_API_VERSION,
+        pixelId: process.env.FACEBOOK_PIXEL_ID,
+        apiVersion: "v18.0",
       },
     },
     {
