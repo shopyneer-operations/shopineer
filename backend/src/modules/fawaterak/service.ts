@@ -354,16 +354,26 @@ export default class FawaterakProviderService extends AbstractPaymentProvider<Op
   async deletePayment(input: DeletePaymentInput): Promise<DeletePaymentOutput> {
     return {};
   }
-  refundPayment(input: RefundPaymentInput): Promise<RefundPaymentOutput> {
-    throw new Error("Method not implemented.");
+  async refundPayment(input: RefundPaymentInput): Promise<RefundPaymentOutput> {
+    return {};
   }
-  cancelPayment(input: CancelPaymentInput): Promise<CancelPaymentOutput> {
-    throw new Error("Method not implemented.");
+  async cancelPayment(input: CancelPaymentInput): Promise<CancelPaymentOutput> {
+    return {};
   }
-  getPaymentStatus(input: GetPaymentStatusInput): Promise<GetPaymentStatusOutput> {
-    throw new Error("Method not implemented.");
+  async getPaymentStatus(input: GetPaymentStatusInput): Promise<GetPaymentStatusOutput> {
+    const payment = await this.retrievePayment(input);
+
+    if (payment.data.status === "success") {
+      return {
+        status: "captured",
+      };
+    }
+
+    return {
+      status: "pending",
+    };
   }
-  updatePayment(input: UpdatePaymentInput): Promise<UpdatePaymentOutput> {
-    throw new Error("Method not implemented.");
+  async updatePayment(input: UpdatePaymentInput): Promise<UpdatePaymentOutput> {
+    return {};
   }
 }

@@ -137,7 +137,7 @@ const medusaConfig = {
           },
           {
             resolve: "./src/modules/fawaterak",
-            id: "fawaterak",
+            id: "fawaterak_json",
             options: {
               baseUrl: FAWATERAK_BASE_URL,
               apiKey: FAWATERAK_API_KEY,
