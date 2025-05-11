@@ -209,14 +209,6 @@ export default class FawaterakProviderService extends AbstractPaymentProvider<Op
         cartItems: this.getCheckoutItems(Number(input.amount), cart),
       };
 
-      // Log request as cURL
-      const curlCommand = `curl -X POST '${this.options_.baseUrl}/api/v2/createInvoiceLink' \\
-        -H 'Content-Type: application/json' \\
-        -H 'Authorization: Bearer ${this.options_.apiKey}' \\
-        -d '${JSON.stringify(request, null, 2)}'`;
-
-      console.log("Fawaterak Request cURL:", curlCommand);
-
       try {
         const response = await axios.post(`${this.options_.baseUrl}/api/v2/createInvoiceLink`, request, {
           headers: {
