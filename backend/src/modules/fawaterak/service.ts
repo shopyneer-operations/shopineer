@@ -96,10 +96,7 @@ interface WebhookPayload {
   paidAmount: number;
   paidAt: string;
   paidCurrency: string;
-  pay_load: {
-    sessionId: string;
-    cartId: string;
-  } | null;
+  pay_load: string | null;
   payment_method: string;
   referenceNumber: string;
 }
@@ -304,15 +301,19 @@ export default class FawaterakProviderService extends AbstractPaymentProvider<Op
     );
 
     const data = payload.data as unknown as WebhookPayload;
+    const sessionId = data.pay_load ? JSON.parse(data.pay_load).sessionId : "";
 
     // Handle paid transactions
     if (data.invoice_status === "paid") {
-      this.logger_.success(activityId, `⚡🟢 Fawaterak (webhook): Setting invoice: ${data.invoice_id} as captured`);
+      this.logger_.success(
+        activityId,
+        `⚡🟢 Fawaterak (webhook): Setting invoice: ${data.invoice_id} with session ID: ${sessionId} as captured`
+      );
 
       return {
         action: "captured",
         data: {
-          session_id: data.pay_load?.sessionId || "",
+          session_id: sessionId,
           amount: new BigNumber(data.paidAmount),
         },
       };
@@ -325,7 +326,7 @@ export default class FawaterakProviderService extends AbstractPaymentProvider<Op
       return {
         action: "failed",
         data: {
-          session_id: data.pay_load?.sessionId || "",
+          session_id: sessionId,
           amount: new BigNumber(data.paidAmount),
         },
       };
