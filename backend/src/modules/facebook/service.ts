@@ -1,6 +1,7 @@
 import axios from "axios";
 import _ from "lodash";
 import { FacebookProductItem } from "./types";
+import { STORE_URL } from "../../lib/constants";
 
 interface FacebookConfig {
   accessToken: string;
@@ -167,7 +168,7 @@ class FacebookModuleService {
       price: price.amount,
       currency: price.currency_code.toUpperCase(),
       image_url: imageUrl,
-      url: `https://your-store.com/products/${product.handle}`,
+      url: `${STORE_URL}/products/${product.handle}`,
       retailer_id: product.id,
       quantity_to_sell_on_facebook: _.sumBy(product.variants, "inventory_quantity"),
 
