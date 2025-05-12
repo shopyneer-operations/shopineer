@@ -115,7 +115,7 @@ type CartResponse = {
 };
 
 export default class FawaterakProviderService extends AbstractPaymentProvider<Options> {
-  static identifier = "fatora";
+  static identifier = "fawaterak";
   protected logger_: Logger;
   protected options_: Options;
   protected manager_: EntityManager;

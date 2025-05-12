@@ -136,8 +136,8 @@ const medusaConfig = {
             },
           },
           {
-            resolve: "./src/modules/fatora",
-            id: "fatora_json",
+            resolve: "./src/modules/fawaterak",
+            id: "json",
             options: {
               baseUrl: FAWATERAK_BASE_URL,
               apiKey: FAWATERAK_API_KEY,
