@@ -115,7 +115,7 @@ type CartResponse = {
 };
 
 export default class FawaterakProviderService extends AbstractPaymentProvider<Options> {
-  static identifier = "fawaterak";
+  static identifier = "fatora";
   protected logger_: Logger;
   protected options_: Options;
   protected manager_: EntityManager;
@@ -204,7 +204,7 @@ export default class FawaterakProviderService extends AbstractPaymentProvider<Op
           successUrl: this.options_.returnUrl,
           failUrl: this.options_.returnUrl,
           pendingUrl: this.options_.returnUrl,
-          webhookUrl: `https://backend-production-b092.up.railway.app/hooks/payment/fawaterak_fawaterak_v2_json`,
+          webhookUrl: `https://backend-production-b092.up.railway.app/hooks/payment/fatora_json`,
         },
         cartItems: this.getCheckoutItems(Number(input.amount), cart),
       };
