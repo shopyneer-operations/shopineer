@@ -1,4 +1,6 @@
 import axios from "axios";
+import _ from "lodash";
+import { FacebookProductItem } from "./types";
 
 interface FacebookConfig {
   accessToken: string;
@@ -78,19 +80,22 @@ interface MedusaProduct {
 
 interface FacebookProduct {
   // Required fields
+  id: string;
+  title: string;
   name: string;
   description: string;
+  availability: "in stock" | "out of stock";
+  condition: "new" | "refurbished" | "used";
   price: number;
   currency: string;
   image_url: string;
+  brand: string;
   url: string;
   retailer_id: string;
+  quantity_to_sell_on_facebook: number;
 
   // Optional fields
-  brand?: string;
   category?: string;
-  availability?: "in stock" | "out of stock";
-  condition?: "new" | "refurbished" | "used";
   additional_image_urls?: string[];
   color?: string;
   size?: string;
@@ -155,6 +160,8 @@ class FacebookModuleService {
 
     return {
       // Required fields
+      id: product.id,
+      title: product.title,
       name: product.title,
       description: product.description || product.subtitle || "",
       price: price.amount,
@@ -162,6 +169,7 @@ class FacebookModuleService {
       image_url: imageUrl,
       url: `https://your-store.com/products/${product.handle}`,
       retailer_id: product.id,
+      quantity_to_sell_on_facebook: _.sumBy(product.variants, "inventory_quantity"),
 
       // Optional fields
       brand: product.metadata?.brand || "Your Brand",
@@ -199,39 +207,147 @@ class FacebookModuleService {
     };
   }
 
+  private mapToFacebookProductItems(product: MedusaProduct): FacebookProductItem[] {
+    const STORE_URL = process.env.STORE_URL || "https://your-store.com";
+
+    return (product.variants || []).map((variant) => {
+      const price = {
+        amount: variant.price_set?.prices?.[0]?.amount || 0,
+        currency_code: variant.price_set?.prices?.[0]?.currency_code.toUpperCase() || "EGP",
+      };
+
+      // Use development image URL only in development environment
+      const imageUrl =
+        process.env.NODE_ENV === "development"
+          ? "https://i.pinimg.com/736x/6b/12/ec/6b12ec0aa1a7e9c2d20617a03de5d38f.jpg"
+          : product.thumbnail || product.images?.[0]?.url;
+
+      if (!imageUrl) {
+        throw new Error("Product must have at least one image to be synced to Facebook catalog");
+      }
+
+      return {
+        // Required fields
+        name: `${product.title} - ${variant.title}`,
+        image_url: imageUrl,
+        price: price.amount,
+        retailer_id: variant.id,
+        retailer_product_group_id: product.id,
+        custom_data: {
+          variant_id: variant.id,
+          sku: variant.sku || "",
+        },
+
+        // Optional fields
+        description: product.description || product.subtitle || "",
+        url: `${STORE_URL}/products/${product.handle}`,
+        checkout_url: `${STORE_URL}/products/${product.handle}`,
+        availability: product.status === "published" ? "in stock" : "out of stock",
+        condition: "new",
+        brand: product.metadata?.brand || "Your Brand",
+        category: product.type?.value || product.collection?.title || "Default Category",
+        currency: price.currency_code.toUpperCase(),
+
+        // Additional optional fields
+        additional_image_urls:
+          process.env.NODE_ENV === "development" ? [imageUrl] : product.images?.map((img) => img.url) || [],
+        material: product.material || product.metadata?.material || "",
+        gtin: product.metadata?.gtin || variant.ean || "",
+        mpn: product.metadata?.mpn || variant.sku || "",
+        product_type: product.type?.value || "",
+        size: variant.metadata?.size || "",
+        color: variant.metadata?.color || "",
+        weight: {
+          value: variant.weight || product.weight || product.metadata?.weight || 0,
+          unit: product.metadata?.weight_unit || "kg",
+        },
+        shipping: {
+          price: product.metadata?.shipping_price || 0,
+          currency: price.currency_code,
+          country: variant.origin_country || product.origin_country || "EG",
+        },
+        tax: product.metadata?.tax || null,
+        custom_label_0: product.metadata?.custom_label_0 || "",
+        custom_label_1: product.metadata?.custom_label_1 || "",
+        custom_label_2: product.metadata?.custom_label_2 || "",
+        custom_label_3: product.metadata?.custom_label_3 || "",
+        custom_label_4: product.metadata?.custom_label_4 || "",
+      };
+    });
+  }
+
   async addProductToCatalog(product: MedusaProduct): Promise<any> {
-    console.log(`🔄 Adding product to Facebook catalog: ${product.title}`, JSON.stringify(product));
+    console.log(`🔄 Adding product to Facebook catalog: ${product.title}`);
 
     try {
-      const facebookProduct = this.mapToFacebookProduct(product);
+      // If product has no variants, submit the product itself
+      if (!product.variants?.length) {
+        const facebookProduct = this.mapToFacebookProduct(product);
 
-      console.log(`📦 Product details:
-        Name: ${facebookProduct.name}
-        Price: ${facebookProduct.currency} ${facebookProduct.price}
-        URL: ${facebookProduct.url}
-        Image: ${facebookProduct.image_url}
-        Brand: ${facebookProduct.brand}
-        Category: ${facebookProduct.category}
-        Availability: ${facebookProduct.availability}
-        Condition: ${facebookProduct.condition}
-      `);
+        console.log(`📦 Product details:
+          Name: ${facebookProduct.name}
+          Price: ${facebookProduct.currency} ${facebookProduct.price}
+          URL: ${facebookProduct.url}
+          Image: ${facebookProduct.image_url}
+          Brand: ${facebookProduct.brand}
+          Category: ${facebookProduct.category}
+          Availability: ${facebookProduct.availability}
+          Condition: ${facebookProduct.condition}
+        `);
 
-      console.log(`📤 Sending request to Facebook:
-        URL: ${this.baseUrl}/${this.config.catalogId}/products
-        Data: ${JSON.stringify(facebookProduct, null, 2)}
-      `);
+        console.log(`📤 Sending request to Facebook:
+          URL: ${this.baseUrl}/${this.config.catalogId}/products
+          Data: ${JSON.stringify(facebookProduct, null, 2)}
+        `);
 
-      const response = await axios.post(`${this.baseUrl}/${this.config.catalogId}/products`, facebookProduct, {
-        params: {
-          access_token: this.config.accessToken,
-        },
-      });
+        const response = await axios.post(`${this.baseUrl}/${this.config.catalogId}/products`, facebookProduct, {
+          params: {
+            access_token: this.config.accessToken,
+          },
+        });
 
-      console.log(`✅ Successfully added product to Facebook catalog:
-        Response: ${JSON.stringify(response.data, null, 2)}
-      `);
+        console.log(`✅ Successfully added product to Facebook catalog:
+          Response: ${JSON.stringify(response.data, null, 2)}
+        `);
 
-      return response.data;
+        return response.data;
+      }
+
+      // If product has variants, submit each variant
+      const facebookProductItems = this.mapToFacebookProductItems(product);
+      const results = [];
+
+      for (const item of facebookProductItems) {
+        console.log(`📦 Variant details:
+          Name: ${item.name}
+          Price: ${item.currency} ${item.price}
+          URL: ${item.url}
+          Image: ${item.image_url}
+          Brand: ${item.brand}
+          Category: ${item.category}
+          Availability: ${item.availability}
+          Condition: ${item.condition}
+        `);
+
+        console.log(`📤 Sending request to Facebook:
+          URL: ${this.baseUrl}/${this.config.catalogId}/products
+          Data: ${JSON.stringify(item, null, 2)}
+        `);
+
+        const response = await axios.post(`${this.baseUrl}/${this.config.catalogId}/products`, item, {
+          params: {
+            access_token: this.config.accessToken,
+          },
+        });
+
+        console.log(`✅ Successfully added variant to Facebook catalog:
+          Response: ${JSON.stringify(response.data, null, 2)}
+        `);
+
+        results.push(response.data);
+      }
+
+      return results;
     } catch (error) {
       console.error(`❌ Failed to add product to Facebook catalog:
         Error: ${error.message}
@@ -271,6 +387,21 @@ class FacebookModuleService {
       throw new Error(`Failed to validate Facebook access token: ${error.message}`);
     }
   }
+}
+
+/**
+ * Formats price according to Facebook's requirements:
+ * - Number followed by space and 3-letter ISO 4217 currency code
+ * - Uses period (.) as decimal point
+ * - No currency symbols
+ * @param amount - The price amount
+ * @param currencyCode - The currency code (will be converted to uppercase)
+ * @returns Formatted price string (e.g. "10.99 USD")
+ */
+export function formatPriceForFacebook(amount: number, currencyCode: string): string {
+  // Convert to string with 2 decimal places, using period as decimal point
+  const formattedAmount = amount.toFixed(2);
+  return `${formattedAmount} ${currencyCode.toUpperCase()}`;
 }
 
 export default FacebookModuleService;

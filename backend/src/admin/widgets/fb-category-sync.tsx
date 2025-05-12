@@ -6,7 +6,6 @@ import { sdk } from "../lib/sdk";
 
 // The widget
 const FBCatalogSyncWidget = ({ data }: DetailWidgetProps<AdminStore>) => {
-  console.log("🫣", data);
   const { data: store, mutate } = useSWR(["store", data.id], async () => {
     const result = await sdk.admin.store.retrieve(data.id);
     return result.store;
