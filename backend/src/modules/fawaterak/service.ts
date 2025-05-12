@@ -63,7 +63,10 @@ interface ChargeRequest {
     title: string;
     value: number;
   };
-  payLoad?: any;
+  payLoad: {
+    sessionId: string;
+    cartId: string;
+  };
   due_date?: string;
   sendEmail?: boolean;
   sendSMS?: boolean;
@@ -75,13 +78,29 @@ interface ChargeRequest {
   };
 }
 
+interface ChargeResponse {
+  status: "success" | "error";
+  data: {
+    url: string;
+    invoiceKey: string;
+    invoiceId: number;
+  };
+}
+
 interface WebhookPayload {
-  api_key: string;
-  invoice_key: string;
+  customerData: Record<string, any>;
+  hashKey: string;
   invoice_id: number;
-  payment_method: string;
+  invoice_key: string;
   invoice_status: "paid" | "cancelled" | "expired";
-  pay_load: any | null;
+  paidAmount: number;
+  paidAt: string;
+  paidCurrency: string;
+  pay_load: {
+    sessionId: string;
+    cartId: string;
+  } | null;
+  payment_method: string;
   referenceNumber: string;
 }
 
@@ -190,7 +209,7 @@ export default class FawaterakProviderService extends AbstractPaymentProvider<Op
         `⚡🔵 Fawaterak (initiatePayment): Initiating a payment for cart: ${cartId}`
       );
 
-      const request = {
+      const request: ChargeRequest = {
         cartTotal: Number(input.amount),
         currency: "EGP",
         customer: {
@@ -199,6 +218,10 @@ export default class FawaterakProviderService extends AbstractPaymentProvider<Op
           email: cart.customer_email,
           phone: cart.customer_phone,
           address: "",
+        },
+        payLoad: {
+          sessionId: session_id,
+          cartId,
         },
         redirectionUrls: {
           successUrl: this.options_.returnUrl,
@@ -210,12 +233,16 @@ export default class FawaterakProviderService extends AbstractPaymentProvider<Op
       };
 
       try {
-        const response = await axios.post(`${this.options_.baseUrl}/api/v2/createInvoiceLink`, request, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${this.options_.apiKey}`,
-          },
-        });
+        const response = await axios.post<ChargeRequest, { data: ChargeResponse }>(
+          `${this.options_.baseUrl}/api/v2/createInvoiceLink`,
+          request,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${this.options_.apiKey}`,
+            },
+          }
+        );
 
         this.logger_.success(
           activityId,
@@ -227,7 +254,7 @@ export default class FawaterakProviderService extends AbstractPaymentProvider<Op
           data: {
             checkoutUrl: response.data.data.url,
             invoiceKey: response.data.data.invoiceKey,
-            invoiceId: response.data.data.invoiceId,
+            invoiceId: response.data.data.invoiceId.toString(),
           },
         };
       } catch (error) {
@@ -276,19 +303,7 @@ export default class FawaterakProviderService extends AbstractPaymentProvider<Op
       payload.data
     );
 
-    const data = payload.data as any;
-
-    // // Validate hash key for security
-    // const expectedHash = data.hashKey || this.generateHashKey(data);
-    // const receivedHash = data.hashKey;
-
-    // if (receivedHash && expectedHash !== receivedHash) {
-    //   this.logger_.failure(
-    //     activityId,
-    //     `⚡🔴 Fawaterak (webhook): Invalid hash key received for payment: ${data.invoice_id || data.referenceId}`
-    //   );
-    //   throw new MedusaError(MedusaError.Types.INVALID_DATA, "Invalid hash key");
-    // }
+    const data = payload.data as unknown as WebhookPayload;
 
     // Handle paid transactions
     if (data.invoice_status === "paid") {
@@ -297,21 +312,21 @@ export default class FawaterakProviderService extends AbstractPaymentProvider<Op
       return {
         action: "captured",
         data: {
-          session_id: data.invoice_key,
-          amount: new BigNumber(data.pay_load?.total || 0),
+          session_id: data.pay_load?.sessionId || "",
+          amount: new BigNumber(data.paidAmount),
         },
       };
     }
 
     // Handle cancelled/expired transactions
-    if (data.status === "EXPIRED") {
-      this.logger_.success(activityId, `⚡🟢 Fawaterak (webhook): Setting reference: ${data.referenceId} as failed`);
+    if (data.invoice_status === "cancelled" || data.invoice_status === "expired") {
+      this.logger_.success(activityId, `⚡🟢 Fawaterak (webhook): Setting reference: ${data.invoice_id} as failed`);
 
       return {
         action: "failed",
         data: {
-          session_id: data.referenceId,
-          amount: new BigNumber(0),
+          session_id: data.pay_load?.sessionId || "",
+          amount: new BigNumber(data.paidAmount),
         },
       };
     }
