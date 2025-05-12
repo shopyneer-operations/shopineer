@@ -7,8 +7,16 @@ export default async function productCreatedHandler({ event: { data }, container
   const logger = container.resolve("logger");
   const query = container.resolve("query");
   const facebookService: FacebookModuleService = container.resolve(FACEBOOK_MODULE);
+  const storeService = container.resolve(Modules.STORE);
 
   try {
+    const stores = await storeService.listStores();
+
+    if (stores.length == 0 || !stores[0].metadata?.sync_fb_catalog) {
+      logger.info(`Product ${data.id} not synced to Facebook catalog because store is not configured`);
+      return;
+    }
+
     logger.info(`Syncing product ${data.id} to Facebook catalog...`);
 
     // Retrieve the product with its details
