@@ -204,7 +204,7 @@ export default class FawaterakProviderService extends AbstractPaymentProvider<Op
           successUrl: this.options_.returnUrl,
           failUrl: this.options_.returnUrl,
           pendingUrl: this.options_.returnUrl,
-          webhookUrl: `https://backend-production-b092.up.railway.app/hooks/payment/fatora_json`,
+          webhookUrl: `https://backend-production-b092.up.railway.app/hooks/payment/fawaterak_json`,
         },
         cartItems: this.getCheckoutItems(Number(input.amount), cart),
       };
