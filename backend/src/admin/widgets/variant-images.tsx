@@ -100,7 +100,7 @@ const VariantsImagesWidget = ({ data }: DetailWidgetProps<AdminProduct>) => {
                         className="gap-x-2"
                       >
                         <PencilSquare className="text-ui-fg-subtle" />
-                        Edit Thumbnail
+                        تعديل الصورة الرئيسية
                       </DropdownMenu.Item>
                       <DropdownMenu.Item
                         onClick={() => {
@@ -110,7 +110,7 @@ const VariantsImagesWidget = ({ data }: DetailWidgetProps<AdminProduct>) => {
                         className="gap-x-2"
                       >
                         <PencilSquare className="text-ui-fg-subtle" />
-                        Edit Media
+                        تعديل الصور
                       </DropdownMenu.Item>
                     </DropdownMenu.Content>
                   </DropdownMenu>
@@ -130,7 +130,7 @@ const VariantsImagesWidget = ({ data }: DetailWidgetProps<AdminProduct>) => {
                     </div>
                   ) : (
                     <div className="w-full h-full aspect-square break-words text-ui-fg-muted text-[14px] text-center border rounded-md border-ui-border-strong border-dashed p-[15%] flex justify-center items-center">
-                      No thumbnail
+                      لا يوجد صورة رئيسية
                     </div>
                   )}
 
@@ -165,7 +165,7 @@ const VariantsImagesWidget = ({ data }: DetailWidgetProps<AdminProduct>) => {
                           key={i}
                           className="w-full h-full aspect-square break-words text-ui-fg-muted text-[14px] text-center border rounded-md border-ui-border-strong border-dashed p-[20%] flex justify-center items-center"
                         >
-                          No images
+                          لا يوجد صور
                         </div>
                       ))}
                 </div>

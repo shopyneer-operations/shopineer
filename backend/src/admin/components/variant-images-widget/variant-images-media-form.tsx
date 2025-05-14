@@ -64,12 +64,12 @@ const VariantsImagesMediaForm = ({ form, type, setImageArr, imageArr }: Props) =
       {fields.length > 0 ? (
         <div className="bg-ui-bg-subtle size-full overflow-auto divide-y">
           <div className="p-6 flex flex-col space-y-1">
-            <h2>Uploads</h2>
+            <h2>الصور المرفوعة</h2>
             <p className="txt-small text-ui-fg-subtle">
               {type === "thumbnail" ? (
-                <span>Select an image to use as the variant thumbnail.</span>
+                <span>حدد صورة لاستخدامها كصورة التصنيف.</span>
               ) : (
-                <span>Select images to use as the variant images.</span>
+                <span>حدد صور لاستخدامها كصور المنتجات.</span>
               )}
             </p>
           </div>
@@ -97,14 +97,14 @@ const VariantsImagesMediaForm = ({ form, type, setImageArr, imageArr }: Props) =
       <div className="bg-ui-bg-base overflow-auto border-b px-6 py-4 lg:border-b-0 lg:border-l">
         <div className="flex flex-col gap-y-2">
           <div className="flex flex-col gap-y-1">
-            <h2>Media</h2>
-            <p className="txt-small text-ui-fg-subtle">Add images to your product media.</p>
+            <h2>الصور</h2>
+            <p className="txt-small text-ui-fg-subtle">أضف صور إلى وسائط المنتج.</p>
           </div>
 
           <div>
             <FileUploadField
               onFileChosen={handleFilesChosen}
-              placeholder="Drag and drop images, or click to upload."
+              placeholder="قم بتحميل الصور أو إسقاطها."
               multiple
               filetypes={["image/gif", "image/jpeg", "image/png", "image/webp"]}
               className="py-large"

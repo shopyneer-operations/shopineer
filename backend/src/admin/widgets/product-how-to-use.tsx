@@ -42,15 +42,15 @@ export const EditForm = ({
       const result = await sdk.admin.product.update(product.id, { metadata: { how_to_use: steps } } as any);
 
       // Show success toast
-      toast.success("How-to-use updated", {
-        description: `Successfully updated How-to-use for product: ${product.handle}`,
+      toast.success("تم تحديث طريقة الاستخدام", {
+        description: `تم تحديث طريقة الاستخدام للمنتج: ${product.handle}`,
       });
 
       onOpenChange(false);
       if (onSubmitSuccess) onSubmitSuccess();
       return result;
     } catch (error: any) {
-      toast.error("How-to-use update failed", { description: error.message });
+      toast.error("فشل تحديث طريقة الاستخدام", { description: error.message });
     }
   });
 
@@ -60,7 +60,7 @@ export const EditForm = ({
         <FormProvider {...form}>
           <form onSubmit={handleSubmit} className="flex flex-1 flex-col overflow-hidden">
             <Drawer.Header>
-              <Heading className="capitalize">Edit How-to-use</Heading>
+              <Heading className="capitalize">تعديل طريقة الاستخدام</Heading>
             </Drawer.Header>
             <Drawer.Body className="flex max-w-full flex-1 flex-col gap-y-8 overflow-y-auto">
               <Controller
@@ -71,7 +71,7 @@ export const EditForm = ({
                     <div className="flex flex-col space-y-2">
                       <div className="flex items-center gap-x-1">
                         <Label size="small" weight="plus">
-                          Steps
+                          الخطوات
                         </Label>
                       </div>
                       <Textarea {...field} className="min-h-40" />
@@ -84,11 +84,11 @@ export const EditForm = ({
               <div className="flex items-center justify-end gap-x-2">
                 <Drawer.Close asChild>
                   <Button size="small" variant="secondary">
-                    Cancel
+                    إلغاء
                   </Button>
                 </Drawer.Close>
                 <Button size="small" type="submit">
-                  Save
+                  حفظ
                 </Button>
               </div>
             </Drawer.Footer>
@@ -115,7 +115,7 @@ const HowToUse = ({ data: passedProduct }: DetailWidgetProps<AdminProduct>) => {
     <Container className="divide-y p-0">
       <Toaster />
       <div className="flex items-center justify-between px-6 py-4">
-        <Heading level="h2">How to use</Heading>
+        <Heading level="h2">طريقة الاستخدام</Heading>
 
         <ActionMenu
           groups={[
@@ -123,7 +123,7 @@ const HowToUse = ({ data: passedProduct }: DetailWidgetProps<AdminProduct>) => {
               actions: [
                 {
                   icon: <PencilSquare />,
-                  label: "Edit",
+                  label: "تعديل",
                   onClick() {
                     setIsOpen(true);
                   },

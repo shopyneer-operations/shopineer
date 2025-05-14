@@ -10,12 +10,12 @@ import { defineWidgetConfig } from "@medusajs/admin-sdk";
 import useSWR from "swr";
 
 const CATEGORY_LABELS = [
-  { label: "New", value: "new" },
-  { label: "Sale", value: "sale" },
-  { label: "Flash Sale", value: "flash-sale" },
-  { label: "Hot", value: "hot" },
-  { label: "Big Sale", value: "big-sale" },
-  { label: "Special Offer", value: "special-offer" },
+  { label: "جديد", value: "new" },
+  { label: "خصم", value: "sale" },
+  { label: "عروض", value: "flash-sale" },
+  { label: "متجر جديد", value: "hot" },
+  { label: "عروض كبيرة", value: "big-sale" },
+  { label: "عروض خاصة", value: "special-offer" },
 ];
 
 const schema = zod.object({
@@ -44,15 +44,15 @@ export const EditForm = ({
       const result = await sdk.admin.productCategory.update(category.id, { metadata: { label } });
 
       // Show success toast
-      toast.success("Category label updated", {
-        description: `Successfully updated label for categroy: ${category.handle}`,
+      toast.success("تم تحديث التصنيف بنجاح", {
+        description: `تم تحديث التصنيف بنجاح`,
       });
 
       onOpenChange(false);
       if (onSubmitSuccess) onSubmitSuccess();
       return result;
     } catch (error: any) {
-      toast.error("Category label update failed", { description: error.message });
+      toast.error("فشل تحديث التصنيف", { description: error.message });
     }
   });
 
@@ -62,7 +62,7 @@ export const EditForm = ({
         <FormProvider {...form}>
           <form onSubmit={handleSubmit} className="flex flex-1 flex-col overflow-hidden">
             <Drawer.Header>
-              <Heading className="capitalize">Edit Label</Heading>
+              <Heading className="capitalize">تعديل التصنيف</Heading>
             </Drawer.Header>
             <Drawer.Body className="flex max-w-full flex-1 flex-col gap-y-8 overflow-y-auto">
               <Controller
@@ -73,13 +73,13 @@ export const EditForm = ({
                     <div className="flex flex-col space-y-2">
                       <div className="flex items-center gap-x-1">
                         <Label size="small" weight="plus">
-                          Label
+                          التصنيف
                         </Label>
                       </div>
                       {/* <Textarea {...field} className="min-h-40" /> */}
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <Select.Trigger>
-                          <Select.Value placeholder="Select a label" />
+                          <Select.Value placeholder="اختر تصنيف" />
                         </Select.Trigger>
                         <Select.Content>
                           {CATEGORY_LABELS.map((category) => (
@@ -98,11 +98,11 @@ export const EditForm = ({
               <div className="flex items-center justify-end gap-x-2">
                 <Drawer.Close asChild>
                   <Button size="small" variant="secondary">
-                    Cancel
+                    إلغاء
                   </Button>
                 </Drawer.Close>
                 <Button size="small" type="submit">
-                  Save
+                  حفظ
                 </Button>
               </div>
             </Drawer.Footer>
@@ -124,7 +124,7 @@ const CategoryLabelWidget = ({ data: passedCategory }: DetailWidgetProps<AdminPr
       <Toaster />
 
       <div className="flex items-center justify-between px-6 py-4">
-        <Heading level="h2">Label</Heading>
+        <Heading level="h2">التصنيف</Heading>
 
         <ActionMenu
           groups={[
@@ -132,7 +132,7 @@ const CategoryLabelWidget = ({ data: passedCategory }: DetailWidgetProps<AdminPr
               actions: [
                 {
                   icon: <PencilSquare />,
-                  label: "Edit",
+                  label: "تعديل",
                   onClick() {
                     setIsOpen(true);
                   },
@@ -144,7 +144,7 @@ const CategoryLabelWidget = ({ data: passedCategory }: DetailWidgetProps<AdminPr
       </div>
 
       <p className="px-6 py-4 txt-small text-ui-fg-subtle">
-        {(category?.product_category?.metadata as any)?.label || "No label"}
+        {(category?.product_category?.metadata as any)?.label || "لا يوجد تصنيف"}
       </p>
 
       <EditForm

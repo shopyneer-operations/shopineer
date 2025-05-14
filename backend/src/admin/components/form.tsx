@@ -52,7 +52,7 @@ const useFormField = () => {
   const fieldState = getFieldState(fieldContext.name, formState);
 
   if (!fieldContext) {
-    throw new Error("useFormField should be used within a FormField");
+    throw new Error("يجب استخدام useFormField داخل FormField");
   }
 
   const { id } = itemContext;
@@ -108,7 +108,7 @@ const Label = forwardRef<
       {icon}
       {optional && (
         <Text size="small" leading="compact" className="text-ui-fg-muted">
-          (Optional)
+          اختياري
         </Text>
       )}
     </div>

@@ -41,11 +41,11 @@ export const EditBrandForm = ({
       setIsOpen(false);
 
       // Show success toast
-      toast.success("Brand updated", { description: `Successfully updated brand: ${JSON.stringify(data)}` });
+      toast.success("تم تحديث الماركة", { description: `تم تحديث الماركة بنجاح: ${JSON.stringify(data)}` });
 
       return result;
     } catch (error: any) {
-      toast.error("Brand update failed", { description: `Failed to update brand: ${error.message}` });
+      toast.error("فشل تحديث الماركة", { description: `فشل تحديث الماركة: ${error.message}` });
     }
   });
 
@@ -60,7 +60,7 @@ export const EditBrandForm = ({
         <FormProvider {...form}>
           <form onSubmit={handleSubmit} className="flex flex-1 flex-col overflow-hidden">
             <Drawer.Header>
-              <Heading className="capitalize">Edit Item</Heading>
+              <Heading className="capitalize">تحديث الماركة</Heading>
             </Drawer.Header>
             <Drawer.Body className="flex max-w-full flex-1 flex-col gap-y-8 overflow-y-auto">
               <Controller
@@ -71,7 +71,7 @@ export const EditBrandForm = ({
                     <div className="flex flex-col space-y-2">
                       <div className="flex items-center gap-x-1">
                         <Label size="small" weight="plus">
-                          Name
+                          الاسم
                         </Label>
                       </div>
                       <Input {...field} />
@@ -87,7 +87,7 @@ export const EditBrandForm = ({
                     <div className="flex flex-col space-y-2">
                       <div className="flex items-center gap-x-1">
                         <Label size="small" weight="plus">
-                          Description
+                          الوصف
                         </Label>
                       </div>
                       <Input {...field} />
@@ -132,11 +132,11 @@ export const EditBrandForm = ({
               <div className="flex items-center justify-end gap-x-2">
                 <Drawer.Close asChild>
                   <Button size="small" variant="secondary">
-                    Cancel
+                    إلغاء
                   </Button>
                 </Drawer.Close>
                 <Button size="small" type="submit">
-                  Save
+                  حفظ
                 </Button>
               </div>
             </Drawer.Footer>

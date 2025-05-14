@@ -1,5 +1,5 @@
 import { defineRouteConfig } from "@medusajs/admin-sdk";
-import { CheckCircle, PencilSquare, Star, StarSolid, Trash } from "@medusajs/icons";
+import { CheckCircle, PencilSquare, StarSolid, Trash } from "@medusajs/icons";
 import useIsAuthorized from "../../lib/hooks/use-is-authorized";
 import { Resource } from "../../lib/data/permissions";
 import { useState } from "react";
@@ -8,7 +8,7 @@ import useSWR from "swr";
 import { sdk } from "../../lib/sdk";
 import { PaginatedResponse } from "@medusajs/framework/types";
 import { Review } from "../../lib/types/review";
-import { Button, Container, Heading, StatusBadge, toast, Toaster } from "@medusajs/ui";
+import { Container, Heading, StatusBadge, toast, Toaster } from "@medusajs/ui";
 import UnauthorizedMessage from "../../components/unauthorized-message";
 import { Table } from "../../components/table";
 import { RatingStars } from "./components/rating-stars";
@@ -45,11 +45,11 @@ export default function ReviewsPage() {
       mutate();
 
       // Show success toast
-      toast.success("Review deleted", { description: `Role with ID: ${reviewId} deleted successfully` });
+      toast.success("تم حذف التقييم", { description: `تم حذف التقييم بنجاح` });
 
       return reviewId;
     } catch (error: any) {
-      toast.error("Review delete failed", { description: error.message });
+      toast.error("فشل حذف التقييم", { description: error.message });
     }
   }
 
@@ -61,11 +61,11 @@ export default function ReviewsPage() {
       mutate();
 
       // Show success toast
-      toast.success("Review approved", { description: `Review with ID: ${reviewId} approved successfully` });
+      toast.success("تم الموافقة على التقييم", { description: `تم الموافقة على التقييم بنجاح` });
 
       return reviewId;
     } catch (error: any) {
-      toast.error("Review approval failed", { description: error.message });
+      toast.error("فشل الموافقة على التقييم", { description: error.message });
     }
   }
 
@@ -77,7 +77,7 @@ export default function ReviewsPage() {
 
       <div className="flex items-center justify-between px-6 py-4">
         {/* <div> */}
-        <Heading level="h2">Reviews</Heading>
+        <Heading level="h2">التقييمات</Heading>
         {/* </div> */}
       </div>
 
@@ -89,37 +89,37 @@ export default function ReviewsPage() {
           //   },
           {
             key: "title",
-            label: "Title",
+            label: "العنوان",
           },
           {
             key: "description",
-            label: "Content",
+            label: "المحتوى",
           },
           {
             key: "approved_at",
-            label: "Status",
+            label: "الحالة",
             render(review: Review) {
               return review.approved_at ? (
-                <StatusBadge color="green">Approved</StatusBadge>
+                <StatusBadge color="green">موافق</StatusBadge>
               ) : (
-                <StatusBadge>Pending</StatusBadge>
+                <StatusBadge>قيد المراجعة</StatusBadge>
               );
             },
           },
           {
             key: "rating",
-            label: "Rating",
+            label: "التقييم",
             render(review: Review) {
               return <RatingStars rating={review.rating} />;
             },
           },
           {
             key: "product.title",
-            label: "Product",
+            label: "المنتج",
           },
           {
             key: "actions",
-            label: "Actions",
+            label: "الإجراءات",
             render(review: Review & { response?: { text: string } }) {
               return (
                 <div className="flex items-center gap-x-2">
@@ -129,19 +129,19 @@ export default function ReviewsPage() {
                         actions: [
                           {
                             icon: <PencilSquare />,
-                            label: "Respond",
+                            label: "الرد",
                             onClick: () => setIsRespondDrawerOpen(true),
                             disabled: Boolean(review.response),
                           },
                           {
                             icon: <CheckCircle />,
-                            label: "Approve",
+                            label: "موافقة",
                             onClick: () => approveReview(review.id),
                             disabled: Boolean(review.approved_at),
                           },
                           {
                             icon: <Trash />,
-                            label: "Delete",
+                            label: "حذف",
                             onClick: () => deleteReview(review.id),
                           },
                         ],
@@ -171,6 +171,6 @@ export default function ReviewsPage() {
 }
 
 export const config = defineRouteConfig({
-  label: "Reviews",
+  label: "التقييمات",
   icon: StarSolid,
 });

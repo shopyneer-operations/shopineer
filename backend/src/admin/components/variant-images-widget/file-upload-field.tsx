@@ -15,7 +15,7 @@ type FileUploadFieldProps = {
 const defaultText = (
   <>
     <ArrowDownTray />
-    <p className="font-normal font-sans txt-medium">Upload Images</p>
+    <p className="font-normal font-sans txt-medium">رفع الصور</p>
   </>
 );
 
@@ -87,7 +87,7 @@ const FileUploadField: React.FC<FileUploadFieldProps> = ({
       <p className="font-normal font-sans txt-compact-small text-ui-fg-muted group-disabled:text-ui-fg-disabled">
         {placeholder}
       </p>
-      {fileUploadError && <span className="text-rose-60">{errorMessage || "Please upload an image file"}</span>}
+      {fileUploadError && <span className="text-rose-600">{errorMessage || "يرجى رفع ملف صورة"}</span>}
       <input
         ref={inputRef}
         accept={filetypes.join(", ")}

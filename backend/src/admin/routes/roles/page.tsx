@@ -42,11 +42,11 @@ export default function RolesPage({}: Props) {
       mutate();
 
       // Show success toast
-      toast.success("Role deleted", { description: `Role with ID: ${roleId} deleted successfully` });
+      toast.success("تم حذف الدور", { description: `تم حذف الدور بنجاح: ${roleId}` });
 
       return roleId;
     } catch (error: any) {
-      toast.error("Role delete failed", { description: error.message });
+      toast.error("فشل حذف الدور", { description: error.message });
     }
   }
 
@@ -58,7 +58,7 @@ export default function RolesPage({}: Props) {
 
       <div className="flex items-center justify-between px-6 py-4">
         {/* <div> */}
-        <Heading level="h2">Roles</Heading>
+        <Heading level="h2">الدور</Heading>
         {/* </div> */}
 
         <CreateRoleForm onSubmit={mutate} />
@@ -72,19 +72,19 @@ export default function RolesPage({}: Props) {
           // },
           {
             key: "name",
-            label: "Name",
+            label: "الاسم",
           },
           {
             key: "permissions.length",
-            label: "Permissions",
+            label: "الصلاحيات",
           },
           {
             key: "users.length",
-            label: "Assigned Users",
+            label: "المستخدمين المعينين",
           },
           {
             key: "actions",
-            label: "Actions",
+            label: "الإجراءات",
             render(role: Role) {
               return (
                 <div className="flex items-center gap-x-2">
@@ -111,6 +111,6 @@ export default function RolesPage({}: Props) {
 }
 
 export const config = defineRouteConfig({
-  label: "Roles",
+  label: "الدور",
   icon: UsersSolid,
 });

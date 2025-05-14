@@ -4,7 +4,7 @@ import { Resource } from "../lib/data/permissions";
 const UnauthorizedMessage = ({ resource }: { resource: Resource }) => {
   return (
     <Alert className="items-center bg-red-100" variant="error">
-      You are not authorized to access {resource}.
+      ليس لديك صلاحيات للوصول إلى {resource}.
     </Alert>
   );
 };

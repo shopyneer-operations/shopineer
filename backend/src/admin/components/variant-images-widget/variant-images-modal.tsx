@@ -67,8 +67,8 @@ const VariantsImagesModal = ({ variant, open, onClose, product, type, notify }: 
     try {
       preppedImages = await prepareImages(data.media.images);
     } catch (error) {
-      notify.error("Error", { description: "Something went wrong while trying to upload images." });
-      console.error("Something went wrong while trying to upload images.");
+      notify.error("حدث خطأ", { description: "حدث خطأ أثناء محاولة رفع الصور." });
+      console.error("حدث خطأ أثناء محاولة رفع الصور.");
       return;
     }
 
@@ -147,11 +147,11 @@ const VariantsImagesModal = ({ variant, open, onClose, product, type, notify }: 
     <FocusModal open={open} onOpenChange={onReset} modal>
       <FocusModal.Content aria-describedby={undefined}>
         <FocusModal.Title asChild>
-          <h2 className="sr-only">Variant Images</h2>
+          <h2 className="sr-only">صور المنتجات</h2>
         </FocusModal.Title>
         <FocusModal.Header>
           <Button variant="primary" type="submit" disabled={!isDirty} isLoading={isUpdating} form="variant-images-form">
-            Save and close
+            حفظ وإغلاق
           </Button>
         </FocusModal.Header>
         <FocusModal.Body>

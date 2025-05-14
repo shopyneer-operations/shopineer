@@ -30,12 +30,12 @@ const CustomerBanWidget = ({ data: customer }: DetailWidgetProps<AdminCustomer>)
       // Update UI
       mutate();
 
-      toast.success("Status updated", {
-        description: `Customer has been ${isBanned ? "banned" : "unbanned"}`,
+      toast.success("تم تحديث الحالة", {
+        description: `تم حظر العميل ${isBanned ? "حظر" : "إلغاء الحظر"}`,
       });
     } catch (error) {
-      toast.error("Error", {
-        description: "Failed to update customer status",
+      toast.error("فشل تحديث الحالة", {
+        description: "فشل تحديث حالة العميل",
       });
     }
   }
@@ -44,15 +44,15 @@ const CustomerBanWidget = ({ data: customer }: DetailWidgetProps<AdminCustomer>)
     <Container className="divide-y p-0">
       <div className="flex items-center justify-between px-6 py-4">
         <div>
-          <Heading level="h2">Customer Ban Status</Heading>
+          <Heading level="h2">حالة الحظر</Heading>
         </div>
       </div>
       <div className="flex items-center justify-between px-6 py-4">
         <Text size="small" weight="plus" leading="compact">
-          Status: {isBanned ? "Banned" : "Active"}
+          الحالة: {isBanned ? "حظر" : "فعال"}
         </Text>
         <Button variant={isBanned ? "primary" : "danger"} onClick={() => updateCustomerBanStatus(!isBanned)}>
-          {isBanned ? "Unban Customer" : "Ban Customer"}
+          {isBanned ? "إلغاء الحظر" : "حظر العميل"}
         </Button>
       </div>
     </Container>

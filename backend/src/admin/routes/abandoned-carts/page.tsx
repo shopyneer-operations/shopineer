@@ -18,7 +18,7 @@ export default function AbandonedCartsPage() {
   const [currentPage, setCurrentPage] = useState(0);
   const offset = currentPage * constants.ABANDONED_CARTS_LIMIT;
 
-  const { data, mutate } = useSWR(["brands", offset, isAuthorized], async () => {
+  const { data } = useSWR(["abandoned-carts", offset, isAuthorized], async () => {
     if (isLoading || !isAuthorized) {
       return { abandonedCarts: [], count: 0, offset: 0, limit: 0 };
     }
@@ -37,7 +37,7 @@ export default function AbandonedCartsPage() {
 
       <div className="flex items-center justify-between px-6 py-4">
         {/* <div> */}
-        <Heading level="h2">Abandoned Carts</Heading>
+        <Heading level="h2">العربات المتروكة</Heading>
         {/* </div> */}
 
         {/* <CreateBrandForm mutate={mutate} /> */}
@@ -51,7 +51,7 @@ export default function AbandonedCartsPage() {
           },
           {
             key: "",
-            label: "Name",
+            label: "الاسم",
             render(cart: CartDTO) {
               if (!cart.shipping_address?.first_name || !cart.shipping_address?.last_name) {
                 return "_";
@@ -62,22 +62,22 @@ export default function AbandonedCartsPage() {
           },
           {
             key: "email",
-            label: "Email",
+            label: "البريد الإلكتروني",
           },
           {
             key: "shipping_address.phone",
-            label: "Phone",
+            label: "الهاتف",
           },
           {
             key: "",
-            label: "Qty",
+            label: "الكمية",
             render(cart: CartDTO) {
               return sumBy(cart.items, "quantity");
             },
           },
           {
             key: "",
-            label: "Created At",
+            label: "تاريخ الإنشاء",
             render(cart: CartDTO) {
               if (!cart.created_at) return "_";
 
@@ -86,7 +86,7 @@ export default function AbandonedCartsPage() {
           },
           {
             key: "total",
-            label: "Amount",
+            label: "المبلغ",
           },
           //   {
           //     key: "actions",
@@ -117,6 +117,6 @@ export default function AbandonedCartsPage() {
 }
 
 export const config = defineRouteConfig({
-  label: "Abandoned Carts",
+  label: "العربات المتروكة",
   icon: HandTruck,
 });

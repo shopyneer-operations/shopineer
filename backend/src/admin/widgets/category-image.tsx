@@ -43,15 +43,15 @@ export const EditForm = ({
       } as any);
 
       // Show success toast
-      toast.success("Category updated successfully", {
-        description: `Successfully updated category's image`,
+      toast.success("تم تحديث التصنيف بنجاح", {
+        description: `تم تحديث صورة التصنيف`,
       });
 
       onOpenChange(false);
       if (onSubmitSuccess) onSubmitSuccess();
       return result;
     } catch (error: any) {
-      toast.error("Category image update failed", { description: error.message });
+      toast.error("فشل تحديث صورة التصنيف", { description: error.message });
     }
   });
 
@@ -65,7 +65,7 @@ export const EditForm = ({
         <FormProvider {...form}>
           <form onSubmit={handleSubmit} className="flex flex-1 flex-col overflow-hidden">
             <Drawer.Header>
-              <Heading className="capitalize">Edit How-to-use</Heading>
+              <Heading className="capitalize">تعديل الصورة المصغرة</Heading>
             </Drawer.Header>
             <Drawer.Body className="flex max-w-full flex-1 flex-col gap-y-8 overflow-y-auto">
               <div className="w-full">
@@ -76,11 +76,11 @@ export const EditForm = ({
               <div className="flex items-center justify-end gap-x-2">
                 <Drawer.Close asChild>
                   <Button size="small" variant="secondary">
-                    Cancel
+                    إلغاء
                   </Button>
                 </Drawer.Close>
                 <Button size="small" type="submit">
-                  Save
+                  حفظ
                 </Button>
               </div>
             </Drawer.Footer>
@@ -105,7 +105,7 @@ const CategoryImage = ({ data: passedCategory }: DetailWidgetProps<AdminProductC
       <Toaster />
 
       <div className="flex items-center justify-between px-6 py-4">
-        <Heading level="h2">Thumbnail</Heading>
+        <Heading level="h2">الصورة المصغرة</Heading>
 
         <ActionMenu
           groups={[
@@ -113,7 +113,7 @@ const CategoryImage = ({ data: passedCategory }: DetailWidgetProps<AdminProductC
               actions: [
                 {
                   icon: <PencilSquare />,
-                  label: "Edit",
+                  label: "تعديل",
                   onClick() {
                     setIsOpen(true);
                   },

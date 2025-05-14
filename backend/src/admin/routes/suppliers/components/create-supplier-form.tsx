@@ -41,11 +41,11 @@ export const CreateSupplierForm = ({
       setIsOpen(false);
 
       // Show success toast
-      toast.success("Supplier created", { description: `Successfully created supplier: ${JSON.stringify(data)}` });
+      toast.success("تم إنشاء المورد", { description: `تم إنشاء المورد بنجاح: ${JSON.stringify(data)}` });
 
       return result;
     } catch (error: any) {
-      toast.error("Supplier creation failed", { description: `Failed to create supplier: ${error.message}` });
+      toast.error("فشل إنشاء المورد", { description: `فشل إنشاء المورد: ${error.message}` });
     }
   });
 
@@ -56,7 +56,7 @@ export const CreateSupplierForm = ({
       <FocusModal open={isOpen} onOpenChange={setIsOpen}>
         <FocusModal.Trigger asChild>
           <Button variant="secondary">
-            <Plus /> Add
+            <Plus /> إضافة مورد
           </Button>
         </FocusModal.Trigger>
         <FocusModal.Content>
@@ -66,11 +66,11 @@ export const CreateSupplierForm = ({
                 <div className="flex items-center justify-end gap-x-2">
                   <FocusModal.Close asChild>
                     <Button size="small" variant="secondary">
-                      Cancel
+                      إلغاء
                     </Button>
                   </FocusModal.Close>
                   <Button type="submit" size="small">
-                    Save
+                    حفظ
                   </Button>
                 </div>
               </FocusModal.Header>
@@ -78,7 +78,7 @@ export const CreateSupplierForm = ({
                 <div className="flex flex-1 flex-col items-center overflow-y-auto">
                   <div className="mx-auto flex w-full max-w-[720px] flex-col gap-y-8 px-2 py-16">
                     <div>
-                      <Heading className="capitalize">Add Supplier</Heading>
+                      <Heading className="capitalize">إضافة مورد</Heading>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <Controller
@@ -89,7 +89,7 @@ export const CreateSupplierForm = ({
                             <div className="flex flex-col space-y-2">
                               <div className="flex items-center gap-x-1">
                                 <Label size="small" weight="plus">
-                                  Name
+                                  الاسم
                                 </Label>
                               </div>
                               <Input {...field} />
@@ -105,7 +105,7 @@ export const CreateSupplierForm = ({
                             <div className="flex flex-col space-y-2">
                               <div className="flex items-center gap-x-1">
                                 <Label size="small" weight="plus">
-                                  Contact Person
+                                  المستخدم المرافق
                                 </Label>
                               </div>
                               <Input {...field} />
@@ -121,7 +121,7 @@ export const CreateSupplierForm = ({
                             <div className="flex flex-col space-y-2">
                               <div className="flex items-center gap-x-1">
                                 <Label size="small" weight="plus">
-                                  Email
+                                  البريد الإلكتروني
                                 </Label>
                               </div>
                               <Input {...field} />
@@ -137,7 +137,7 @@ export const CreateSupplierForm = ({
                             <div className="flex flex-col space-y-2">
                               <div className="flex items-center gap-x-1">
                                 <Label size="small" weight="plus">
-                                  Phone
+                                  الهاتف
                                 </Label>
                               </div>
                               <Input {...field} />

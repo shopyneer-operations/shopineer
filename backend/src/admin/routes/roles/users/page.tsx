@@ -57,11 +57,11 @@ export default function UserRolePage({}: Props) {
       mutateUsers();
 
       // Show success toast
-      toast.success("Role assigned", { description: `Assigned role: ${roleId} to user: ${userId} successfully` });
+      toast.success("تم تعيين الدور", { description: `تم تعيين الدور: ${roleId} إلى المستخدم: ${userId} بنجاح` });
 
       return result;
     } catch (error: any) {
-      toast.error("Role assign failed", { description: error.message });
+      toast.error("فشل تعيين الدور", { description: error.message });
     }
   });
 
@@ -72,14 +72,14 @@ export default function UserRolePage({}: Props) {
       {!isAuthorized && <UnauthorizedMessage resource={Resource.roles} />}
 
       <div className="flex items-center justify-between px-6 py-4">
-        <Heading level="h2">Users</Heading>
+        <Heading level="h2">المستخدمين</Heading>
       </div>
 
       <Table
         columns={[
           {
             key: "",
-            label: "Name",
+            label: "الاسم",
             render(user: AdminUser) {
               if (!user.first_name || !user.last_name) {
                 return "_";
@@ -90,17 +90,17 @@ export default function UserRolePage({}: Props) {
           },
           {
             key: "email",
-            label: "Email",
+            label: "البريد الإلكتروني",
           },
           {
             key: "role.name",
-            label: "Role",
+            label: "الدور",
             render(user: AdminUser & { role: Role }) {
               return (
                 <div className="w-44">
                   <Select value={user.role?.id} onValueChange={assignRole(user.id)}>
                     <Select.Trigger>
-                      <Select.Value placeholder="Select a role" />
+                      <Select.Value placeholder="حدد دور" />
                     </Select.Trigger>
                     <Select.Content>
                       {rolesData?.roles.map((item) => (
@@ -126,5 +126,5 @@ export default function UserRolePage({}: Props) {
 }
 
 export const config = defineRouteConfig({
-  label: "Users",
+  label: "المستخدمين",
 });

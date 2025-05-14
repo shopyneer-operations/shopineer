@@ -4,7 +4,6 @@ import { Controller, FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { sdk } from "../../../lib/sdk";
 import { Button, Drawer, Heading, Input, Label, toast, Toaster } from "@medusajs/ui";
-import { PencilSquare } from "@medusajs/icons";
 
 const respondFormSchema = z.object({
   text: z.string(),
@@ -38,11 +37,11 @@ export const RespondForm = ({
       setIsOpen(false);
 
       // Show success toast
-      toast.success("Response added", { description: `Successfully responded: ${data.text}` });
+      toast.success("تم إضافة الرد", { description: `تم إضافة الرد بنجاح: ${data.text}` });
 
       return result;
     } catch (error: any) {
-      toast.error("Response added failed", { description: `Failed to respond: ${error.message}` });
+      toast.error("فشل إضافة الرد", { description: `فشل إضافة الرد: ${error.message}` });
     }
   });
 
@@ -55,7 +54,7 @@ export const RespondForm = ({
           <FormProvider {...form}>
             <form onSubmit={handleSubmit} className="flex h-full flex-col overflow-visible">
               <Drawer.Header>
-                <Heading className="capitalize">Edit Item</Heading>
+                <Heading className="capitalize">تحديث الرد</Heading>
               </Drawer.Header>
               <Drawer.Body className="flex max-w-full flex-1 flex-col gap-y-8 overflow-y-auto">
                 <div>
@@ -67,7 +66,7 @@ export const RespondForm = ({
                         <div className="flex-1 flex flex-col space-y-2">
                           <div className="flex items-center gap-x-1">
                             <Label size="small" weight="plus">
-                              Response
+                              الرد
                             </Label>
                           </div>
                           <Input {...field} />
@@ -82,11 +81,11 @@ export const RespondForm = ({
                 <div className="flex items-center justify-end gap-x-2">
                   <Drawer.Close asChild>
                     <Button size="small" variant="secondary">
-                      Cancel
+                      إلغاء
                     </Button>
                   </Drawer.Close>
                   <Button size="small" type="submit">
-                    Save
+                    حفظ
                   </Button>
                 </div>
               </Drawer.Footer>

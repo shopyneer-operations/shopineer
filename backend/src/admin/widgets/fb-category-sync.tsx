@@ -18,20 +18,20 @@ const FBCatalogSyncWidget = ({ data }: DetailWidgetProps<AdminStore>) => {
       });
       mutate();
     } catch (error) {
-      console.error("Failed to update Facebook sync status:", error);
+      console.error("فشل تحديث حالة الاتصال بمنتجات الفيسبوك:", error);
     }
   };
 
   return (
     <Container className="flex flex-col divide-y p-0">
       <div className="flex items-center justify-between px-6 py-4">
-        <Heading level="h2">Facebook Catalog Sync</Heading>
+        <Heading level="h2">الاتصال بمنتجات الفيسبوك</Heading>
       </div>
 
       <div className="flex items-center gap-x-3 px-6 py-4">
         <Switch id="fb-sync" checked={store?.metadata?.sync_fb_catalog || false} onCheckedChange={handleSyncToggle} />
         <Label htmlFor="fb-sync" className="text-ui-fg-subtle">
-          Enable Facebook Catalog Sync
+          تمكين الاتصال بمنتجات الفيسبوك
         </Label>
       </div>
     </Container>

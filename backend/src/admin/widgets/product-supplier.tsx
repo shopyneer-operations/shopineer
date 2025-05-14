@@ -38,7 +38,7 @@ const ProductSupplierWidget = ({ data: product }: DetailWidgetProps<AdminProduct
     // Update UI
     setSupplierId(supplierId);
 
-    toast.success("Supplier updated", { description: `Successfully, updated supplier for product: ${product.handle}` });
+    toast.success("تم تحديث المورد", { description: `تم تحديث المورد للمنتج: ${product.handle}` });
 
     return result;
   }
@@ -46,13 +46,13 @@ const ProductSupplierWidget = ({ data: product }: DetailWidgetProps<AdminProduct
   return (
     <Container className="divide-y p-0">
       <div className="flex items-center justify-between px-6 py-4">
-        <Heading level="h2">Supplier</Heading>
+        <Heading level="h2">المورد</Heading>
       </div>
 
       <div className="px-6 py-4">
         <Select onValueChange={updateProductSupplier} value={supplierId}>
           <Select.Trigger>
-            <Select.Value placeholder="Select a supplier" />
+            <Select.Value placeholder="اختر مورد" />
           </Select.Trigger>
           <Select.Content>
             {suppliers?.suppliers.map((item) => (

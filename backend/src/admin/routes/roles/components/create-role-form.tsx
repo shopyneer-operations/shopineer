@@ -51,11 +51,11 @@ export const CreateRoleForm = ({ onSubmit }: { onSubmit: Function }) => {
       setIsOpen(false);
 
       // Show success toast
-      toast.success("Role created", { description: `Successfully created role: ${data.name}` });
+      toast.success("تم إنشاء الدور", { description: `تم إنشاء الدور بنجاح: ${data.name}` });
 
       return result;
     } catch (error: any) {
-      toast.error("Role creation failed", { description: `Failed to create role: ${error.message}` });
+      toast.error("فشل إنشاء الدور", { description: `فشل إنشاء الدور: ${error.message}` });
     }
   });
 
@@ -66,7 +66,7 @@ export const CreateRoleForm = ({ onSubmit }: { onSubmit: Function }) => {
       <FocusModal open={isOpen} onOpenChange={setIsOpen}>
         <FocusModal.Trigger asChild>
           <Button variant="secondary">
-            <Plus /> Add
+            <Plus /> إضافة دور
           </Button>
         </FocusModal.Trigger>
         <FocusModal.Content className="overflow-auto">
@@ -76,11 +76,11 @@ export const CreateRoleForm = ({ onSubmit }: { onSubmit: Function }) => {
                 <div className="flex items-center justify-end gap-x-2">
                   <FocusModal.Close asChild>
                     <Button size="small" variant="secondary">
-                      Cancel
+                      إلغاء
                     </Button>
                   </FocusModal.Close>
                   <Button type="submit" size="small">
-                    Save
+                    حفظ
                   </Button>
                 </div>
               </FocusModal.Header>
@@ -88,7 +88,7 @@ export const CreateRoleForm = ({ onSubmit }: { onSubmit: Function }) => {
                 <div className="flex flex-1 flex-col items-center overflow-y-auto">
                   <div className="mx-auto flex w-full max-w-[720px] flex-col gap-y-8 px-2 py-16">
                     <div>
-                      <Heading className="capitalize">Add Role</Heading>
+                      <Heading className="capitalize">إضافة دور</Heading>
                     </div>
                     <div>
                       <Controller
@@ -99,7 +99,7 @@ export const CreateRoleForm = ({ onSubmit }: { onSubmit: Function }) => {
                             <div className="flex-1 flex flex-col space-y-2">
                               <div className="flex items-center gap-x-1">
                                 <Label size="small" weight="plus">
-                                  Name
+                                  الاسم
                                 </Label>
                               </div>
                               <Input {...field} />

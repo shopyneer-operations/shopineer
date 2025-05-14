@@ -43,11 +43,11 @@ export const EditSupplierForm = ({
       setIsOpen(false);
 
       // Show success toast
-      toast.success("Supplier updated", { description: `Successfully updated supplier: ${JSON.stringify(data)}` });
+      toast.success("تم تحديث المورد", { description: `تم تحديث المورد بنجاح: ${JSON.stringify(data)}` });
 
       return result;
     } catch (error: any) {
-      toast.error("Supplier update failed", { description: `Failed to update supplier: ${error.message}` });
+      toast.error("فشل تحديث المورد", { description: `فشل تحديث المورد: ${error.message}` });
     }
   });
 
@@ -62,7 +62,7 @@ export const EditSupplierForm = ({
         <FormProvider {...form}>
           <form onSubmit={handleSubmit} className="flex flex-1 flex-col overflow-hidden">
             <Drawer.Header>
-              <Heading className="capitalize">Edit Item</Heading>
+              <Heading className="capitalize">تحديث المورد</Heading>
             </Drawer.Header>
             <Drawer.Body className="flex max-w-full flex-1 flex-col gap-y-8 overflow-y-auto">
               <Controller
@@ -73,7 +73,7 @@ export const EditSupplierForm = ({
                     <div className="flex flex-col space-y-2">
                       <div className="flex items-center gap-x-1">
                         <Label size="small" weight="plus">
-                          Name
+                          الاسم
                         </Label>
                       </div>
                       <Input {...field} />
@@ -89,7 +89,7 @@ export const EditSupplierForm = ({
                     <div className="flex flex-col space-y-2">
                       <div className="flex items-center gap-x-1">
                         <Label size="small" weight="plus">
-                          Contact Person
+                          المستخدم المرافق
                         </Label>
                       </div>
                       <Input {...field} />
@@ -105,7 +105,7 @@ export const EditSupplierForm = ({
                     <div className="flex flex-col space-y-2">
                       <div className="flex items-center gap-x-1">
                         <Label size="small" weight="plus">
-                          Email
+                          البريد الإلكتروني
                         </Label>
                       </div>
                       <Input {...field} />
@@ -121,7 +121,7 @@ export const EditSupplierForm = ({
                     <div className="flex flex-col space-y-2">
                       <div className="flex items-center gap-x-1">
                         <Label size="small" weight="plus">
-                          Phone
+                          الهاتف
                         </Label>
                       </div>
                       <Input {...field} />
@@ -134,11 +134,11 @@ export const EditSupplierForm = ({
               <div className="flex items-center justify-end gap-x-2">
                 <Drawer.Close asChild>
                   <Button size="small" variant="secondary">
-                    Cancel
+                    إلغاء
                   </Button>
                 </Drawer.Close>
                 <Button size="small" type="submit">
-                  Save
+                  حفظ
                 </Button>
               </div>
             </Drawer.Footer>

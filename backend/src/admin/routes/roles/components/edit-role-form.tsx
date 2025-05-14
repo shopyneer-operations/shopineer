@@ -42,11 +42,11 @@ export const EditRoleForm = ({ role, onSubmit }: { role: Role; onSubmit: Functio
       setIsOpen(false);
 
       // Show success toast
-      toast.success("Role updated", { description: `Successfully updated role: ${data.name}` });
+      toast.success("تم تحديث الدور", { description: `تم تحديث الدور بنجاح: ${data.name}` });
 
       return result;
     } catch (error: any) {
-      toast.error("Role update failed", { description: `Failed to update role: ${error.message}` });
+      toast.error("فشل تحديث الدور", { description: `فشل تحديث الدور: ${error.message}` });
     }
   });
 
@@ -64,7 +64,7 @@ export const EditRoleForm = ({ role, onSubmit }: { role: Role; onSubmit: Functio
           <FormProvider {...form}>
             <form onSubmit={handleSubmit} className="flex h-full flex-col overflow-visible">
               <Drawer.Header>
-                <Heading className="capitalize">Edit Item</Heading>
+                <Heading className="capitalize">تحديث الدور</Heading>
               </Drawer.Header>
               <Drawer.Body className="flex max-w-full flex-1 flex-col gap-y-8 overflow-y-auto">
                 <div>
@@ -76,7 +76,7 @@ export const EditRoleForm = ({ role, onSubmit }: { role: Role; onSubmit: Functio
                         <div className="flex-1 flex flex-col space-y-2">
                           <div className="flex items-center gap-x-1">
                             <Label size="small" weight="plus">
-                              Name
+                              الاسم
                             </Label>
                           </div>
                           <Input {...field} />
@@ -97,11 +97,11 @@ export const EditRoleForm = ({ role, onSubmit }: { role: Role; onSubmit: Functio
                 <div className="flex items-center justify-end gap-x-2">
                   <Drawer.Close asChild>
                     <Button size="small" variant="secondary">
-                      Cancel
+                      إلغاء
                     </Button>
                   </Drawer.Close>
                   <Button size="small" type="submit">
-                    Save
+                    حفظ
                   </Button>
                 </div>
               </Drawer.Footer>

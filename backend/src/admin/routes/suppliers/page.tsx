@@ -5,7 +5,6 @@ import { sdk } from "../../lib/sdk";
 import { useState } from "react";
 import useSWR from "swr";
 import { Table } from "../../components/table";
-import { IconProps } from "@medusajs/icons/dist/types";
 import { CreateSupplierForm } from "./components/create-supplier-form";
 import { Supplier } from "../../lib/types/supplier";
 import { EditSupplierForm } from "./components/edit-supplier-form";
@@ -14,12 +13,6 @@ import useIsAuthorized from "../../lib/hooks/use-is-authorized";
 import { Resource } from "../../lib/data/permissions";
 import UnauthorizedMessage from "../../components/unauthorized-message";
 import { PaginatedResponse } from "@medusajs/framework/types";
-
-type Action = {
-  label: string;
-  Icon: React.ForwardRefExoticComponent<IconProps & React.RefAttributes<SVGSVGElement>>;
-  onClick(supplierId: string): Promise<any>;
-};
 
 export default function SuppliersPage() {
   const { isAuthorized, isLoading } = useIsAuthorized(Resource.suppliers);
@@ -46,7 +39,7 @@ export default function SuppliersPage() {
     mutate();
 
     // Show success toast
-    toast.success("Supplier deleted", { description: `Supplier with ID: ${supplierId} deleted successfully` });
+    toast.success("تم حذف المورد", { description: `تم حذف المورد بنجاح: ${supplierId}` });
 
     return supplierId;
   }
@@ -67,7 +60,7 @@ export default function SuppliersPage() {
 
       <div className="flex items-center justify-between px-6 py-4">
         {/* <div> */}
-        <Heading level="h2">Suppliers</Heading>
+        <Heading level="h2">الموردين</Heading>
         {/* </div> */}
 
         <CreateSupplierForm mutate={mutate} />
@@ -81,28 +74,28 @@ export default function SuppliersPage() {
           },
           {
             key: "name",
-            label: "Name",
+            label: "الاسم",
           },
           {
             key: "contact_person",
-            label: "Contact Person",
+            label: "المستخدم المرافق",
           },
           {
             key: "email",
-            label: "Email",
+            label: "البريد الإلكتروني",
           },
           {
             key: "phone",
-            label: "Phone",
+            label: "الهاتف",
           },
 
           {
             key: "products.length",
-            label: "Products",
+            label: "المنتجات",
           },
           {
             key: "actions",
-            label: "Actions",
+            label: "العمليات",
             render(supplier: Supplier) {
               return (
                 <div className="flex items-center gap-x-2">
@@ -149,6 +142,6 @@ export default function SuppliersPage() {
 // }
 
 export const config = defineRouteConfig({
-  label: "Suppliers",
+  label: "الموردين",
   icon: TruckFast,
 });

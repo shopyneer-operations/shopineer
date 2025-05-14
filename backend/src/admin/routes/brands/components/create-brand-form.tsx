@@ -44,11 +44,11 @@ export const CreateBrandForm = ({ mutate }: { mutate: KeyedMutator<PaginatedResp
       setIsOpen(false);
 
       // Show success toast
-      toast.success("Brand created", { description: `Successfully created brand: ${JSON.stringify(data)}` });
+      toast.success("تم إنشاء الماركة", { description: `تم إنشاء الماركة بنجاح: ${JSON.stringify(data)}` });
 
       return result;
     } catch (error: any) {
-      toast.error("Brand creation failed", { description: `Failed to create brand: ${error.message}` });
+      toast.error("فشل إنشاء الماركة", { description: `فشل إنشاء الماركة: ${error.message}` });
     }
   });
 
@@ -63,7 +63,7 @@ export const CreateBrandForm = ({ mutate }: { mutate: KeyedMutator<PaginatedResp
       <FocusModal open={isOpen} onOpenChange={setIsOpen}>
         <FocusModal.Trigger asChild>
           <Button variant="secondary">
-            <Plus /> Add
+            <Plus /> إضافة ماركة
           </Button>
         </FocusModal.Trigger>
         <FocusModal.Content>
@@ -73,11 +73,11 @@ export const CreateBrandForm = ({ mutate }: { mutate: KeyedMutator<PaginatedResp
                 <div className="flex items-center justify-end gap-x-2">
                   <FocusModal.Close asChild>
                     <Button size="small" variant="secondary">
-                      Cancel
+                      إلغاء
                     </Button>
                   </FocusModal.Close>
                   <Button type="submit" size="small">
-                    Save
+                    حفظ
                   </Button>
                 </div>
               </FocusModal.Header>
@@ -85,7 +85,7 @@ export const CreateBrandForm = ({ mutate }: { mutate: KeyedMutator<PaginatedResp
                 <div className="flex flex-1 flex-col items-center overflow-y-auto">
                   <div className="mx-auto flex w-full max-w-[720px] flex-col gap-y-8 px-2 py-16">
                     <div>
-                      <Heading className="capitalize">Add Brand</Heading>
+                      <Heading className="capitalize">إضافة ماركة</Heading>
                     </div>
                     <div className="flex flex-col sm:flex-row gap-4 flex-wrap">
                       <Controller
@@ -96,7 +96,7 @@ export const CreateBrandForm = ({ mutate }: { mutate: KeyedMutator<PaginatedResp
                             <div className="flex-1 flex flex-col space-y-2">
                               <div className="flex items-center gap-x-1">
                                 <Label size="small" weight="plus">
-                                  Name
+                                  الاسم
                                 </Label>
                               </div>
                               <Input {...field} />
@@ -112,7 +112,7 @@ export const CreateBrandForm = ({ mutate }: { mutate: KeyedMutator<PaginatedResp
                             <div className="flex-1 flex flex-col space-y-2">
                               <div className="flex items-center gap-x-1">
                                 <Label size="small" weight="plus">
-                                  Description
+                                  الوصف
                                 </Label>
                               </div>
                               <Input {...field} />

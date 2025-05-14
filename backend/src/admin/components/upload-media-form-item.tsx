@@ -70,13 +70,13 @@ export const UploadMediaFormItem = ({
           <Form.Item>
             <div className="flex flex-col gap-y-2">
               <div className="flex flex-col gap-y-1">
-                <Form.Label optional>Image</Form.Label>
+                <Form.Label optional>الصورة</Form.Label>
                 {/* {showHint && <Form.Hint>Drag and drop images here or click to upload</Form.Hint>} */}
               </div>
               <Form.Control>
                 <FileUpload
-                  label={"Upload Image"}
-                  hint={"Drag and drop images here or click to upload"}
+                  label={"رفع الصورة"}
+                  hint={"قم بتحميل الصور أو إسقاطها"}
                   hasError={!!form.formState.errors.media}
                   formats={SUPPORTED_FORMATS}
                   onUploaded={onUploaded}

@@ -39,7 +39,7 @@ export default function BrandsPage() {
     mutate();
 
     // Show success toast
-    toast.success("Brand deleted", { description: `Brand with ID: ${brandId} deleted successfully` });
+    toast.success("تم حذف الماركة", { description: `تم حذف الماركة بنجاح` });
 
     return brandId;
   }
@@ -60,7 +60,7 @@ export default function BrandsPage() {
 
       <div className="flex items-center justify-between px-6 py-4">
         {/* <div> */}
-        <Heading level="h2">Brands</Heading>
+        <Heading level="h2">الماركات</Heading>
         {/* </div> */}
 
         <CreateBrandForm mutate={mutate} />
@@ -76,19 +76,19 @@ export default function BrandsPage() {
           },
           {
             key: "name",
-            label: "Name",
+            label: "الاسم",
           },
           {
             key: "description",
-            label: "Description",
+            label: "الوصف",
           },
           {
             key: "products.length",
-            label: "Products",
+            label: "المنتجات",
           },
           {
             key: "actions",
-            label: "Actions",
+            label: "الإجراءات",
             render(brand: Brand) {
               return (
                 <div className="flex items-center gap-x-2">
@@ -115,6 +115,6 @@ export default function BrandsPage() {
 }
 
 export const config = defineRouteConfig({
-  label: "Brands",
+  label: "الماركات",
   icon: Sparkles,
 });

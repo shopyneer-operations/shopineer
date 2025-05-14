@@ -10,12 +10,12 @@
  * limitations under the License.
  */
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useMemo } from "react";
 import { defineRouteConfig } from "@medusajs/admin-sdk";
 import { Tabs } from "@medusajs/ui";
 import { LightBulb } from "@medusajs/icons";
-import { Box, CircularProgress, Grid2 } from "@mui/material";
+import { Box } from "@mui/material";
 import OverviewTab from "../../../ui-components/tabs/overview";
 import OrdersTab from "../../../ui-components/tabs/orders";
 import ProductsTab from "../../../ui-components/tabs/products";
@@ -35,7 +35,6 @@ import {
   SelectDateLasts,
   SwitchComparison,
 } from "../../../ui-components/common/overview-components";
-import ProTab from "../../../ui-components/tabs/pro";
 
 const AnalyticsPage = () => {
   const [dateLast, setDateLasts] = useState<DateLasts>(DateLasts.LastWeek);
@@ -98,11 +97,11 @@ const AnalyticsPage = () => {
       <Grid item xs={12} md={12}>
         <Tabs defaultValue="overview">
           <Tabs.List style={{ justifyContent: "center" }}>
-            <Tabs.Trigger value="overview">Overview</Tabs.Trigger>
-            <Tabs.Trigger value="sales">Sales</Tabs.Trigger>
-            <Tabs.Trigger value="orders">Orders</Tabs.Trigger>
-            <Tabs.Trigger value="customers">Customers</Tabs.Trigger>
-            <Tabs.Trigger value="products">Products</Tabs.Trigger>
+            <Tabs.Trigger value="overview">الملخص</Tabs.Trigger>
+            <Tabs.Trigger value="sales">المبيعات</Tabs.Trigger>
+            <Tabs.Trigger value="orders">الطلبات</Tabs.Trigger>
+            <Tabs.Trigger value="customers">العملاء</Tabs.Trigger>
+            <Tabs.Trigger value="products">المنتجات</Tabs.Trigger>
             {/* {import.meta.env.VITE_MEDUSA_ADMIN_MEDUSA_STORE_ANALYTICS_HIDE_PRO === undefined && <Tabs.Trigger value='pro' style={ { color: 'purple' }}>Pro version</Tabs.Trigger>}  */}
           </Tabs.List>
           <Tabs.Content value="overview">
@@ -165,6 +164,6 @@ const AnalyticsPage = () => {
 export default AnalyticsPage;
 
 export const config = defineRouteConfig({
-  label: "Analytics",
+  label: "التحليلات",
   icon: LightBulb,
 });
