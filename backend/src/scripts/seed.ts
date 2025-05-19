@@ -24,7 +24,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
   const salesChannelModuleService = container.resolve(Modules.SALES_CHANNEL);
   const storeModuleService = container.resolve(Modules.STORE);
 
-  const countries = ["gb", "de", "dk", "se", "fr", "es", "it"];
+  const country = "eg";
 
   logger.info("Seeding store data...");
   const [store] = await storeModuleService.listStores();
@@ -52,11 +52,8 @@ export default async function seedDemoData({ container }: ExecArgs) {
       update: {
         supported_currencies: [
           {
-            currency_code: "eur",
+            currency_code: "egp",
             is_default: true,
-          },
-          {
-            currency_code: "usd",
           },
         ],
         default_sales_channel_id: defaultSalesChannel[0].id,
@@ -68,9 +65,9 @@ export default async function seedDemoData({ container }: ExecArgs) {
     input: {
       regions: [
         {
-          name: "Europe",
-          currency_code: "eur",
-          countries,
+          name: "Egypt",
+          currency_code: "egp",
+          countries: [country],
           payment_providers: ["pp_system_default"],
         },
       ],
@@ -81,9 +78,11 @@ export default async function seedDemoData({ container }: ExecArgs) {
 
   logger.info("Seeding tax regions...");
   await createTaxRegionsWorkflow(container).run({
-    input: countries.map((country_code) => ({
-      country_code,
-    })),
+    input: [
+      {
+        country_code: country,
+      },
+    ],
   });
   logger.info("Finished seeding tax regions.");
 
@@ -92,10 +91,10 @@ export default async function seedDemoData({ container }: ExecArgs) {
     input: {
       locations: [
         {
-          name: "European Warehouse",
+          name: "Egyptian Warehouse",
           address: {
-            city: "Copenhagen",
-            country_code: "DK",
+            city: "Cairo",
+            country_code: "EG",
             address_1: "",
           },
         },
@@ -134,38 +133,14 @@ export default async function seedDemoData({ container }: ExecArgs) {
   }
 
   const fulfillmentSet = await fulfillmentModuleService.createFulfillmentSets({
-    name: "European Warehouse delivery",
+    name: "Egyptian Warehouse delivery",
     type: "shipping",
     service_zones: [
       {
-        name: "Europe",
+        name: "Egypt",
         geo_zones: [
           {
-            country_code: "gb",
-            type: "country",
-          },
-          {
-            country_code: "de",
-            type: "country",
-          },
-          {
-            country_code: "dk",
-            type: "country",
-          },
-          {
-            country_code: "se",
-            type: "country",
-          },
-          {
-            country_code: "fr",
-            type: "country",
-          },
-          {
-            country_code: "es",
-            type: "country",
-          },
-          {
-            country_code: "it",
+            country_code: country,
             type: "country",
           },
         ],
@@ -197,16 +172,12 @@ export default async function seedDemoData({ container }: ExecArgs) {
         },
         prices: [
           {
-            currency_code: "usd",
-            amount: 10,
-          },
-          {
-            currency_code: "eur",
-            amount: 10,
+            currency_code: "egp",
+            amount: 100,
           },
           {
             region_id: region.id,
-            amount: 10,
+            amount: 100,
           },
         ],
         rules: [
@@ -235,16 +206,12 @@ export default async function seedDemoData({ container }: ExecArgs) {
         },
         prices: [
           {
-            currency_code: "usd",
-            amount: 10,
-          },
-          {
-            currency_code: "eur",
-            amount: 10,
+            currency_code: "egp",
+            amount: 200,
           },
           {
             region_id: region.id,
-            amount: 10,
+            amount: 200,
           },
         ],
         rules: [
@@ -294,553 +261,463 @@ export default async function seedDemoData({ container }: ExecArgs) {
   });
   logger.info("Finished seeding publishable API key data.");
 
-  // logger.info("Seeding product data...");
+  logger.info("Seeding product data...");
 
-  // const { result: categoryResult } = await createProductCategoriesWorkflow(
-  //   container
-  // ).run({
-  //   input: {
-  //     product_categories: [
-  //       {
-  //         name: "Shirts",
-  //         is_active: true,
-  //       },
-  //       {
-  //         name: "Sweatshirts",
-  //         is_active: true,
-  //       },
-  //       {
-  //         name: "Pants",
-  //         is_active: true,
-  //       },
-  //       {
-  //         name: "Merch",
-  //         is_active: true,
-  //       },
-  //     ],
-  //   },
-  // });
+  const { result: categoryResult } = await createProductCategoriesWorkflow(container).run({
+    input: {
+      product_categories: [
+        {
+          name: "Shirts",
+          is_active: true,
+        },
+        {
+          name: "Sweatshirts",
+          is_active: true,
+        },
+        {
+          name: "Pants",
+          is_active: true,
+        },
+        {
+          name: "Merch",
+          is_active: true,
+        },
+      ],
+    },
+  });
 
-  // await createProductsWorkflow(container).run({
-  //   input: {
-  //     products: [
-  //       {
-  //         title: "Medusa T-Shirt",
-  //         category_ids: [
-  //           categoryResult.find((cat) => cat.name === "Shirts")!.id,
-  //         ],
-  //         description:
-  //           "Reimagine the feeling of a classic T-shirt. With our cotton T-shirts, everyday essentials no longer have to be ordinary.",
-  //         handle: "t-shirt",
-  //         weight: 400,
-  //         status: ProductStatus.PUBLISHED,
-  //         shipping_profile_id: shippingProfile.id,
-  //         images: [
-  //           {
-  //             url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/tee-black-front.png",
-  //           },
-  //           {
-  //             url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/tee-black-back.png",
-  //           },
-  //           {
-  //             url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/tee-white-front.png",
-  //           },
-  //           {
-  //             url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/tee-white-back.png",
-  //           },
-  //         ],
-  //         options: [
-  //           {
-  //             title: "Size",
-  //             values: ["S", "M", "L", "XL"],
-  //           },
-  //           {
-  //             title: "Color",
-  //             values: ["Black", "White"],
-  //           },
-  //         ],
-  //         variants: [
-  //           {
-  //             title: "S / Black",
-  //             sku: "SHIRT-S-BLACK",
-  //             options: {
-  //               Size: "S",
-  //               Color: "Black",
-  //             },
-  //             prices: [
-  //               {
-  //                 amount: 10,
-  //                 currency_code: "eur",
-  //               },
-  //               {
-  //                 amount: 15,
-  //                 currency_code: "usd",
-  //               },
-  //             ],
-  //           },
-  //           {
-  //             title: "S / White",
-  //             sku: "SHIRT-S-WHITE",
-  //             options: {
-  //               Size: "S",
-  //               Color: "White",
-  //             },
-  //             prices: [
-  //               {
-  //                 amount: 10,
-  //                 currency_code: "eur",
-  //               },
-  //               {
-  //                 amount: 15,
-  //                 currency_code: "usd",
-  //               },
-  //             ],
-  //           },
-  //           {
-  //             title: "M / Black",
-  //             sku: "SHIRT-M-BLACK",
-  //             options: {
-  //               Size: "M",
-  //               Color: "Black",
-  //             },
-  //             prices: [
-  //               {
-  //                 amount: 10,
-  //                 currency_code: "eur",
-  //               },
-  //               {
-  //                 amount: 15,
-  //                 currency_code: "usd",
-  //               },
-  //             ],
-  //           },
-  //           {
-  //             title: "M / White",
-  //             sku: "SHIRT-M-WHITE",
-  //             options: {
-  //               Size: "M",
-  //               Color: "White",
-  //             },
-  //             prices: [
-  //               {
-  //                 amount: 10,
-  //                 currency_code: "eur",
-  //               },
-  //               {
-  //                 amount: 15,
-  //                 currency_code: "usd",
-  //               },
-  //             ],
-  //           },
-  //           {
-  //             title: "L / Black",
-  //             sku: "SHIRT-L-BLACK",
-  //             options: {
-  //               Size: "L",
-  //               Color: "Black",
-  //             },
-  //             prices: [
-  //               {
-  //                 amount: 10,
-  //                 currency_code: "eur",
-  //               },
-  //               {
-  //                 amount: 15,
-  //                 currency_code: "usd",
-  //               },
-  //             ],
-  //           },
-  //           {
-  //             title: "L / White",
-  //             sku: "SHIRT-L-WHITE",
-  //             options: {
-  //               Size: "L",
-  //               Color: "White",
-  //             },
-  //             prices: [
-  //               {
-  //                 amount: 10,
-  //                 currency_code: "eur",
-  //               },
-  //               {
-  //                 amount: 15,
-  //                 currency_code: "usd",
-  //               },
-  //             ],
-  //           },
-  //           {
-  //             title: "XL / Black",
-  //             sku: "SHIRT-XL-BLACK",
-  //             options: {
-  //               Size: "XL",
-  //               Color: "Black",
-  //             },
-  //             prices: [
-  //               {
-  //                 amount: 10,
-  //                 currency_code: "eur",
-  //               },
-  //               {
-  //                 amount: 15,
-  //                 currency_code: "usd",
-  //               },
-  //             ],
-  //           },
-  //           {
-  //             title: "XL / White",
-  //             sku: "SHIRT-XL-WHITE",
-  //             options: {
-  //               Size: "XL",
-  //               Color: "White",
-  //             },
-  //             prices: [
-  //               {
-  //                 amount: 10,
-  //                 currency_code: "eur",
-  //               },
-  //               {
-  //                 amount: 15,
-  //                 currency_code: "usd",
-  //               },
-  //             ],
-  //           },
-  //         ],
-  //         sales_channels: [
-  //           {
-  //             id: defaultSalesChannel[0].id,
-  //           },
-  //         ],
-  //       },
-  //       {
-  //         title: "Medusa Sweatshirt",
-  //         category_ids: [
-  //           categoryResult.find((cat) => cat.name === "Sweatshirts")!.id,
-  //         ],
-  //         description:
-  //           "Reimagine the feeling of a classic sweatshirt. With our cotton sweatshirt, everyday essentials no longer have to be ordinary.",
-  //         handle: "sweatshirt",
-  //         weight: 400,
-  //         status: ProductStatus.PUBLISHED,
-  //         shipping_profile_id: shippingProfile.id,
-  //         images: [
-  //           {
-  //             url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/sweatshirt-vintage-front.png",
-  //           },
-  //           {
-  //             url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/sweatshirt-vintage-back.png",
-  //           },
-  //         ],
-  //         options: [
-  //           {
-  //             title: "Size",
-  //             values: ["S", "M", "L", "XL"],
-  //           },
-  //         ],
-  //         variants: [
-  //           {
-  //             title: "S",
-  //             sku: "SWEATSHIRT-S",
-  //             options: {
-  //               Size: "S",
-  //             },
-  //             prices: [
-  //               {
-  //                 amount: 10,
-  //                 currency_code: "eur",
-  //               },
-  //               {
-  //                 amount: 15,
-  //                 currency_code: "usd",
-  //               },
-  //             ],
-  //           },
-  //           {
-  //             title: "M",
-  //             sku: "SWEATSHIRT-M",
-  //             options: {
-  //               Size: "M",
-  //             },
-  //             prices: [
-  //               {
-  //                 amount: 10,
-  //                 currency_code: "eur",
-  //               },
-  //               {
-  //                 amount: 15,
-  //                 currency_code: "usd",
-  //               },
-  //             ],
-  //           },
-  //           {
-  //             title: "L",
-  //             sku: "SWEATSHIRT-L",
-  //             options: {
-  //               Size: "L",
-  //             },
-  //             prices: [
-  //               {
-  //                 amount: 10,
-  //                 currency_code: "eur",
-  //               },
-  //               {
-  //                 amount: 15,
-  //                 currency_code: "usd",
-  //               },
-  //             ],
-  //           },
-  //           {
-  //             title: "XL",
-  //             sku: "SWEATSHIRT-XL",
-  //             options: {
-  //               Size: "XL",
-  //             },
-  //             prices: [
-  //               {
-  //                 amount: 10,
-  //                 currency_code: "eur",
-  //               },
-  //               {
-  //                 amount: 15,
-  //                 currency_code: "usd",
-  //               },
-  //             ],
-  //           },
-  //         ],
-  //         sales_channels: [
-  //           {
-  //             id: defaultSalesChannel[0].id,
-  //           },
-  //         ],
-  //       },
-  //       {
-  //         title: "Medusa Sweatpants",
-  //         category_ids: [
-  //           categoryResult.find((cat) => cat.name === "Pants")!.id,
-  //         ],
-  //         description:
-  //           "Reimagine the feeling of classic sweatpants. With our cotton sweatpants, everyday essentials no longer have to be ordinary.",
-  //         handle: "sweatpants",
-  //         weight: 400,
-  //         status: ProductStatus.PUBLISHED,
-  //         shipping_profile_id: shippingProfile.id,
-  //         images: [
-  //           {
-  //             url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/sweatpants-gray-front.png",
-  //           },
-  //           {
-  //             url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/sweatpants-gray-back.png",
-  //           },
-  //         ],
-  //         options: [
-  //           {
-  //             title: "Size",
-  //             values: ["S", "M", "L", "XL"],
-  //           },
-  //         ],
-  //         variants: [
-  //           {
-  //             title: "S",
-  //             sku: "SWEATPANTS-S",
-  //             options: {
-  //               Size: "S",
-  //             },
-  //             prices: [
-  //               {
-  //                 amount: 10,
-  //                 currency_code: "eur",
-  //               },
-  //               {
-  //                 amount: 15,
-  //                 currency_code: "usd",
-  //               },
-  //             ],
-  //           },
-  //           {
-  //             title: "M",
-  //             sku: "SWEATPANTS-M",
-  //             options: {
-  //               Size: "M",
-  //             },
-  //             prices: [
-  //               {
-  //                 amount: 10,
-  //                 currency_code: "eur",
-  //               },
-  //               {
-  //                 amount: 15,
-  //                 currency_code: "usd",
-  //               },
-  //             ],
-  //           },
-  //           {
-  //             title: "L",
-  //             sku: "SWEATPANTS-L",
-  //             options: {
-  //               Size: "L",
-  //             },
-  //             prices: [
-  //               {
-  //                 amount: 10,
-  //                 currency_code: "eur",
-  //               },
-  //               {
-  //                 amount: 15,
-  //                 currency_code: "usd",
-  //               },
-  //             ],
-  //           },
-  //           {
-  //             title: "XL",
-  //             sku: "SWEATPANTS-XL",
-  //             options: {
-  //               Size: "XL",
-  //             },
-  //             prices: [
-  //               {
-  //                 amount: 10,
-  //                 currency_code: "eur",
-  //               },
-  //               {
-  //                 amount: 15,
-  //                 currency_code: "usd",
-  //               },
-  //             ],
-  //           },
-  //         ],
-  //         sales_channels: [
-  //           {
-  //             id: defaultSalesChannel[0].id,
-  //           },
-  //         ],
-  //       },
-  //       {
-  //         title: "Medusa Shorts",
-  //         category_ids: [
-  //           categoryResult.find((cat) => cat.name === "Merch")!.id,
-  //         ],
-  //         description:
-  //           "Reimagine the feeling of classic shorts. With our cotton shorts, everyday essentials no longer have to be ordinary.",
-  //         handle: "shorts",
-  //         weight: 400,
-  //         status: ProductStatus.PUBLISHED,
-  //         shipping_profile_id: shippingProfile.id,
-  //         images: [
-  //           {
-  //             url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/shorts-vintage-front.png",
-  //           },
-  //           {
-  //             url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/shorts-vintage-back.png",
-  //           },
-  //         ],
-  //         options: [
-  //           {
-  //             title: "Size",
-  //             values: ["S", "M", "L", "XL"],
-  //           },
-  //         ],
-  //         variants: [
-  //           {
-  //             title: "S",
-  //             sku: "SHORTS-S",
-  //             options: {
-  //               Size: "S",
-  //             },
-  //             prices: [
-  //               {
-  //                 amount: 10,
-  //                 currency_code: "eur",
-  //               },
-  //               {
-  //                 amount: 15,
-  //                 currency_code: "usd",
-  //               },
-  //             ],
-  //           },
-  //           {
-  //             title: "M",
-  //             sku: "SHORTS-M",
-  //             options: {
-  //               Size: "M",
-  //             },
-  //             prices: [
-  //               {
-  //                 amount: 10,
-  //                 currency_code: "eur",
-  //               },
-  //               {
-  //                 amount: 15,
-  //                 currency_code: "usd",
-  //               },
-  //             ],
-  //           },
-  //           {
-  //             title: "L",
-  //             sku: "SHORTS-L",
-  //             options: {
-  //               Size: "L",
-  //             },
-  //             prices: [
-  //               {
-  //                 amount: 10,
-  //                 currency_code: "eur",
-  //               },
-  //               {
-  //                 amount: 15,
-  //                 currency_code: "usd",
-  //               },
-  //             ],
-  //           },
-  //           {
-  //             title: "XL",
-  //             sku: "SHORTS-XL",
-  //             options: {
-  //               Size: "XL",
-  //             },
-  //             prices: [
-  //               {
-  //                 amount: 10,
-  //                 currency_code: "eur",
-  //               },
-  //               {
-  //                 amount: 15,
-  //                 currency_code: "usd",
-  //               },
-  //             ],
-  //           },
-  //         ],
-  //         sales_channels: [
-  //           {
-  //             id: defaultSalesChannel[0].id,
-  //           },
-  //         ],
-  //       },
-  //     ],
-  //   },
-  // });
-  // logger.info("Finished seeding product data.");
+  await createProductsWorkflow(container).run({
+    input: {
+      products: [
+        {
+          title: "Shopyneer T-Shirt",
+          category_ids: [categoryResult.find((cat) => cat.name === "Shirts")!.id],
+          description:
+            "Reimagine the feeling of a classic T-shirt. With our cotton T-shirts, everyday essentials no longer have to be ordinary.",
+          handle: "t-shirt",
+          weight: 400,
+          status: ProductStatus.PUBLISHED,
+          shipping_profile_id: shippingProfile.id,
+          images: [
+            {
+              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/tee-black-front.png",
+            },
+            {
+              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/tee-black-back.png",
+            },
+            {
+              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/tee-white-front.png",
+            },
+            {
+              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/tee-white-back.png",
+            },
+          ],
+          options: [
+            {
+              title: "Size",
+              values: ["S", "M", "L", "XL"],
+            },
+            {
+              title: "Color",
+              values: ["Black", "White"],
+            },
+          ],
+          variants: [
+            {
+              title: "S / Black",
+              sku: "SHIRT-S-BLACK",
+              options: {
+                Size: "S",
+                Color: "Black",
+              },
+              prices: [
+                {
+                  amount: 500,
+                  currency_code: "egp",
+                },
+              ],
+            },
+            {
+              title: "S / White",
+              sku: "SHIRT-S-WHITE",
+              options: {
+                Size: "S",
+                Color: "White",
+              },
+              prices: [
+                {
+                  amount: 500,
+                  currency_code: "egp",
+                },
+              ],
+            },
+            {
+              title: "M / Black",
+              sku: "SHIRT-M-BLACK",
+              options: {
+                Size: "M",
+                Color: "Black",
+              },
+              prices: [
+                {
+                  amount: 500,
+                  currency_code: "egp",
+                },
+              ],
+            },
+            {
+              title: "M / White",
+              sku: "SHIRT-M-WHITE",
+              options: {
+                Size: "M",
+                Color: "White",
+              },
+              prices: [
+                {
+                  amount: 500,
+                  currency_code: "egp",
+                },
+              ],
+            },
+            {
+              title: "L / Black",
+              sku: "SHIRT-L-BLACK",
+              options: {
+                Size: "L",
+                Color: "Black",
+              },
+              prices: [
+                {
+                  amount: 500,
+                  currency_code: "egp",
+                },
+              ],
+            },
+            {
+              title: "L / White",
+              sku: "SHIRT-L-WHITE",
+              options: {
+                Size: "L",
+                Color: "White",
+              },
+              prices: [
+                {
+                  amount: 500,
+                  currency_code: "egp",
+                },
+              ],
+            },
+            {
+              title: "XL / Black",
+              sku: "SHIRT-XL-BLACK",
+              options: {
+                Size: "XL",
+                Color: "Black",
+              },
+              prices: [
+                {
+                  amount: 500,
+                  currency_code: "egp",
+                },
+              ],
+            },
+            {
+              title: "XL / White",
+              sku: "SHIRT-XL-WHITE",
+              options: {
+                Size: "XL",
+                Color: "White",
+              },
+              prices: [
+                {
+                  amount: 500,
+                  currency_code: "egp",
+                },
+              ],
+            },
+          ],
+          sales_channels: [
+            {
+              id: defaultSalesChannel[0].id,
+            },
+          ],
+        },
+        {
+          title: "Shopyneer Sweatshirt",
+          category_ids: [categoryResult.find((cat) => cat.name === "Sweatshirts")!.id],
+          description:
+            "Reimagine the feeling of a classic sweatshirt. With our cotton sweatshirt, everyday essentials no longer have to be ordinary.",
+          handle: "sweatshirt",
+          weight: 400,
+          status: ProductStatus.PUBLISHED,
+          shipping_profile_id: shippingProfile.id,
+          images: [
+            {
+              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/sweatshirt-vintage-front.png",
+            },
+            {
+              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/sweatshirt-vintage-back.png",
+            },
+          ],
+          options: [
+            {
+              title: "Size",
+              values: ["S", "M", "L", "XL"],
+            },
+          ],
+          variants: [
+            {
+              title: "S",
+              sku: "SWEATSHIRT-S",
+              options: {
+                Size: "S",
+              },
+              prices: [
+                {
+                  amount: 800,
+                  currency_code: "egp",
+                },
+              ],
+            },
+            {
+              title: "M",
+              sku: "SWEATSHIRT-M",
+              options: {
+                Size: "M",
+              },
+              prices: [
+                {
+                  amount: 800,
+                  currency_code: "egp",
+                },
+              ],
+            },
+            {
+              title: "L",
+              sku: "SWEATSHIRT-L",
+              options: {
+                Size: "L",
+              },
+              prices: [
+                {
+                  amount: 800,
+                  currency_code: "egp",
+                },
+              ],
+            },
+            {
+              title: "XL",
+              sku: "SWEATSHIRT-XL",
+              options: {
+                Size: "XL",
+              },
+              prices: [
+                {
+                  amount: 800,
+                  currency_code: "egp",
+                },
+              ],
+            },
+          ],
+          sales_channels: [
+            {
+              id: defaultSalesChannel[0].id,
+            },
+          ],
+        },
+        {
+          title: "Shopyneer Sweatpants",
+          category_ids: [categoryResult.find((cat) => cat.name === "Pants")!.id],
+          description:
+            "Reimagine the feeling of classic sweatpants. With our cotton sweatpants, everyday essentials no longer have to be ordinary.",
+          handle: "sweatpants",
+          weight: 400,
+          status: ProductStatus.PUBLISHED,
+          shipping_profile_id: shippingProfile.id,
+          images: [
+            {
+              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/sweatpants-gray-front.png",
+            },
+            {
+              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/sweatpants-gray-back.png",
+            },
+          ],
+          options: [
+            {
+              title: "Size",
+              values: ["S", "M", "L", "XL"],
+            },
+          ],
+          variants: [
+            {
+              title: "S",
+              sku: "SWEATPANTS-S",
+              options: {
+                Size: "S",
+              },
+              prices: [
+                {
+                  amount: 700,
+                  currency_code: "egp",
+                },
+              ],
+            },
+            {
+              title: "M",
+              sku: "SWEATPANTS-M",
+              options: {
+                Size: "M",
+              },
+              prices: [
+                {
+                  amount: 700,
+                  currency_code: "egp",
+                },
+              ],
+            },
+            {
+              title: "L",
+              sku: "SWEATPANTS-L",
+              options: {
+                Size: "L",
+              },
+              prices: [
+                {
+                  amount: 700,
+                  currency_code: "egp",
+                },
+              ],
+            },
+            {
+              title: "XL",
+              sku: "SWEATPANTS-XL",
+              options: {
+                Size: "XL",
+              },
+              prices: [
+                {
+                  amount: 700,
+                  currency_code: "egp",
+                },
+              ],
+            },
+          ],
+          sales_channels: [
+            {
+              id: defaultSalesChannel[0].id,
+            },
+          ],
+        },
+        {
+          title: "Shopyneer Shorts",
+          category_ids: [categoryResult.find((cat) => cat.name === "Merch")!.id],
+          description:
+            "Reimagine the feeling of classic shorts. With our cotton shorts, everyday essentials no longer have to be ordinary.",
+          handle: "shorts",
+          weight: 400,
+          status: ProductStatus.PUBLISHED,
+          shipping_profile_id: shippingProfile.id,
+          images: [
+            {
+              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/shorts-vintage-front.png",
+            },
+            {
+              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/shorts-vintage-back.png",
+            },
+          ],
+          options: [
+            {
+              title: "Size",
+              values: ["S", "M", "L", "XL"],
+            },
+          ],
+          variants: [
+            {
+              title: "S",
+              sku: "SHORTS-S",
+              options: {
+                Size: "S",
+              },
+              prices: [
+                {
+                  amount: 600,
+                  currency_code: "egp",
+                },
+              ],
+            },
+            {
+              title: "M",
+              sku: "SHORTS-M",
+              options: {
+                Size: "M",
+              },
+              prices: [
+                {
+                  amount: 600,
+                  currency_code: "egp",
+                },
+              ],
+            },
+            {
+              title: "L",
+              sku: "SHORTS-L",
+              options: {
+                Size: "L",
+              },
+              prices: [
+                {
+                  amount: 600,
+                  currency_code: "egp",
+                },
+              ],
+            },
+            {
+              title: "XL",
+              sku: "SHORTS-XL",
+              options: {
+                Size: "XL",
+              },
+              prices: [
+                {
+                  amount: 600,
+                  currency_code: "egp",
+                },
+              ],
+            },
+          ],
+          sales_channels: [
+            {
+              id: defaultSalesChannel[0].id,
+            },
+          ],
+        },
+      ],
+    },
+  });
+  logger.info("Finished seeding product data.");
 
-  // logger.info("Seeding inventory levels.");
+  logger.info("Seeding inventory levels.");
 
-  // const { data: inventoryItems } = await query.graph({
-  //   entity: "inventory_item",
-  //   fields: ["id"],
-  // });
+  const { data: inventoryItems } = await query.graph({
+    entity: "inventory_item",
+    fields: ["id"],
+  });
 
-  // const inventoryLevels: CreateInventoryLevelInput[] = [];
-  // for (const inventoryItem of inventoryItems) {
-  //   const inventoryLevel = {
-  //     location_id: stockLocation.id,
-  //     stocked_quantity: 1000000,
-  //     inventory_item_id: inventoryItem.id,
-  //   };
-  //   inventoryLevels.push(inventoryLevel);
-  // }
+  const inventoryLevels: CreateInventoryLevelInput[] = [];
+  for (const inventoryItem of inventoryItems) {
+    const inventoryLevel = {
+      location_id: stockLocation.id,
+      stocked_quantity: 1000000,
+      inventory_item_id: inventoryItem.id,
+    };
+    inventoryLevels.push(inventoryLevel);
+  }
 
-  // await createInventoryLevelsWorkflow(container).run({
-  //   input: {
-  //     inventory_levels: inventoryLevels,
-  //   },
-  // });
+  await createInventoryLevelsWorkflow(container).run({
+    input: {
+      inventory_levels: inventoryLevels,
+    },
+  });
 
-  // logger.info("Finished seeding inventory levels data.");
+  logger.info("Finished seeding inventory levels data.");
 }
