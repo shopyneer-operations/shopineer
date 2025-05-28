@@ -19,7 +19,7 @@ export default function BrandsPage() {
   const [currentPage, setCurrentPage] = useState(0);
   const offset = currentPage * constants.BRANDS_LIMIT;
 
-  const { data, mutate } = useSWR(["brands", offset, isAuthorized], async () => {
+  const { data, mutate } = useSWR(["brands", offset, isAuthorized, isLoading], async () => {
     if (isLoading || !isAuthorized) {
       return { brands: [], count: 0, offset: 0, limit: 0 };
     }
