@@ -60,7 +60,7 @@ const VariantsImagesMediaForm = ({ form, type, setImageArr, imageArr }: Props) =
   };
 
   return (
-    <div className="flex size-full flex-col-reverse lg:grid lg:grid-cols-[1fr_560px]">
+    <div className="flex size-full flex-col-reverse lg:grid">
       {fields.length > 0 ? (
         <div className="bg-ui-bg-subtle size-full overflow-auto divide-y">
           <div className="p-6 flex flex-col space-y-1">
@@ -91,10 +91,10 @@ const VariantsImagesMediaForm = ({ form, type, setImageArr, imageArr }: Props) =
           </div>
         </div>
       ) : (
-        <div className="w-[70%]"></div>
+        <div className="w-full"></div>
       )}
 
-      <div className="bg-ui-bg-base overflow-auto border-b px-6 py-4 lg:border-b-0 lg:border-l">
+      {/* <div className="bg-ui-bg-base overflow-auto border-b px-6 py-4 lg:border-b-0 lg:border-l">
         <div className="flex flex-col gap-y-2">
           <div className="flex flex-col gap-y-1">
             <h2>الصور</h2>
@@ -111,7 +111,7 @@ const VariantsImagesMediaForm = ({ form, type, setImageArr, imageArr }: Props) =
             />
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };
