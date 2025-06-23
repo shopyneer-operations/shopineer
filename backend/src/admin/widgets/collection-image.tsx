@@ -1,5 +1,5 @@
 import { defineWidgetConfig } from "@medusajs/admin-sdk";
-import { AdminProductCategory, DetailWidgetProps } from "@medusajs/framework/types";
+import { AdminCollection, DetailWidgetProps } from "@medusajs/framework/types";
 import { Button, Container, Drawer, Heading, toast, Toaster } from "@medusajs/ui";
 import { ActionMenu } from "../components/action-menu";
 import { PencilSquare } from "@medusajs/icons";
@@ -17,12 +17,12 @@ const schema = zod.object({
 export const EditForm = ({
   open,
   onOpenChange,
-  category,
+  collection,
   onSubmitSuccess,
 }: {
   open: boolean;
-  onOpenChange(oprn: boolean): void;
-  category: AdminProductCategory;
+  onOpenChange(open: boolean): void;
+  collection: AdminCollection;
   onSubmitSuccess?: () => void;
 }) => {
   const form = useForm<zod.infer<typeof schema>>();
@@ -38,20 +38,23 @@ export const EditForm = ({
         return null;
       })();
 
-      const result = await sdk.admin.productCategory.update(category.id, {
-        metadata: { thumbnail: thumbnail?.url },
+      const result = await sdk.admin.productCollection.update(collection.id, {
+        metadata: {
+          ...collection.metadata,
+          thumbnail: thumbnail?.url,
+        },
       } as any);
 
       // Show success toast
-      toast.success("تم تحديث التصنيف بنجاح", {
-        description: `تم تحديث صورة التصنيف`,
+      toast.success("تم تحديث المجموعة بنجاح", {
+        description: `تم تحديث صورة المجموعة`,
       });
 
       onOpenChange(false);
       if (onSubmitSuccess) onSubmitSuccess();
       return result;
     } catch (error: any) {
-      toast.error("فشل تحديث صورة التصنيف", { description: error.message });
+      toast.error("فشل تحديث صورة المجموعة", { description: error.message });
     }
   });
 
@@ -61,12 +64,12 @@ export const EditForm = ({
 
   // Initialize form with existing image
   useEffect(() => {
-    const existingThumbnail = category.metadata?.thumbnail;
+    const existingThumbnail = collection.metadata?.thumbnail;
     if (existingThumbnail) {
       const mediaImage: Media = { url: existingThumbnail as string, file: null };
       form.setValue("thumbnail", mediaImage);
     }
-  }, [category.metadata?.thumbnail, form]);
+  }, [collection.metadata?.thumbnail, form]);
 
   const currentThumbnail = form.watch("thumbnail");
 
@@ -76,7 +79,7 @@ export const EditForm = ({
         <FormProvider {...form}>
           <form onSubmit={handleSubmit} className="flex flex-1 flex-col overflow-hidden">
             <Drawer.Header>
-              <Heading className="capitalize">تعديل الصورة المصغرة</Heading>
+              <Heading className="capitalize">تعديل صورة المجموعة</Heading>
             </Drawer.Header>
             <Drawer.Body className="flex max-w-full flex-1 flex-col gap-y-8 overflow-y-auto">
               <div className="w-full">
@@ -90,7 +93,7 @@ export const EditForm = ({
                   <div className="relative group">
                     <img
                       src={currentThumbnail.url}
-                      alt="Category thumbnail preview"
+                      alt="Collection thumbnail preview"
                       className="w-full object-cover rounded-md"
                     />
                   </div>
@@ -116,21 +119,21 @@ export const EditForm = ({
   );
 };
 
-const CategoryImage = ({ data: passedCategory }: DetailWidgetProps<AdminProductCategory>) => {
-  const { data: categoryResponse, mutate } = useSWR(["category", passedCategory.id], () =>
-    sdk.admin.productCategory.retrieve(passedCategory.id)
+const CollectionImage = ({ data: passedCollection }: DetailWidgetProps<AdminCollection>) => {
+  const { data: collectionResponse, mutate } = useSWR(["collection", passedCollection.id], () =>
+    sdk.admin.productCollection.retrieve(passedCollection.id)
   );
 
   const [isOpen, setIsOpen] = useState(false);
 
-  const thumbnail = categoryResponse?.product_category.metadata?.thumbnail as string | undefined;
+  const thumbnail = collectionResponse?.collection.metadata?.thumbnail as string | undefined;
 
   return (
     <Container className="divide-y p-0">
       <Toaster />
 
       <div className="flex items-center justify-between px-6 py-4">
-        <Heading level="h2">الصورة المصغرة</Heading>
+        <Heading level="h2">صورة المجموعة</Heading>
 
         <ActionMenu
           groups={[
@@ -154,13 +157,13 @@ const CategoryImage = ({ data: passedCategory }: DetailWidgetProps<AdminProductC
           <img className="object-cover bg-clip-border rounded-md aspect-square w-40" src={thumbnail} alt="" />
         </div>
       ) : (
-        <p className="px-6 py-4 text-sm text-ui-fg-subtle">لا توجد صورة للتصنيف. اضغط على "تعديل" لإضافة صورة.</p>
+        <p className="px-6 py-4 text-sm text-ui-fg-subtle">لا توجد صورة للمجموعة. اضغط على "تعديل" لإضافة صورة.</p>
       )}
 
       <EditForm
         open={isOpen}
         onOpenChange={setIsOpen}
-        category={categoryResponse?.product_category || passedCategory}
+        collection={collectionResponse?.collection || passedCollection}
         onSubmitSuccess={mutate}
       />
     </Container>
@@ -168,7 +171,7 @@ const CategoryImage = ({ data: passedCategory }: DetailWidgetProps<AdminProductC
 };
 
 export const config = defineWidgetConfig({
-  zone: "product_category.details.side.after",
+  zone: "product_collection.details.after",
 });
 
-export default CategoryImage;
+export default CollectionImage;
