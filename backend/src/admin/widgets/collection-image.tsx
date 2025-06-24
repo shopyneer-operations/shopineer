@@ -41,7 +41,7 @@ export const EditForm = ({
       const result = await sdk.admin.productCollection.update(collection.id, {
         metadata: {
           ...collection.metadata,
-          thumbnail: thumbnail?.url,
+          thumbnail: uploadedMedia?.url || thumbnail?.url,
         },
       } as any);
 

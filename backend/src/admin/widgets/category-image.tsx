@@ -39,7 +39,10 @@ export const EditForm = ({
       })();
 
       const result = await sdk.admin.productCategory.update(category.id, {
-        metadata: { thumbnail: thumbnail?.url },
+        metadata: {
+          ...category.metadata,
+          thumbnail: uploadedMedia?.url || thumbnail?.url,
+        },
       } as any);
 
       // Show success toast
