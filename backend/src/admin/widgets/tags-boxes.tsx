@@ -98,7 +98,7 @@ export const EditForm = ({
 
   const renderBoxForm = (boxKey: "box1" | "box2" | "box3", boxNumber: number) => {
     const boxData = form.watch(boxKey);
-    const selectedTags = productTags.filter((tag) => boxData.tagIds.includes(tag.id));
+    const selectedTags = productTags.filter((tag) => (boxData.tagIds || []).includes(tag.id));
 
     return (
       <div key={boxKey} className="space-y-4 p-4 border rounded-lg">
