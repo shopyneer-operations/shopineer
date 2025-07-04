@@ -129,7 +129,7 @@ export const EditForm = ({
 
 const ProductTagImage = ({ data: passedProductTag }: DetailWidgetProps<AdminProductTag>) => {
   const { data: productTagResponse, mutate } = useSWR(["product-tag", passedProductTag.id], () =>
-    sdk.admin.productTag.retrieve(passedProductTag.id)
+    sdk.admin.productTag.retrieve(passedProductTag.id, { fields: "metadata" })
   );
 
   const [isOpen, setIsOpen] = useState(false);
@@ -137,6 +137,8 @@ const ProductTagImage = ({ data: passedProductTag }: DetailWidgetProps<AdminProd
   const thumbnail = (productTagResponse?.product_tag.metadata as Record<string, unknown>)?.thumbnail as
     | string
     | undefined;
+
+  console.log("🥶🥶", productTagResponse);
 
   return (
     <Container className="divide-y p-0">
