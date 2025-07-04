@@ -86,13 +86,22 @@ export const EditForm = ({
   useEffect(() => {
     const existingBoxes = (store.metadata?.tags_boxes as any) || {};
     if (existingBoxes.box1) {
-      form.setValue("box1", existingBoxes.box1);
+      form.setValue("box1", {
+        title: existingBoxes.box1.title || "",
+        tagIds: Array.isArray(existingBoxes.box1.tagIds) ? existingBoxes.box1.tagIds : [],
+      });
     }
     if (existingBoxes.box2) {
-      form.setValue("box2", existingBoxes.box2);
+      form.setValue("box2", {
+        title: existingBoxes.box2.title || "",
+        tagIds: Array.isArray(existingBoxes.box2.tagIds) ? existingBoxes.box2.tagIds : [],
+      });
     }
     if (existingBoxes.box3) {
-      form.setValue("box3", existingBoxes.box3);
+      form.setValue("box3", {
+        title: existingBoxes.box3.title || "",
+        tagIds: Array.isArray(existingBoxes.box3.tagIds) ? existingBoxes.box3.tagIds : [],
+      });
     }
   }, [store.metadata?.tags_boxes, form]);
 
@@ -238,7 +247,7 @@ const TagsBoxesWidget = ({ data }: DetailWidgetProps<AdminStore>) => {
 
   // Count configured boxes
   const configuredBoxes = Object.values(tagsBoxes).filter(
-    (box: any) => box && box.title && box.tagIds && box.tagIds.length >= 2
+    (box: any) => box && box.title && box.tagIds && Array.isArray(box.tagIds) && box.tagIds.length >= 2
   ).length;
 
   const getTagById = (id: string) => productTags.find((tag) => tag.id === id);
@@ -274,7 +283,13 @@ const TagsBoxesWidget = ({ data }: DetailWidgetProps<AdminStore>) => {
 
             {/* Display configured boxes */}
             {Object.entries(tagsBoxes).map(([boxKey, boxData]: [string, any]) => {
-              if (!boxData || !boxData.title || !boxData.tagIds || boxData.tagIds.length < 2) {
+              if (
+                !boxData ||
+                !boxData.title ||
+                !boxData.tagIds ||
+                !Array.isArray(boxData.tagIds) ||
+                boxData.tagIds.length < 2
+              ) {
                 return null;
               }
 
