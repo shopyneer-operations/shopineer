@@ -1,5 +1,5 @@
 import { defineWidgetConfig } from "@medusajs/admin-sdk";
-import { AdminCollection, DetailWidgetProps } from "@medusajs/framework/types";
+import { AdminStore, DetailWidgetProps } from "@medusajs/framework/types";
 import { Button, Container, Drawer, Heading, toast, Toaster, Switch, Label, Input } from "@medusajs/ui";
 import { ActionMenu } from "../components/action-menu";
 import { PencilSquare } from "@medusajs/icons";
@@ -17,12 +17,12 @@ const schema = zod.object({
 export const EditForm = ({
   open,
   onOpenChange,
-  collection,
+  store,
   onSubmitSuccess,
 }: {
   open: boolean;
   onOpenChange(open: boolean): void;
-  collection: AdminCollection;
+  store: AdminStore;
   onSubmitSuccess?: () => void;
 }) => {
   const form = useForm<zod.infer<typeof schema>>({
@@ -34,13 +34,13 @@ export const EditForm = ({
 
   const handleSubmit = form.handleSubmit(async ({ has_flash_sale, flash_sale_end_time }) => {
     try {
-      const result = await sdk.admin.productCollection.update(collection.id, {
+      const result = await sdk.admin.store.update(store.id, {
         metadata: {
-          ...collection.metadata,
+          ...store.metadata,
           has_flash_sale,
           flash_sale_end_time: has_flash_sale ? flash_sale_end_time : undefined,
         },
-      } as any);
+      });
 
       // Show success toast
       toast.success("تم تحديث إعدادات العرض الخاطف بنجاح", {
@@ -59,12 +59,12 @@ export const EditForm = ({
 
   // Initialize form with existing values
   useEffect(() => {
-    const existingHasFlashSale = (collection.metadata?.has_flash_sale as boolean) || false;
-    const existingEndTime = (collection.metadata?.flash_sale_end_time as string) || "";
+    const existingHasFlashSale = (store.metadata?.has_flash_sale as boolean) || false;
+    const existingEndTime = (store.metadata?.flash_sale_end_time as string) || "";
 
     form.setValue("has_flash_sale", existingHasFlashSale);
     form.setValue("flash_sale_end_time", existingEndTime);
-  }, [collection.metadata, form]);
+  }, [store.metadata, form]);
 
   const hasFlashSale = form.watch("has_flash_sale");
 
@@ -134,15 +134,15 @@ export const EditForm = ({
   );
 };
 
-const CollectionFlashSaleWidget = ({ data: passedCollection }: DetailWidgetProps<AdminCollection>) => {
-  const { data: collectionResponse, mutate } = useSWR(["collection", passedCollection.id], () =>
-    sdk.admin.productCollection.retrieve(passedCollection.id)
+const StoreFlashSaleWidget = ({ data: passedStore }: DetailWidgetProps<AdminStore>) => {
+  const { data: storeResponse, mutate } = useSWR(["store", passedStore.id], () =>
+    sdk.admin.store.retrieve(passedStore.id)
   );
 
   const [isOpen, setIsOpen] = useState(false);
 
-  const hasFlashSale = (collectionResponse?.collection.metadata?.has_flash_sale as boolean) || false;
-  const flashSaleEndTime = collectionResponse?.collection.metadata?.flash_sale_end_time as string | undefined;
+  const hasFlashSale = (storeResponse?.store.metadata?.has_flash_sale as boolean) || false;
+  const flashSaleEndTime = storeResponse?.store.metadata?.flash_sale_end_time as string | undefined;
 
   const formatEndTime = (endTime: string) => {
     try {
@@ -209,7 +209,7 @@ const CollectionFlashSaleWidget = ({ data: passedCollection }: DetailWidgetProps
       <EditForm
         open={isOpen}
         onOpenChange={setIsOpen}
-        collection={collectionResponse?.collection || passedCollection}
+        store={storeResponse?.store || passedStore}
         onSubmitSuccess={mutate}
       />
     </Container>
@@ -217,7 +217,7 @@ const CollectionFlashSaleWidget = ({ data: passedCollection }: DetailWidgetProps
 };
 
 export const config = defineWidgetConfig({
-  zone: "product_collection.details.after",
+  zone: "store.details.after",
 });
 
-export default CollectionFlashSaleWidget;
+export default StoreFlashSaleWidget;
