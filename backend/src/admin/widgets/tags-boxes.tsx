@@ -18,45 +18,21 @@ type AdminProductTag = {
 // Define the box structure
 type TagBox = {
   title: string;
-  tags: AdminProductTag[];
+  tagIds: string[];
 };
 
 const schema = zod.object({
   box1: zod.object({
     title: zod.string().min(1, "Title is required"),
-    tags: zod
-      .array(
-        zod.object({
-          id: zod.string(),
-          value: zod.string(),
-        })
-      )
-      .min(2, "Select at least 2 tags")
-      .max(4, "Select maximum 4 tags"),
+    tagIds: zod.array(zod.string()).min(2, "Select at least 2 tags").max(4, "Select maximum 4 tags"),
   }),
   box2: zod.object({
     title: zod.string().min(1, "Title is required"),
-    tags: zod
-      .array(
-        zod.object({
-          id: zod.string(),
-          value: zod.string(),
-        })
-      )
-      .min(2, "Select at least 2 tags")
-      .max(4, "Select maximum 4 tags"),
+    tagIds: zod.array(zod.string()).min(2, "Select at least 2 tags").max(4, "Select maximum 4 tags"),
   }),
   box3: zod.object({
     title: zod.string().min(1, "Title is required"),
-    tags: zod
-      .array(
-        zod.object({
-          id: zod.string(),
-          value: zod.string(),
-        })
-      )
-      .min(2, "Select at least 2 tags")
-      .max(4, "Select maximum 4 tags"),
+    tagIds: zod.array(zod.string()).min(2, "Select at least 2 tags").max(4, "Select maximum 4 tags"),
   }),
 });
 
@@ -73,9 +49,9 @@ export const EditForm = ({
 }) => {
   const form = useForm<zod.infer<typeof schema>>({
     defaultValues: {
-      box1: { title: "", tags: [] },
-      box2: { title: "", tags: [] },
-      box3: { title: "", tags: [] },
+      box1: { title: "", tagIds: [] },
+      box2: { title: "", tagIds: [] },
+      box3: { title: "", tagIds: [] },
     },
   });
 
@@ -122,7 +98,7 @@ export const EditForm = ({
 
   const renderBoxForm = (boxKey: "box1" | "box2" | "box3", boxNumber: number) => {
     const boxData = form.watch(boxKey);
-    const selectedTags = boxData.tags || [];
+    const selectedTags = productTags.filter((tag) => boxData.tagIds.includes(tag.id));
 
     return (
       <div key={boxKey} className="space-y-4 p-4 border rounded-lg">
@@ -154,18 +130,16 @@ export const EditForm = ({
           </Label>
           <Controller
             control={form.control}
-            name={`${boxKey}.tags`}
+            name={`${boxKey}.tagIds`}
             render={({ field }) => (
               <Select
                 value=""
                 onValueChange={(value) => {
-                  const currentTags = field.value || [];
-                  const selectedTag = productTags.find((tag) => tag.id === value);
-
-                  if (selectedTag && !currentTags.some((tag) => tag.id === value)) {
+                  const currentIds = field.value || [];
+                  if (!currentIds.includes(value)) {
                     // Add tag (if under limit)
-                    if (currentTags.length < 4) {
-                      field.onChange([...currentTags, selectedTag]);
+                    if (currentIds.length < 4) {
+                      field.onChange([...currentIds, value]);
                     }
                   }
                 }}
@@ -175,7 +149,7 @@ export const EditForm = ({
                 </Select.Trigger>
                 <Select.Content>
                   {productTags
-                    .filter((tag) => !field.value?.some((selectedTag) => selectedTag.id === tag.id))
+                    .filter((tag) => !field.value?.includes(tag.id))
                     .map((tag) => (
                       <Select.Item key={tag.id} value={tag.id}>
                         {tag.value}
@@ -195,10 +169,10 @@ export const EditForm = ({
                   <button
                     type="button"
                     onClick={() => {
-                      const currentTags = form.getValues(`${boxKey}.tags`) || [];
+                      const currentIds = form.getValues(`${boxKey}.tagIds`) || [];
                       form.setValue(
-                        `${boxKey}.tags`,
-                        currentTags.filter((t) => t.id !== tag.id)
+                        `${boxKey}.tagIds`,
+                        currentIds.filter((id) => id !== tag.id)
                       );
                     }}
                     className="ml-1 text-xs hover:text-red-500"
@@ -264,8 +238,10 @@ const TagsBoxesWidget = ({ data }: DetailWidgetProps<AdminStore>) => {
 
   // Count configured boxes
   const configuredBoxes = Object.values(tagsBoxes).filter(
-    (box: any) => box && box.title && box.tags && box.tags.length >= 2
+    (box: any) => box && box.title && box.tagIds && box.tagIds.length >= 2
   ).length;
+
+  const getTagById = (id: string) => productTags.find((tag) => tag.id === id);
 
   return (
     <Container className="divide-y p-0">
@@ -298,15 +274,17 @@ const TagsBoxesWidget = ({ data }: DetailWidgetProps<AdminStore>) => {
 
             {/* Display configured boxes */}
             {Object.entries(tagsBoxes).map(([boxKey, boxData]: [string, any]) => {
-              if (!boxData || !boxData.title || !boxData.tags || boxData.tags.length < 2) {
+              if (!boxData || !boxData.title || !boxData.tagIds || boxData.tagIds.length < 2) {
                 return null;
               }
+
+              const selectedTags = boxData.tagIds.map((id: string) => getTagById(id)).filter(Boolean);
 
               return (
                 <div key={boxKey} className="p-4 border rounded-lg">
                   <h3 className="text-lg font-medium text-ui-fg-base mb-3">{boxData.title}</h3>
                   <div className="flex flex-wrap gap-2">
-                    {boxData.tags.map((tag: AdminProductTag) => (
+                    {selectedTags.map((tag: AdminProductTag) => (
                       <Badge key={tag.id} className="flex items-center gap-x-1">
                         {tag.value}
                       </Badge>
