@@ -1,7 +1,7 @@
 import { FocusModal, Heading, Label, Input, Button, toast, Toaster } from "@medusajs/ui";
 import { useForm, FormProvider, Controller } from "react-hook-form";
 import * as z from "zod";
-import { Plus } from "@medusajs/icons";
+import { Plus, Trash } from "@medusajs/icons";
 import { sdk } from "../../../lib/sdk";
 import { Brand } from "../../../lib/types/brand";
 import { KeyedMutator } from "swr";
@@ -55,6 +55,13 @@ export const CreateBrandForm = ({ mutate }: { mutate: KeyedMutator<PaginatedResp
   function handleAppend(media: Media) {
     form.setValue("image", media);
   }
+
+  function handleRemoveImage() {
+    form.setValue("image", undefined);
+  }
+
+  // Watch the image field to show preview
+  const currentImage = form.watch("image");
 
   return (
     <>
@@ -124,6 +131,27 @@ export const CreateBrandForm = ({ mutate }: { mutate: KeyedMutator<PaginatedResp
                         <UploadMediaFormItem form={form} append={handleAppend} multiple={false} />
                       </div>
                     </div>
+
+                    {/* Display uploaded image preview */}
+                    {currentImage && (
+                      <div className="w-full">
+                        <h3 className="text-sm font-medium mb-3">الصورة المحددة:</h3>
+                        <div className="relative inline-block group">
+                          <img
+                            src={currentImage.url}
+                            alt="Brand image preview"
+                            className="w-32 h-32 object-cover rounded-md"
+                          />
+                          <button
+                            type="button"
+                            onClick={handleRemoveImage}
+                            className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <Trash className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </FocusModal.Body>
