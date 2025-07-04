@@ -31,6 +31,26 @@ const schema = zod.object({
   sheglam_brand_id: zod.string().optional(),
 });
 
+// Field configurations for better maintainability
+const tagFields = [
+  { name: "local_tag_id", label: "Local" },
+  { name: "best_seller_tag_id", label: "Best Seller" },
+  { name: "high_rated_tag_id", label: "High Rated" },
+  { name: "new_arrival_tag_id", label: "New Arrival" },
+  { name: "winter_tag_id", label: "Winter" },
+  { name: "sheglam_tag_id", label: "Sheglam" },
+  { name: "powder_tag_id", label: "Powder" },
+  { name: "new_year_offers_tag_id", label: "New Year Offers" },
+  { name: "beauty_essentials_tag_id", label: "Beauty Essentials" },
+  { name: "all_you_want_tag_id", label: "All You Want" },
+  { name: "recommended_tag_id", label: "Recommended" },
+  { name: "flash_sale_tag_id", label: "Flash Sale" },
+];
+
+const categoryFields = [{ name: "make_up_category_id", label: "Make Up" }];
+
+const brandFields = [{ name: "sheglam_brand_id", label: "Sheglam" }];
+
 export const EditForm = ({
   open,
   onOpenChange,
@@ -86,21 +106,30 @@ export const EditForm = ({
   // Initialize form with existing values
   useEffect(() => {
     const metadata = store.metadata || {};
-    form.setValue("local_tag_id", metadata.local_tag_id || "");
-    form.setValue("best_seller_tag_id", metadata.best_seller_tag_id || "");
-    form.setValue("high_rated_tag_id", metadata.high_rated_tag_id || "");
-    form.setValue("new_arrival_tag_id", metadata.new_arrival_tag_id || "");
-    form.setValue("winter_tag_id", metadata.winter_tag_id || "");
-    form.setValue("sheglam_tag_id", metadata.sheglam_tag_id || "");
-    form.setValue("powder_tag_id", metadata.powder_tag_id || "");
-    form.setValue("new_year_offers_tag_id", metadata.new_year_offers_tag_id || "");
-    form.setValue("beauty_essentials_tag_id", metadata.beauty_essentials_tag_id || "");
-    form.setValue("all_you_want_tag_id", metadata.all_you_want_tag_id || "");
-    form.setValue("recommended_tag_id", metadata.recommended_tag_id || "");
-    form.setValue("flash_sale_tag_id", metadata.flash_sale_tag_id || "");
-    form.setValue("make_up_category_id", metadata.make_up_category_id || "");
-    form.setValue("sheglam_brand_id", metadata.sheglam_brand_id || "");
+    [...tagFields, ...categoryFields, ...brandFields].forEach(({ name }) => {
+      form.setValue(name as keyof zod.infer<typeof schema>, metadata[name] || "");
+    });
   }, [store.metadata, form]);
+
+  const renderField = (field: { name: string; label: string }, placeholder: string) => (
+    <div key={field.name} className="space-y-2">
+      <Label size="small" weight="plus">
+        {field.label}
+      </Label>
+      <Controller
+        control={form.control}
+        name={field.name as keyof zod.infer<typeof schema>}
+        render={({ field: controllerField }) => (
+          <Input
+            placeholder={placeholder}
+            value={controllerField.value || ""}
+            onChange={controllerField.onChange}
+            className="w-full"
+          />
+        )}
+      />
+    </div>
+  );
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
@@ -117,221 +146,7 @@ export const EditForm = ({
                   <h3 className="text-lg font-medium text-ui-fg-base">علامات المنتجات</h3>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label size="small" weight="plus">
-                        محلي
-                      </Label>
-                      <Controller
-                        control={form.control}
-                        name="local_tag_id"
-                        render={({ field }) => (
-                          <Input
-                            placeholder="أدخل معرف العلامة"
-                            value={field.value || ""}
-                            onChange={field.onChange}
-                            className="w-full"
-                          />
-                        )}
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label size="small" weight="plus">
-                        الأكثر مبيعاً
-                      </Label>
-                      <Controller
-                        control={form.control}
-                        name="best_seller_tag_id"
-                        render={({ field }) => (
-                          <Input
-                            placeholder="أدخل معرف العلامة"
-                            value={field.value || ""}
-                            onChange={field.onChange}
-                            className="w-full"
-                          />
-                        )}
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label size="small" weight="plus">
-                        الأعلى تقييماً
-                      </Label>
-                      <Controller
-                        control={form.control}
-                        name="high_rated_tag_id"
-                        render={({ field }) => (
-                          <Input
-                            placeholder="أدخل معرف العلامة"
-                            value={field.value || ""}
-                            onChange={field.onChange}
-                            className="w-full"
-                          />
-                        )}
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label size="small" weight="plus">
-                        وصل حديثاً
-                      </Label>
-                      <Controller
-                        control={form.control}
-                        name="new_arrival_tag_id"
-                        render={({ field }) => (
-                          <Input
-                            placeholder="أدخل معرف العلامة"
-                            value={field.value || ""}
-                            onChange={field.onChange}
-                            className="w-full"
-                          />
-                        )}
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label size="small" weight="plus">
-                        شتوي
-                      </Label>
-                      <Controller
-                        control={form.control}
-                        name="winter_tag_id"
-                        render={({ field }) => (
-                          <Input
-                            placeholder="أدخل معرف العلامة"
-                            value={field.value || ""}
-                            onChange={field.onChange}
-                            className="w-full"
-                          />
-                        )}
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label size="small" weight="plus">
-                        شيجلام
-                      </Label>
-                      <Controller
-                        control={form.control}
-                        name="sheglam_tag_id"
-                        render={({ field }) => (
-                          <Input
-                            placeholder="أدخل معرف العلامة"
-                            value={field.value || ""}
-                            onChange={field.onChange}
-                            className="w-full"
-                          />
-                        )}
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label size="small" weight="plus">
-                        بودرة
-                      </Label>
-                      <Controller
-                        control={form.control}
-                        name="powder_tag_id"
-                        render={({ field }) => (
-                          <Input
-                            placeholder="أدخل معرف العلامة"
-                            value={field.value || ""}
-                            onChange={field.onChange}
-                            className="w-full"
-                          />
-                        )}
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label size="small" weight="plus">
-                        عروض رأس السنة
-                      </Label>
-                      <Controller
-                        control={form.control}
-                        name="new_year_offers_tag_id"
-                        render={({ field }) => (
-                          <Input
-                            placeholder="أدخل معرف العلامة"
-                            value={field.value || ""}
-                            onChange={field.onChange}
-                            className="w-full"
-                          />
-                        )}
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label size="small" weight="plus">
-                        أساسيات الجمال
-                      </Label>
-                      <Controller
-                        control={form.control}
-                        name="beauty_essentials_tag_id"
-                        render={({ field }) => (
-                          <Input
-                            placeholder="أدخل معرف العلامة"
-                            value={field.value || ""}
-                            onChange={field.onChange}
-                            className="w-full"
-                          />
-                        )}
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label size="small" weight="plus">
-                        كل ما تريد
-                      </Label>
-                      <Controller
-                        control={form.control}
-                        name="all_you_want_tag_id"
-                        render={({ field }) => (
-                          <Input
-                            placeholder="أدخل معرف العلامة"
-                            value={field.value || ""}
-                            onChange={field.onChange}
-                            className="w-full"
-                          />
-                        )}
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label size="small" weight="plus">
-                        موصى به
-                      </Label>
-                      <Controller
-                        control={form.control}
-                        name="recommended_tag_id"
-                        render={({ field }) => (
-                          <Input
-                            placeholder="أدخل معرف العلامة"
-                            value={field.value || ""}
-                            onChange={field.onChange}
-                            className="w-full"
-                          />
-                        )}
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label size="small" weight="plus">
-                        عرض خاطف
-                      </Label>
-                      <Controller
-                        control={form.control}
-                        name="flash_sale_tag_id"
-                        render={({ field }) => (
-                          <Input
-                            placeholder="أدخل معرف العلامة"
-                            value={field.value || ""}
-                            onChange={field.onChange}
-                            className="w-full"
-                          />
-                        )}
-                      />
-                    </div>
+                    {tagFields.map((field) => renderField(field, "Enter tag ID"))}
                   </div>
                 </div>
 
@@ -340,21 +155,7 @@ export const EditForm = ({
                   <h3 className="text-lg font-medium text-ui-fg-base">التصنيفات</h3>
 
                   <div className="space-y-2">
-                    <Label size="small" weight="plus">
-                      مكياج
-                    </Label>
-                    <Controller
-                      control={form.control}
-                      name="make_up_category_id"
-                      render={({ field }) => (
-                        <Input
-                          placeholder="أدخل معرف التصنيف"
-                          value={field.value || ""}
-                          onChange={field.onChange}
-                          className="w-full"
-                        />
-                      )}
-                    />
+                    {categoryFields.map((field) => renderField(field, "Enter category ID"))}
                   </div>
                 </div>
 
@@ -362,23 +163,7 @@ export const EditForm = ({
                 <div className="space-y-4">
                   <h3 className="text-lg font-medium text-ui-fg-base">العلامات التجارية</h3>
 
-                  <div className="space-y-2">
-                    <Label size="small" weight="plus">
-                      شيجلام
-                    </Label>
-                    <Controller
-                      control={form.control}
-                      name="sheglam_brand_id"
-                      render={({ field }) => (
-                        <Input
-                          placeholder="أدخل معرف العلامة التجارية"
-                          value={field.value || ""}
-                          onChange={field.onChange}
-                          className="w-full"
-                        />
-                      )}
-                    />
-                  </div>
+                  <div className="space-y-2">{brandFields.map((field) => renderField(field, "Enter brand ID"))}</div>
                 </div>
               </div>
             </Drawer.Body>
@@ -412,27 +197,9 @@ const StoreProductSettingsWidget = ({ data }: DetailWidgetProps<AdminStore>) => 
   const metadata = store?.metadata || {};
 
   // Count filled fields
-  const tagFields = [
-    "local_tag_id",
-    "best_seller_tag_id",
-    "high_rated_tag_id",
-    "new_arrival_tag_id",
-    "winter_tag_id",
-    "sheglam_tag_id",
-    "powder_tag_id",
-    "new_year_offers_tag_id",
-    "beauty_essentials_tag_id",
-    "all_you_want_tag_id",
-    "recommended_tag_id",
-    "flash_sale_tag_id",
-  ];
-
-  const categoryFields = ["make_up_category_id"];
-  const brandFields = ["sheglam_brand_id"];
-
-  const filledTags = tagFields.filter((field) => metadata[field]).length;
-  const filledCategories = categoryFields.filter((field) => metadata[field]).length;
-  const filledBrands = brandFields.filter((field) => metadata[field]).length;
+  const filledTags = tagFields.filter((field) => metadata[field.name]).length;
+  const filledCategories = categoryFields.filter((field) => metadata[field.name]).length;
+  const filledBrands = brandFields.filter((field) => metadata[field.name]).length;
 
   return (
     <Container className="divide-y p-0">
@@ -494,36 +261,12 @@ const StoreProductSettingsWidget = ({ data }: DetailWidgetProps<AdminStore>) => 
           <div className="space-y-3 pt-4 border-t">
             <h3 className="text-sm font-medium text-ui-fg-base">القيم المعينة:</h3>
             <div className="space-y-2 text-xs">
-              {tagFields.map((field) => {
-                const value = metadata[field];
+              {[...tagFields, ...categoryFields, ...brandFields].map((field) => {
+                const value = metadata[field.name];
                 if (value) {
                   return (
-                    <div key={field} className="flex justify-between">
-                      <span className="text-ui-fg-subtle">{field.replace("_tag_id", "")}:</span>
-                      <span className="font-mono text-ui-fg-base">{value}</span>
-                    </div>
-                  );
-                }
-                return null;
-              })}
-              {categoryFields.map((field) => {
-                const value = metadata[field];
-                if (value) {
-                  return (
-                    <div key={field} className="flex justify-between">
-                      <span className="text-ui-fg-subtle">{field.replace("_category_id", "")}:</span>
-                      <span className="font-mono text-ui-fg-base">{value}</span>
-                    </div>
-                  );
-                }
-                return null;
-              })}
-              {brandFields.map((field) => {
-                const value = metadata[field];
-                if (value) {
-                  return (
-                    <div key={field} className="flex justify-between">
-                      <span className="text-ui-fg-subtle">{field.replace("_brand_id", "")}:</span>
+                    <div key={field.name} className="flex justify-between">
+                      <span className="text-ui-fg-subtle">{field.label}:</span>
                       <span className="font-mono text-ui-fg-base">{value}</span>
                     </div>
                   );
