@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { FormProvider, useForm, Controller } from "react-hook-form";
 import * as zod from "zod";
 import { sdk } from "../lib/sdk";
+import useStore from "../lib/hooks/use-store";
 import useSWR from "swr";
 
 const schema = zod.object({
@@ -135,14 +136,13 @@ export const EditForm = ({
 };
 
 const StoreFlashSaleWidget = ({ data: passedStore }: DetailWidgetProps<AdminStore>) => {
-  const { data: storeResponse, mutate } = useSWR(["store", passedStore.id], () =>
-    sdk.admin.store.retrieve(passedStore.id)
-  );
+  const { store, isLoading, error } = useStore();
+  const { mutate } = useSWR(["store"]);
 
   const [isOpen, setIsOpen] = useState(false);
 
-  const hasFlashSale = (storeResponse?.store.metadata?.has_flash_sale as boolean) || false;
-  const flashSaleEndTime = storeResponse?.store.metadata?.flash_sale_end_time as string | undefined;
+  const hasFlashSale = (store?.metadata?.has_flash_sale as boolean) || false;
+  const flashSaleEndTime = store?.metadata?.flash_sale_end_time as string | undefined;
 
   const formatEndTime = (endTime: string) => {
     try {
@@ -206,12 +206,7 @@ const StoreFlashSaleWidget = ({ data: passedStore }: DetailWidgetProps<AdminStor
         )}
       </div>
 
-      <EditForm
-        open={isOpen}
-        onOpenChange={setIsOpen}
-        store={storeResponse?.store || passedStore}
-        onSubmitSuccess={mutate}
-      />
+      <EditForm open={isOpen} onOpenChange={setIsOpen} store={store || passedStore} onSubmitSuccess={mutate} />
     </Container>
   );
 };
