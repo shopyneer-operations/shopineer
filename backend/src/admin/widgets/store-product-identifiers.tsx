@@ -13,6 +13,7 @@ const schema = zod.object({
   // Product Tags
   local_tag_id: zod.string().optional(),
   best_seller_tag_id: zod.string().optional(),
+  makeup_best_seller_tag_id: zod.string().optional(),
   high_rated_tag_id: zod.string().optional(),
   new_arrival_tag_id: zod.string().optional(),
   winter_tag_id: zod.string().optional(),
@@ -35,6 +36,7 @@ const schema = zod.object({
 const tagFields = [
   { name: "local_tag_id", label: "Local" },
   { name: "best_seller_tag_id", label: "Best Seller" },
+  { name: "makeup_best_seller_tag_id", label: "Makeup Best Seller" },
   { name: "high_rated_tag_id", label: "High Rated" },
   { name: "new_arrival_tag_id", label: "New Arrival" },
   { name: "winter_tag_id", label: "Winter" },
@@ -65,6 +67,7 @@ export const EditForm = ({
     defaultValues: {
       local_tag_id: "",
       best_seller_tag_id: "",
+      makeup_best_seller_tag_id: "",
       high_rated_tag_id: "",
       new_arrival_tag_id: "",
       winter_tag_id: "",
@@ -185,7 +188,7 @@ export const EditForm = ({
   );
 };
 
-const StoreProductSettingsWidget = ({ data }: DetailWidgetProps<AdminStore>) => {
+const StoreProductIdentifiersWidget = ({ data }: DetailWidgetProps<AdminStore>) => {
   const { data: store, mutate } = useSWR(["store", data.id], async () => {
     const result = await sdk.admin.store.retrieve(data.id);
     return result.store;
@@ -286,4 +289,4 @@ export const config = defineWidgetConfig({
   zone: "store.details.after",
 });
 
-export default StoreProductSettingsWidget;
+export default StoreProductIdentifiersWidget;
