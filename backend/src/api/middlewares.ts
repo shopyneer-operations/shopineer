@@ -126,6 +126,10 @@ export default defineMiddlewares({
       method: "GET",
       // middlewares: [authenticate("cusotmer", ["session", "bearer"])],
     },
+    {
+      matcher: "/store/products-by-brand",
+      method: "GET",
+    },
 
     // // Admin
     // {
