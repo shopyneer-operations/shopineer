@@ -75,6 +75,13 @@ export default function BrandsPage() {
             },
           },
           {
+            key: "id",
+            label: "الرقم التعريفي",
+            render(brand: Brand) {
+              return <span className="font-mono text-sm">{brand.id}</span>;
+            },
+          },
+          {
             key: "name",
             label: "الاسم",
           },
