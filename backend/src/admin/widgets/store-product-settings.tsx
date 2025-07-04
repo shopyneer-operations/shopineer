@@ -38,7 +38,6 @@ const tagFields = [
   { name: "high_rated_tag_id", label: "High Rated" },
   { name: "new_arrival_tag_id", label: "New Arrival" },
   { name: "winter_tag_id", label: "Winter" },
-  { name: "sheglam_tag_id", label: "Sheglam" },
   { name: "powder_tag_id", label: "Powder" },
   { name: "new_year_offers_tag_id", label: "New Year Offers" },
   { name: "beauty_essentials_tag_id", label: "Beauty Essentials" },
