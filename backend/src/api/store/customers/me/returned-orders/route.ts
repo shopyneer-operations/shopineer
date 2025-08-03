@@ -11,7 +11,14 @@ export const GET = async (req: AuthenticatedMedusaRequest, res: MedusaResponse) 
     filters: { id: req.auth_context.actor_id },
   });
 
-  //   const returnedOrders = customer.orders.filter((order) => order.status === "returned");
+  // Filter orders that have returned items
+  const returnedOrders = customer.orders.filter((order) => {
+    // Check if any line item has returned quantity
+    return order.items?.some((item) => {
+      // Check if the item detail has return_received_quantity > 0
+      return item.detail?.return_received_quantity > 0;
+    });
+  });
 
-  res.json({ returned_orders: customer.orders });
+  res.json({ returned_orders: returnedOrders });
 };
