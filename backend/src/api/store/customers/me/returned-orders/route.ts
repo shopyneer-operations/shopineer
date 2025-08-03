@@ -20,7 +20,7 @@ export const GET = async (req: AuthenticatedMedusaRequest, res: MedusaResponse) 
     },
   });
 
-  const { rows, metadata } = result as {
+  const { rows } = result as {
     rows: OrderDTO[];
     metadata: any;
   };
@@ -32,28 +32,7 @@ export const GET = async (req: AuthenticatedMedusaRequest, res: MedusaResponse) 
   });
 
   res.json({
-    orders: returnedOrders as unknown as HttpTypes.StoreOrder[],
-    count: metadata.count,
-    offset: metadata.skip,
-    limit: metadata.take,
+    returnedOrders: returnedOrders as unknown as HttpTypes.StoreOrder[],
+    count: returnedOrders.length,
   });
-  //   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY);
-  //   const {
-  //     data: [customer],
-  //   } = await query.graph({
-  //     entity: "customer",
-  //     fields: ["orders.*"],
-  //     filters: { id: req.auth_context.actor_id },
-  //   });
-
-  //   // Filter orders that have returned items
-  //   const returnedOrders = customer.orders.filter((order) => {
-  //     // Check if any line item has returned quantity
-  //     return order.items?.some((item) => {
-  //       // Check if the item detail has return_received_quantity > 0
-  //       return item.detail?.return_received_quantity > 0;
-  //     });
-  //   });
-
-  //   res.json({ returned_orders: returnedOrders });
 };
