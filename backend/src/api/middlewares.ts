@@ -18,8 +18,6 @@ import { PostReviewResponse } from "./admin/reviews/validators";
 import { authenticate } from "@medusajs/medusa";
 import { retrieveCartTransformQueryConfig } from "./admin/abandoned-carts/query-config";
 import { HttpStatusCode } from "axios";
-import { AdminGetOrdersParams } from "./store/customers/me/returned-orders/validators";
-import { listTransformQueryConfig } from "./store/customers/me/returned-orders/query-config";
 
 const GetSuppliersSchema = createFindParams();
 
@@ -131,14 +129,6 @@ export default defineMiddlewares({
     {
       matcher: "/store/products-by-brand",
       method: "GET",
-    },
-    {
-      method: "GET",
-      matcher: "/store/customers/me/returned-orders",
-      middlewares: [
-        authenticate("customer", ["session", "bearer"]),
-        validateAndTransformQuery(AdminGetOrdersParams, listTransformQueryConfig),
-      ],
     },
 
     // // Admin
