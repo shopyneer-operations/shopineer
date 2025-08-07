@@ -1,6 +1,6 @@
 import { SubscriberArgs, type SubscriberConfig } from "@medusajs/medusa";
 import { Modules } from "@medusajs/framework/utils";
-import { STORE_URL } from "../lib/constants";
+import { RESEND_FROM_EMAIL, STORE_URL } from "../lib/constants";
 
 export default async function resetPasswordTokenHandler({
   event: {
@@ -29,6 +29,10 @@ export default async function resetPasswordTokenHandler({
     data: {
       // a URL to a frontend application
       reset_url: `${urlPrefix}/reset-password?token=${token}&email=${email}`,
+      emailOptions: {
+        subject: "Reset Your Password",
+        replyTo: RESEND_FROM_EMAIL,
+      },
     },
   });
 }
