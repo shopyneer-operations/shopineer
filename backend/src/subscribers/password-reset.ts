@@ -1,7 +1,5 @@
-import { INotificationModuleService } from "@medusajs/framework/types";
+import { SubscriberArgs, type SubscriberConfig } from "@medusajs/medusa";
 import { Modules } from "@medusajs/framework/utils";
-import { SubscriberArgs, SubscriberConfig } from "@medusajs/framework";
-import { EmailTemplates } from "../modules/email-notifications/templates";
 import { STORE_URL } from "../lib/constants";
 
 export default async function resetPasswordTokenHandler({
@@ -10,7 +8,7 @@ export default async function resetPasswordTokenHandler({
   },
   container,
 }: SubscriberArgs<{ entity_id: string; token: string; actor_type: string }>) {
-  const notificationModuleService: INotificationModuleService = container.resolve(Modules.NOTIFICATION);
+  const notificationModuleService = container.resolve(Modules.NOTIFICATION);
   const config = container.resolve("configModule");
 
   let urlPrefix = "";
@@ -23,20 +21,16 @@ export default async function resetPasswordTokenHandler({
     urlPrefix = `${backendUrl}${adminPath}`;
   }
 
-  try {
-    await notificationModuleService.createNotifications({
-      to: email,
-      channel: "email",
-      template: EmailTemplates.PASSWORD_RESET,
-      data: {
-        reset_url: `${urlPrefix}/reset-password?token=${token}&email=${email}`,
-        email: email,
-        preview: "Reset your password",
-      },
-    });
-  } catch (error) {
-    console.error("Error sending password reset email:", error);
-  }
+  await notificationModuleService.createNotifications({
+    to: email,
+    channel: "email",
+    // TODO replace with template ID in notification provider
+    template: "password-reset",
+    data: {
+      // a URL to a frontend application
+      reset_url: `${urlPrefix}/reset-password?token=${token}&email=${email}`,
+    },
+  });
 }
 
 export const config: SubscriberConfig = {
