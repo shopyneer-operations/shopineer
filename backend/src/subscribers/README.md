@@ -1,53 +1,79 @@
-# Custom subscribers
+# Subscribers
 
-Subscribers handle events emitted in the Medusa application.
+This directory contains event subscribers that handle various events in the Medusa application.
 
-The subscriber is created in a TypeScript or JavaScript file under the `src/subscribers` directory.
+## Available Subscribers
 
-For example, create the file `src/subscribers/product-created.ts` with the following content:
+### `invite-created.ts`
 
-```ts
-import { type SubscriberConfig } from "@medusajs/medusa";
+Handles the `invite.created` and `invite.resent` events to send invitation emails to new users.
 
-// subscriber function
-export default async function productCreateHandler() {
-  console.log("A product was created");
-}
+### `order-placed.ts`
 
-// subscriber config
-export const config: SubscriberConfig = {
-  event: "product.created",
-};
-```
+Handles the `order.placed` event to send order confirmation emails to customers.
 
-A subscriber file must export:
+### `payment-captured.ts`
 
-- The subscriber function that is an asynchronous function executed whenever the associated event is triggered.
-- A configuration object defining the event this subscriber is listening to.
+Handles the `payment.captured` event to send payment confirmation emails.
 
-## Subscriber Parameters
+### `product-created.ts`
 
-A subscriber receives an object having the following properties:
+Handles the `product.created` event for product-related notifications.
 
-- `event`: An object holding the event's details. It has a `data` property, which is the event's data payload.
-- `container`: The Medusa container. Use it to resolve modules' main services and other registered resources.
+### `password-reset.ts`
 
-```ts
-import type { SubscriberArgs, SubscriberConfig } from "@medusajs/medusa";
-import { IProductModuleService } from "@medusajs/framework/types";
-import { ModuleRegistrationName } from "@medusajs/framework/utils";
+Handles the `auth.password_reset` event to send password reset emails to users.
 
-export default async function productCreateHandler({ event: { data }, container }: SubscriberArgs<{ id: string }>) {
-  const productId = data.id;
+## Password Reset Flow
 
-  const productModuleService: IProductModuleService = container.resolve(ModuleRegistrationName.PRODUCT);
+When a user requests a password reset:
 
-  const product = await productModuleService.retrieve(productId);
+1. The system generates a password reset token and emits the `auth.password_reset` event
+2. The `password-reset.ts` subscriber catches this event and sends an email notification
+3. The email contains a link with the reset token and user's email
+4. The user clicks the link and is redirected to the reset password page
+5. The user enters their new password and submits the form
 
-  console.log(`The product ${product.title} was created`);
-}
+### Email Template
 
-export const config: SubscriberConfig = {
-  event: "product.created",
-};
-```
+The password reset email uses the `PASSWORD_RESET` template which includes:
+
+- A personalized greeting with the user's email
+- A "Reset Password" button
+- A fallback URL that can be copied and pasted
+- Security disclaimers and instructions
+
+### URL Configuration
+
+The reset URL is constructed based on the user type:
+
+- **Customers**: Uses `STORE_URL` from environment variables
+- **Admin users**: Uses the backend URL with admin path
+
+### Environment Variables Required
+
+Make sure these environment variables are set:
+
+- `STORE_URL`: The URL of your storefront
+- `RESEND_API_KEY`: Your Resend API key
+- `RESEND_FROM_EMAIL`: The email address to send from
+
+## Testing
+
+To test the password reset flow:
+
+1. Start your Medusa application
+2. Go to the admin panel login page
+3. Click "Reset" and enter an email address
+4. Check the server logs for the event emission
+5. Check the email inbox for the reset password email
+
+## Customization
+
+You can customize the email template by modifying `src/modules/email-notifications/templates/password-reset.tsx`.
+
+The template supports the following props:
+
+- `reset_url`: The URL to reset the password
+- `email`: The user's email address
+- `preview`: The email preview text
