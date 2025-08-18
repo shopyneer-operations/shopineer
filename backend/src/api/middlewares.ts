@@ -15,6 +15,7 @@ import { Permission } from "../modules/role/models/role";
 import { PutAdminRole } from "./admin/roles/validators";
 import { PostReview } from "./store/reviews/validators";
 import { PostReviewResponse } from "./admin/reviews/validators";
+import { PostOrderCancelReq } from "./store/orders/[orderId]/cancel/validators";
 import { authenticate } from "@medusajs/medusa";
 import { retrieveCartTransformQueryConfig } from "./admin/abandoned-carts/query-config";
 import { HttpStatusCode } from "axios";
@@ -129,6 +130,14 @@ export default defineMiddlewares({
     {
       matcher: "/store/products-by-brand",
       method: "GET",
+    },
+    {
+      matcher: "/store/orders/:orderId/cancel",
+      method: "POST",
+      middlewares: [
+        authenticate("customer", ["session", "bearer"]),
+        validateAndTransformBody(PostOrderCancelReq as any),
+      ],
     },
 
     // // Admin
