@@ -14,7 +14,10 @@ const FBCatalogSyncWidget = ({ data }: DetailWidgetProps<AdminStore>) => {
   const handleSyncToggle = async (checked: boolean) => {
     try {
       await sdk.admin.store.update(data.id, {
-        metadata: { sync_fb_catalog: checked },
+        metadata: {
+          ...store?.metadata,
+          sync_fb_catalog: checked,
+        },
       });
       mutate();
     } catch (error) {
