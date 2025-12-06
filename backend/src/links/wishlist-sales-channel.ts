@@ -1,13 +1,13 @@
 import { defineLink } from "@medusajs/framework/utils";
 import WishlistModule from "../modules/wishlist";
-import CustomerModule from "@medusajs/medusa/customer";
+import SalesChannelModule from "@medusajs/medusa/sales-channel";
 
 export default defineLink(
   {
     linkable: WishlistModule.linkable.wishlist.id,
-    field: "customer_id",
+    field: "sales_channel_id",
   },
-  CustomerModule.linkable.customer.id,
+  SalesChannelModule.linkable.salesChannel,
   {
     readOnly: true,
   }

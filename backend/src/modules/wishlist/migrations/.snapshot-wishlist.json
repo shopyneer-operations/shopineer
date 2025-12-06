@@ -15,6 +15,24 @@
           "nullable": false,
           "mappedType": "text"
         },
+        "customer_id": {
+          "name": "customer_id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "text"
+        },
+        "sales_channel_id": {
+          "name": "sales_channel_id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "text"
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamptz",
@@ -55,9 +73,19 @@
           "keyName": "IDX_wishlist_deleted_at",
           "columnNames": [],
           "composite": false,
+          "constraint": false,
           "primary": false,
           "unique": false,
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_wishlist_deleted_at\" ON \"wishlist\" (deleted_at) WHERE deleted_at IS NULL"
+        },
+        {
+          "keyName": "IDX_wishlist_customer_id_sales_channel_id_unique",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_wishlist_customer_id_sales_channel_id_unique\" ON \"wishlist\" (customer_id, sales_channel_id) WHERE deleted_at IS NULL"
         },
         {
           "keyName": "wishlist_pkey",
@@ -65,12 +93,14 @@
             "id"
           ],
           "composite": false,
+          "constraint": true,
           "primary": true,
           "unique": true
         }
       ],
       "checks": [],
-      "foreignKeys": {}
+      "foreignKeys": {},
+      "nativeEnums": {}
     },
     {
       "columns": {
@@ -83,26 +113,8 @@
           "nullable": false,
           "mappedType": "text"
         },
-        "quantity": {
-          "name": "quantity",
-          "type": "integer",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "mappedType": "integer"
-        },
-        "productId": {
-          "name": "productId",
-          "type": "text",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "mappedType": "text"
-        },
-        "productVariantId": {
-          "name": "productVariantId",
+        "product_variant_id": {
+          "name": "product_variant_id",
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
@@ -159,6 +171,7 @@
           "keyName": "IDX_wishlist_item_wishlist_id",
           "columnNames": [],
           "composite": false,
+          "constraint": false,
           "primary": false,
           "unique": false,
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_wishlist_item_wishlist_id\" ON \"wishlist_item\" (wishlist_id) WHERE deleted_at IS NULL"
@@ -167,9 +180,19 @@
           "keyName": "IDX_wishlist_item_deleted_at",
           "columnNames": [],
           "composite": false,
+          "constraint": false,
           "primary": false,
           "unique": false,
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_wishlist_item_deleted_at\" ON \"wishlist_item\" (deleted_at) WHERE deleted_at IS NULL"
+        },
+        {
+          "keyName": "IDX_wishlist_item_product_variant_id_wishlist_id_unique",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_wishlist_item_product_variant_id_wishlist_id_unique\" ON \"wishlist_item\" (product_variant_id, wishlist_id) WHERE deleted_at IS NULL"
         },
         {
           "keyName": "wishlist_item_pkey",
@@ -177,6 +200,7 @@
             "id"
           ],
           "composite": false,
+          "constraint": true,
           "primary": true,
           "unique": true
         }
@@ -193,10 +217,11 @@
             "id"
           ],
           "referencedTableName": "public.wishlist",
-          "deleteRule": "cascade",
           "updateRule": "cascade"
         }
-      }
+      },
+      "nativeEnums": {}
     }
-  ]
+  ],
+  "nativeEnums": {}
 }

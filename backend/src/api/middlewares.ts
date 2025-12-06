@@ -19,6 +19,7 @@ import { PostOrderCancelReq } from "./store/orders/[orderId]/cancel/validators";
 import { authenticate } from "@medusajs/medusa";
 import { retrieveCartTransformQueryConfig } from "./admin/abandoned-carts/query-config";
 import { HttpStatusCode } from "axios";
+import { PostStoreCreateWishlistItem } from "./store/customers/me/wishlists/items/validators";
 
 const GetSuppliersSchema = createFindParams();
 
@@ -77,6 +78,12 @@ const permissions = async (req: MedusaRequest, res: MedusaResponse, next: Medusa
 export default defineMiddlewares({
   routes: [
     // Store
+    {
+      matcher: "/store/customers/me/wishlists/items",
+      method: "POST",
+      middlewares: [validateAndTransformBody(PostStoreCreateWishlistItem as any)],
+    },
+
     {
       matcher: "/store/reviews",
       method: "POST",
