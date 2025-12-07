@@ -16,10 +16,10 @@
     "build": "medusa build && node src/scripts/postBuild.js",
     "seed": "medusa exec ./src/scripts/seed.ts",
     "ib": "init-backend",
-    "start": "init-backend && medusa db:migrate && cd .medusa/server && medusa start --verbose",
+    "start": "init-backend && medusa db:migrate --execute-all-links && cd .medusa/server && medusa start --verbose",
     "dev": "medusa develop",
     "email:dev": "email dev --dir=./src/modules/email-notifications/templates --port=3002",
-    "restart": "medusa db:migrate && medusa user -e killua@mail.com -p killua && medusa develop"
+    "restart": "medusa db:migrate --execute-all-links && medusa user -e killua@mail.com -p killua && medusa develop"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
