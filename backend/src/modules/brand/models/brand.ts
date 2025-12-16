@@ -5,4 +5,5 @@ export const Brand = model.define("brand", {
   name: model.text(),
   description: model.text().nullable(),
   image: model.text().nullable(),
+  tag_id: model.text().nullable(),
 });

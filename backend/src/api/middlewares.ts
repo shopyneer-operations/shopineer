@@ -94,7 +94,7 @@ export default defineMiddlewares({
       method: "GET",
       middlewares: [
         validateAndTransformQuery(GetSuppliersSchema, {
-          defaults: ["id", "name", "description", "image", "products.*"],
+          defaults: ["id", "name", "description", "image", "tag_id", "products.*"],
           isList: true,
         }),
       ],
@@ -226,7 +226,7 @@ export default defineMiddlewares({
       method: "GET",
       middlewares: [
         validateAndTransformQuery(GetSuppliersSchema, {
-          defaults: ["id", "name", "description", "image", "products.*"],
+          defaults: ["id", "name", "description", "image", "tag_id", "products.*"],
           isList: true,
         }),
       ],
@@ -252,17 +252,17 @@ export default defineMiddlewares({
       middlewares: [validateAndTransformBody(PutAdminRole as any)],
     },
   ],
-  errorHandler(error: MedusaError | any, req: MedusaRequest, res: MedusaResponse, next: MedusaNextFunction) {
-    console.log("4️⃣", error.type === MedusaError.Types.UNAUTHORIZED);
+  // errorHandler(error: MedusaError | any, req: MedusaRequest, res: MedusaResponse, next: MedusaNextFunction) {
+  //   console.log("4️⃣", error.type === MedusaError.Types.UNAUTHORIZED);
 
-    if (error.type === MedusaError.Types.UNAUTHORIZED) {
-      res.status(HttpStatusCode.Ok).json({
-        error: error.message,
-        timestamp: new Date().toISOString(),
-        path: req.baseUrl,
-      });
-    } else {
-      next(error);
-    }
-  },
+  //   if (error.type === MedusaError.Types.UNAUTHORIZED) {
+  //     res.status(HttpStatusCode.Ok).json({
+  //       error: error.message,
+  //       timestamp: new Date().toISOString(),
+  //       path: req.baseUrl,
+  //     });
+  //   } else {
+  //     next(error);
+  //   }
+  // },
 });

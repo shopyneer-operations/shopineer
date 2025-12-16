@@ -5,7 +5,7 @@ import { MedusaError } from "@medusajs/framework/utils";
 export async function GET(req: AuthenticatedMedusaRequest, res: MedusaResponse) {
   const query = req.scope.resolve("query");
 
-  const { data } = await query.graph({
+  let { data } = await query.graph({
     entity: "wishlist",
     fields: ["*", "items.*", "items.product_variant.*", "items.product_variant.prices.*"],
     filters: {
@@ -13,8 +13,33 @@ export async function GET(req: AuthenticatedMedusaRequest, res: MedusaResponse) 
     },
   });
 
+  // If no wishlist exists, create a new one
   if (!data.length) {
-    throw new MedusaError(MedusaError.Types.NOT_FOUND, "No wishlist found for customer");
+    if (!req.publishable_key_context?.sales_channel_ids.length) {
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        "At least one sales channel ID is required to be associated with the publishable API key in the request header."
+      );
+    }
+
+    // Create a new wishlist
+    const { result } = await createWishlistWorkflow(req.scope).run({
+      input: {
+        customer_id: req.auth_context.actor_id,
+        sales_channel_id: req.publishable_key_context?.sales_channel_ids[0],
+      },
+    });
+
+    // Fetch the newly created wishlist with all fields
+    const wishlistData = await query.graph({
+      entity: "wishlist",
+      fields: ["*", "items.*", "items.product_variant.*", "items.product_variant.prices.*"],
+      filters: {
+        id: result.wishlist.id,
+      },
+    });
+
+    data = wishlistData.data;
   }
 
   return res.json({

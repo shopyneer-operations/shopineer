@@ -19,23 +19,32 @@ export default function BrandsPage() {
   const [currentPage, setCurrentPage] = useState(0);
   const offset = currentPage * constants.BRANDS_LIMIT;
 
-  const { data, mutate } = useSWR(["brands", offset, isAuthorized, isLoading], async () => {
-    if (isLoading || !isAuthorized) {
-      return { brands: [], count: 0, offset: 0, limit: 0 };
-    }
+  const { data, mutate } = useSWR(
+    ["brands", offset, isAuthorized, isLoading],
+    async () => {
+      if (isLoading || !isAuthorized) {
+        return { brands: [], count: 0, offset: 0, limit: 0 };
+      }
 
-    return sdk.client.fetch<PaginatedResponse<{ brands: Brand[] }>>(`/admin/brands`, {
-      query: {
-        limit: constants.BRANDS_LIMIT,
-        offset,
-      },
-    });
-  });
+      return sdk.client.fetch<PaginatedResponse<{ brands: Brand[] }>>(
+        `/admin/brands`,
+        {
+          query: {
+            limit: constants.BRANDS_LIMIT,
+            offset,
+          },
+        }
+      );
+    }
+  );
 
   async function deleteBrand(id: string) {
-    const { brandId } = await sdk.client.fetch<{ brandId: string }>(`/admin/brands/${id}`, {
-      method: "DELETE",
-    });
+    const { brandId } = await sdk.client.fetch<{ brandId: string }>(
+      `/admin/brands/${id}`,
+      {
+        method: "DELETE",
+      }
+    );
     mutate();
 
     // Show success toast
@@ -71,7 +80,13 @@ export default function BrandsPage() {
           {
             key: "",
             render(brand: Brand) {
-              return <img src={brand.image} alt={brand.name} className="h-8 w-8 rounded-full object-cover" />;
+              return (
+                <img
+                  src={brand.image}
+                  alt={brand.name}
+                  className="h-8 w-8 rounded-full object-cover"
+                />
+              );
             },
           },
           {
@@ -90,6 +105,15 @@ export default function BrandsPage() {
             label: "الوصف",
           },
           {
+            key: "tag_id",
+            label: "معرف العلامة",
+            render(brand: Brand) {
+              return (
+                <span className="font-mono text-sm">{brand.tag_id || "-"}</span>
+              );
+            },
+          },
+          {
             key: "products.length",
             label: "المنتجات",
           },
@@ -103,7 +127,11 @@ export default function BrandsPage() {
                   <EditBrandForm mutate={mutate} brand={brand} />
 
                   {/* Delete */}
-                  <Button type="button" onClick={() => deleteBrand(brand.id)} variant="danger">
+                  <Button
+                    type="button"
+                    onClick={() => deleteBrand(brand.id)}
+                    variant="danger"
+                  >
                     <Trash />
                   </Button>
                 </div>
