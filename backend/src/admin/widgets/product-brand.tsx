@@ -21,15 +21,12 @@ const ProductBrandWidget = ({ data: product }: any) => {
   });
 
   // Fetch current product tags
-  const { data: productData, mutate: mutateProduct } = useSWR(
-    ["product", product.id],
-    async () => {
-      const result = await sdk.admin.product.retrieve(product.id, {
-        fields: "+tags.*",
-      });
-      return result;
-    }
-  );
+  const { data: productData, mutate: mutateProduct } = useSWR(["product", product.id], async () => {
+    const result = await sdk.admin.product.retrieve(product.id, {
+      fields: "+tags.*",
+    });
+    return result;
+  });
 
   // Get brands that have a tag_id assigned (filter brands with tags)
   const brandsWithTags = React.useMemo(() => {
@@ -38,17 +35,13 @@ const ProductBrandWidget = ({ data: product }: any) => {
 
   // Get the current product's tag that matches a brand's tag
   const currentBrandTagId = React.useMemo(() => {
-    const productTags =
-      (productData?.product as AdminProduct & { tags?: AdminProductTag[] })
-        ?.tags || [];
+    const productTags = (productData?.product as AdminProduct & { tags?: AdminProductTag[] })?.tags || [];
     const brandTagIds = brandsWithTags.map((b) => b.tag_id);
     const matchingTag = productTags.find((tag) => brandTagIds.includes(tag.id));
     return matchingTag?.id;
   }, [productData, brandsWithTags]);
 
-  const [selectedTagId, setSelectedTagId] = React.useState<
-    string | undefined
-  >();
+  const [selectedTagId, setSelectedTagId] = React.useState<string | undefined>();
 
   // Sync selectedTagId with currentBrandTagId
   React.useEffect(() => {
@@ -60,21 +53,17 @@ const ProductBrandWidget = ({ data: product }: any) => {
   async function updateProductTag(tagId: string) {
     try {
       // Get current product tags
-      const productTags =
-        (productData?.product as AdminProduct & { tags?: AdminProductTag[] })
-          ?.tags || [];
+      const productTags = (productData?.product as AdminProduct & { tags?: AdminProductTag[] })?.tags || [];
       const brandTagIds = brandsWithTags.map((b) => b.tag_id);
 
       // Remove any existing brand tags and add the new one
-      const filteredTagIds = productTags
-        .filter((tag) => !brandTagIds.includes(tag.id))
-        .map((tag) => tag.id);
+      const filteredTagIds = productTags.filter((tag) => !brandTagIds.includes(tag.id)).map((tag) => tag.id);
 
       const newTagIds = [...filteredTagIds, tagId];
 
       await sdk.admin.product.update(product.id, {
-        tag_ids: newTagIds,
-      } as any);
+        tags: newTagIds.map((tagId) => ({ id: tagId })),
+      });
 
       // Update UI
       setSelectedTagId(tagId);
@@ -83,9 +72,7 @@ const ProductBrandWidget = ({ data: product }: any) => {
       // Find the brand name for the toast message
       const brand = brandsWithTags.find((b) => b.tag_id === tagId);
       toast.success("تم تحديث العلامة التجارية", {
-        description: `تم تحديث العلامة التجارية للمنتج: ${
-          brand?.name || tagId
-        }`,
+        description: `تم تحديث العلامة التجارية للمنتج: ${brand?.name || tagId}`,
       });
     } catch (error: any) {
       toast.error("فشل تحديث العلامة التجارية", { description: error.message });
