@@ -89,5 +89,11 @@
   "engines": {
     "node": "22.x",
     "npm": "10.x"
+  },
+  "pnpm": {
+    "overrides": {
+      "next": "15.3.8",
+      "@next/env": "15.3.8"
+    }
   }
 }
