@@ -49,6 +49,7 @@ const medusaConfig = {
       storeCors: "/^.*/",
       jwtSecret: JWT_SECRET,
       cookieSecret: COOKIE_SECRET,
+      jwtExpiresIn: "30d",
     },
   },
   admin: {
