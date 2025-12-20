@@ -28,7 +28,6 @@ import { AbstractPaymentProvider, BigNumber, MedusaError } from "@medusajs/frame
 import fp from "lodash/fp";
 import crypto from "crypto";
 import axios from "axios";
-import { EntityManager } from "@mikro-orm/knex";
 import _ from "lodash";
 
 type ChargeItem = {
@@ -110,7 +109,7 @@ type Options = {
 
 type InjectedDependencies = {
   logger: Logger;
-  manager: EntityManager;
+  manager: any;
 };
 
 type CartResponse = {
@@ -134,7 +133,7 @@ export default class FawaterakProviderService extends AbstractPaymentProvider<Op
   static identifier = "fawaterak";
   protected logger_: Logger;
   protected options_: Options;
-  protected manager_: EntityManager;
+  protected manager_: any;
   // assuming you're initializing a client
   protected client;
 
