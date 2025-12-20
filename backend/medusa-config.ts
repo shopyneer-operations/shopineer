@@ -88,9 +88,6 @@ const medusaConfig = {
       resolve: "./src/modules/role",
     },
     {
-      resolve: "./modules/store-analytics",
-    },
-    {
       resolve: "./modules/wishlist",
       options: {
         jwtSecret: JWT_SECRET,

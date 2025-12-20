@@ -1,3 +1,5 @@
+import { CreateInventoryLevelInput, ExecArgs } from "@medusajs/framework/types";
+import { ContainerRegistrationKeys, Modules, ProductStatus } from "@medusajs/framework/utils";
 import {
   createApiKeysWorkflow,
   createInventoryLevelsWorkflow,
@@ -11,10 +13,33 @@ import {
   createTaxRegionsWorkflow,
   linkSalesChannelsToApiKeyWorkflow,
   linkSalesChannelsToStockLocationWorkflow,
+  updateStoresStep,
   updateStoresWorkflow,
 } from "@medusajs/medusa/core-flows";
-import { CreateInventoryLevelInput, ExecArgs } from "@medusajs/framework/types";
-import { ContainerRegistrationKeys, Modules, ProductStatus } from "@medusajs/framework/utils";
+import { createWorkflow, transform, WorkflowResponse } from "@medusajs/framework/workflows-sdk";
+
+const updateStoreCurrencies = createWorkflow(
+  "update-store-currencies",
+  (input: { supported_currencies: { currency_code: string; is_default?: boolean }[]; store_id: string }) => {
+    const normalizedInput = transform({ input }, (data) => {
+      return {
+        selector: { id: data.input.store_id },
+        update: {
+          supported_currencies: data.input.supported_currencies.map((currency) => {
+            return {
+              currency_code: currency.currency_code,
+              is_default: currency.is_default ?? false,
+            };
+          }),
+        },
+      };
+    });
+
+    const stores = updateStoresStep(normalizedInput);
+
+    return new WorkflowResponse(stores);
+  }
+);
 
 export default async function seedDemoData({ container }: ExecArgs) {
   const logger = container.resolve(ContainerRegistrationKeys.LOGGER);
@@ -24,7 +49,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
   const salesChannelModuleService = container.resolve(Modules.SALES_CHANNEL);
   const storeModuleService = container.resolve(Modules.STORE);
 
-  const country = "eg";
+  const countries = ["eg"];
 
   logger.info("Seeding store data...");
   const [store] = await storeModuleService.listStores();
@@ -46,16 +71,22 @@ export default async function seedDemoData({ container }: ExecArgs) {
     defaultSalesChannel = salesChannelResult;
   }
 
+  await updateStoreCurrencies(container).run({
+    input: {
+      store_id: store.id,
+      supported_currencies: [
+        {
+          currency_code: "egp",
+          is_default: true,
+        },
+      ],
+    },
+  });
+
   await updateStoresWorkflow(container).run({
     input: {
       selector: { id: store.id },
       update: {
-        supported_currencies: [
-          {
-            currency_code: "egp",
-            is_default: true,
-          },
-        ],
         default_sales_channel_id: defaultSalesChannel[0].id,
       },
     },
@@ -67,7 +98,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
         {
           name: "Egypt",
           currency_code: "egp",
-          countries: [country],
+          countries,
           payment_providers: ["pp_system_default"],
         },
       ],
@@ -78,11 +109,10 @@ export default async function seedDemoData({ container }: ExecArgs) {
 
   logger.info("Seeding tax regions...");
   await createTaxRegionsWorkflow(container).run({
-    input: [
-      {
-        country_code: country,
-      },
-    ],
+    input: countries.map((country_code) => ({
+      country_code,
+      provider_id: "tp_system",
+    })),
   });
   logger.info("Finished seeding tax regions.");
 
@@ -102,6 +132,15 @@ export default async function seedDemoData({ container }: ExecArgs) {
     },
   });
   const stockLocation = stockLocationResult[0];
+
+  await updateStoresWorkflow(container).run({
+    input: {
+      selector: { id: store.id },
+      update: {
+        default_location_id: stockLocation.id,
+      },
+    },
+  });
 
   await link.create({
     [Modules.STOCK_LOCATION]: {
@@ -140,7 +179,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
         name: "Egypt",
         geo_zones: [
           {
-            country_code: country,
+            country_code: "eg",
             type: "country",
           },
         ],
@@ -173,11 +212,11 @@ export default async function seedDemoData({ container }: ExecArgs) {
         prices: [
           {
             currency_code: "egp",
-            amount: 100,
+            amount: 500,
           },
           {
             region_id: region.id,
-            amount: 100,
+            amount: 500,
           },
         ],
         rules: [
@@ -207,11 +246,11 @@ export default async function seedDemoData({ container }: ExecArgs) {
         prices: [
           {
             currency_code: "egp",
-            amount: 200,
+            amount: 500,
           },
           {
             region_id: region.id,
-            amount: 200,
+            amount: 500,
           },
         ],
         rules: [
@@ -290,7 +329,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
     input: {
       products: [
         {
-          title: "Shopyneer T-Shirt",
+          title: "Medusa T-Shirt",
           category_ids: [categoryResult.find((cat) => cat.name === "Shirts")!.id],
           description:
             "Reimagine the feeling of a classic T-shirt. With our cotton T-shirts, everyday essentials no longer have to be ordinary.",
@@ -443,7 +482,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
           ],
         },
         {
-          title: "Shopyneer Sweatshirt",
+          title: "Medusa Sweatshirt",
           category_ids: [categoryResult.find((cat) => cat.name === "Sweatshirts")!.id],
           description:
             "Reimagine the feeling of a classic sweatshirt. With our cotton sweatshirt, everyday essentials no longer have to be ordinary.",
@@ -474,7 +513,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
               },
               prices: [
                 {
-                  amount: 800,
+                  amount: 500,
                   currency_code: "egp",
                 },
               ],
@@ -487,7 +526,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
               },
               prices: [
                 {
-                  amount: 800,
+                  amount: 500,
                   currency_code: "egp",
                 },
               ],
@@ -500,7 +539,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
               },
               prices: [
                 {
-                  amount: 800,
+                  amount: 500,
                   currency_code: "egp",
                 },
               ],
@@ -513,7 +552,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
               },
               prices: [
                 {
-                  amount: 800,
+                  amount: 500,
                   currency_code: "egp",
                 },
               ],
@@ -526,7 +565,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
           ],
         },
         {
-          title: "Shopyneer Sweatpants",
+          title: "Medusa Sweatpants",
           category_ids: [categoryResult.find((cat) => cat.name === "Pants")!.id],
           description:
             "Reimagine the feeling of classic sweatpants. With our cotton sweatpants, everyday essentials no longer have to be ordinary.",
@@ -557,7 +596,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
               },
               prices: [
                 {
-                  amount: 700,
+                  amount: 500,
                   currency_code: "egp",
                 },
               ],
@@ -570,7 +609,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
               },
               prices: [
                 {
-                  amount: 700,
+                  amount: 500,
                   currency_code: "egp",
                 },
               ],
@@ -583,7 +622,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
               },
               prices: [
                 {
-                  amount: 700,
+                  amount: 500,
                   currency_code: "egp",
                 },
               ],
@@ -596,7 +635,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
               },
               prices: [
                 {
-                  amount: 700,
+                  amount: 500,
                   currency_code: "egp",
                 },
               ],
@@ -609,7 +648,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
           ],
         },
         {
-          title: "Shopyneer Shorts",
+          title: "Medusa Shorts",
           category_ids: [categoryResult.find((cat) => cat.name === "Merch")!.id],
           description:
             "Reimagine the feeling of classic shorts. With our cotton shorts, everyday essentials no longer have to be ordinary.",
@@ -640,7 +679,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
               },
               prices: [
                 {
-                  amount: 600,
+                  amount: 500,
                   currency_code: "egp",
                 },
               ],
@@ -653,7 +692,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
               },
               prices: [
                 {
-                  amount: 600,
+                  amount: 500,
                   currency_code: "egp",
                 },
               ],
@@ -666,7 +705,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
               },
               prices: [
                 {
-                  amount: 600,
+                  amount: 500,
                   currency_code: "egp",
                 },
               ],
@@ -679,7 +718,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
               },
               prices: [
                 {
-                  amount: 600,
+                  amount: 500,
                   currency_code: "egp",
                 },
               ],

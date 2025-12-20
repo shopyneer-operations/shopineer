@@ -1,0 +1,86 @@
+version: "3.8"
+
+# Docker Compose configuration for Shopyneer development environment
+#
+# Usage:
+#   Start services: docker-compose up -d
+#   Stop services: docker-compose down
+#   View logs: docker-compose logs -f
+#   Remove volumes (clean database): docker-compose down -v
+#
+# Environment Variables for backend/.env:
+#   DATABASE_URL=postgres://postgres:postgres@localhost:5432/medusa
+#   REDIS_URL=redis://localhost:6379 (optional but recommended)
+#
+# Web UIs:
+#   PostgreSQL Adminer: http://localhost:8080
+#   Redis Commander: http://localhost:8081
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: shopyneer-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: medusa
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - shopyneer-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: shopyneer-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - shopyneer-network
+
+  adminer:
+    image: adminer:latest
+    container_name: shopyneer-adminer
+    ports:
+      - "8080:8080"
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - shopyneer-network
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: shopyneer-redis-commander
+    ports:
+      - "8081:8081"
+    environment:
+      REDIS_HOSTS: local:redis:6379
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - shopyneer-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  shopyneer-network:
+    driver: bridge
